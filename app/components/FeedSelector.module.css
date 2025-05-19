@@ -1,0 +1,12 @@
+.feedSelector {
+    width: 174px;
+    height: 32px;
+    margin: 0 auto;
+    background-color: var(--mid);
+    display: grid;
+    place-items: center;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+    -21px 16px 64px -36px rgba(0,0,0,0.25);
+    font-family: var(--font-gentium-plus);
+}

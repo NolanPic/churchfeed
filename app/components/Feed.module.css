@@ -1,0 +1,22 @@
+.feedWrapper {
+    background-color: var(--mid);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+    -21px 16px 64px -36px rgba(0,0,0,0.25);
+
+
+    .feedIntro {
+        font-family: var(--font-gentium-plus);
+        font-style: italic;
+        font-weight: 400;
+        padding: 42px 0;
+        text-align: center;
+    }
+
+    .feedIntroRule {
+        color: var(--light);
+        width: 210px;
+        margin: auto;
+        margin-bottom: 28px;
+    }
+}
