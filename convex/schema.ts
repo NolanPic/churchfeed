@@ -31,7 +31,7 @@ export default defineSchema({
     feedId: v.id("feeds"),
     posterId: v.id("users"),
     content: v.string(),
-  }),
+  }).index("by_org_feed", ["orgId", "feedId"]),
   messages: defineTable({ 
     ...defaultColumns,
     postId: v.id("posts"),
