@@ -12,11 +12,11 @@
 
 .mainTitle {
     margin-top: 142px;
-    font-size: 64px;
+    font-size: var(--text-xl);
 }
 
 .location {
-    font-size: 20px;
+    font-size: var(--text-md);
 }
 
 .lightPointer {

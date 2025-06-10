@@ -1,4 +1,6 @@
 :root {
+
+  /* Colors */
   --dark: #2D3250;
   --mid: #424769;
   --mid2: #4C5177;
@@ -6,6 +8,13 @@
   --light2: #8387A1;
   --accent: #F6B17A;
   --white: #E0E0E0;
+  --text-regular: 16px;
+
+  /* Text sizes */
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 4rem;
 }
 
 html,
