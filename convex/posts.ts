@@ -13,7 +13,14 @@ export const getPublicFeedPosts = query({
             .withIndex("by_org_feed", 
                 (q) => q.eq("orgId", orgId).eq("feedId", feedId)
             )
+            .order("desc")
             .collect();
-        return posts;
+
+        const postsWithAuthor = await Promise.all(posts.map(async (post) => {
+            const author = await cxt.db.get(post.posterId);
+            return { ...post, author };
+        }));
+
+        return postsWithAuthor;
     }
 });

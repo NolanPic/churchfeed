@@ -17,9 +17,15 @@
     }
 
     .feedIntroRule {
-        color: var(--light);
         width: 210px;
         margin: auto;
+        border-bottom: 0.75px solid var(--light);
         margin-bottom: 28px;
+    }
+
+    .feedPosts {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing10);
     }
 }

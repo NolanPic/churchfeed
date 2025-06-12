@@ -1,0 +1,57 @@
+.feedPost {
+    display: flex;
+    gap: var(--spacing4);
+    padding: 0 var(--spacing17);
+    font-size: var(--text-base);
+
+    .postAuthorAvatar {
+        background-color: var(--accent);
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        color: var(--dark);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .postRight {
+        width: 100%;
+    }
+
+    .postInfo {
+        display: flex;
+    }
+
+    .postAuthorName {
+        font-weight: 600;
+    }
+    
+    .postTimestamp {
+        color: var(--light);
+        font-weight: 600;
+        margin-left: var(--spacing3);
+    }
+
+    .postMessageThread {
+        flex-shrink: 0;
+        margin-left: auto;
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
+    .postContent {
+        margin-top: var(--spacing2);
+
+        p:not(:last-child) {
+            margin-bottom: var(--spacing3);
+        }
+    }
+
+}
+
+.postSeparator {
+    border: 0.75px solid var(--light);
+}
