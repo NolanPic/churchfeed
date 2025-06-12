@@ -41,7 +41,6 @@ export default function FeedPost({ post }: FeedPostProps) {
                     <div className={styles.postContent} dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
                 </div>
             </article>
-            <hr className={styles.postSeparator} />
         </>
     );
 }

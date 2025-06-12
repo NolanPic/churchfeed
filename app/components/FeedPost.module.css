@@ -1,8 +1,12 @@
 .feedPost {
     display: flex;
     gap: var(--spacing4);
-    padding: 0 var(--spacing17);
+    padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
     font-size: var(--text-base);
+
+    &:not(:last-child) {
+        border-bottom: 0.75px solid var(--light);
+    }
 
     .postAuthorAvatar {
         background-color: var(--accent);
@@ -49,9 +53,4 @@
             margin-bottom: var(--spacing3);
         }
     }
-
-}
-
-.postSeparator {
-    border: 0.75px solid var(--light);
 }
