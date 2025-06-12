@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexAuthNextjsServerProvider>
-       <html lang="en">
+      <html lang="en">
         <body className={`${lato.variable} ${gentiumPlus.variable}`}>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>

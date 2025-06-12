@@ -25,9 +25,7 @@ export default function Feed({ orgId, feedId }: FeedProps) {
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <hr className={styles.feedIntroRule} />
         <main className={styles.feedPosts}>
-          {posts?.map(post => (
-            <FeedPost key={post._id} post={post} />
-          ))}
+          {posts?.map((post) => <FeedPost key={post._id} post={post} />)}
         </main>
       </div>
     </>

@@ -18,7 +18,11 @@ export default defineSchema({
   feeds: defineTable({
     ...defaultColumns,
     name: v.string(),
-    privacy: v.union(v.literal("public"), v.literal("private"), v.literal("open")),
+    privacy: v.union(
+      v.literal("public"),
+      v.literal("private"),
+      v.literal("open"),
+    ),
   }),
   userFeeds: defineTable({
     ...defaultColumns,
@@ -32,10 +36,10 @@ export default defineSchema({
     posterId: v.id("users"),
     content: v.string(),
   }).index("by_org_feed", ["orgId", "feedId"]),
-  messages: defineTable({ 
+  messages: defineTable({
     ...defaultColumns,
     postId: v.id("posts"),
     senderId: v.id("users"),
     content: v.string(),
-  })
+  }),
 });
