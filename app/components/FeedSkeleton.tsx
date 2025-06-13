@@ -3,7 +3,7 @@ import styles from "./FeedSkeleton.module.css";
 export default function FeedSkeleton() {
   return (
     <>
-      {[...Array(3)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <article key={i} className={styles.skeletonPostWrapper}>
           <div className={styles.skeletonFeedPost}>
             <div className={styles.skeletonAvatar} />
