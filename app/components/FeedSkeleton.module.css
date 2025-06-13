@@ -1,0 +1,85 @@
+.skeletonPostWrapper {
+  /* Matches FeedPost spacing */
+  padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
+}
+
+.skeletonFeedPost {
+  display: flex;
+  gap: var(--spacing4);
+  align-items: flex-start;
+}
+
+.skeletonAvatar {
+  background-color: var(--accent);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  opacity: 0.5;
+  flex-shrink: 0;
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+.skeletonPostRight {
+  width: 100%;
+}
+
+.skeletonPostInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing3);
+}
+
+.skeletonAuthorName {
+  width: 90px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--light);
+  margin-bottom: 4px;
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+.skeletonTimestamp {
+  width: 60px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--light);
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+.skeletonMessageThread {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--light);
+  margin-left: auto;
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+.skeletonContentLine1 {
+  width: 80%;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--light);
+  margin-top: var(--spacing2);
+  margin-bottom: 8px;
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+.skeletonContentLine2 {
+  width: 60%;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--light);
+  animation: skeleton-loading 1.2s infinite ease-in-out;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+} 

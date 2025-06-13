@@ -1,23 +1,9 @@
-"use client";
-
-import { useQuery } from "convex/react";
+import { preloadQuery } from "convex/nextjs";
 import { api } from "../convex/_generated/api";
-import styles from "./page.module.css";
-import Feed from "./components/Feed";
-import { useState } from "react";
-import { Id } from "@/convex/_generated/dataModel";
+import Home from "./components/Home";
 
-export default function Home() {
-  const org = useQuery(api.organizations.getOrganization);
-  const [feedId] = useState<Id<"feeds"> | null>(
-    "k9731m7p1z48t2dtjv640fpesd7hbrg2" as Id<"feeds">,
-  );
-  return (
-    <div className={styles.feedWrapper}>
-      <h1 className={styles.mainTitle}>{org?.name}</h1>
-      <h2 className={styles.location}>{org?.location}</h2>
-      <div className={styles.lightPointer}></div>
-      {org?._id && feedId && <Feed orgId={org?._id} feedId={feedId} />}
-    </div>
-  );
+export default async function App() {
+  const preloadedOrg = await preloadQuery(api.organizations.getOrganization);
+
+  return <Home preloadedOrg={preloadedOrg} />;
 }
