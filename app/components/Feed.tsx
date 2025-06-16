@@ -51,7 +51,7 @@ export default function Feed({ orgId }: FeedProps) {
         <hr className={styles.feedIntroRule} />
         <main className={styles.feedPosts}>
           {posts ? (
-            posts?.map((post, idx) => {
+            posts?.map((post) => {
               return <FeedPost key={post._id} post={post} />;
             })
           ) : (
