@@ -3,11 +3,12 @@
 import styles from "./Feed.module.css";
 import FeedSelector from "./FeedSelector";
 import { useQuery } from "convex/react";
-import { useState, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import FeedPost from "./FeedPost";
 import FeedSkeleton from "./FeedSkeleton";
+import useViewportHeight from "@/app/hooks/useViewportHeight";
 
 interface FeedProps {
   orgId: Id<"organizations">;
@@ -23,6 +24,23 @@ export default function Feed({ orgId }: FeedProps) {
     feedId,
   });
 
+  const vh = useViewportHeight();
+  const endOfFeed = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log(`isIntersecting: ${entries[0].isIntersecting}`);
+      },
+      {
+        rootMargin: `${vh + vh * 0.5}px`,
+      }
+    );
+    if (endOfFeed.current) {
+      observer.observe(endOfFeed.current);
+    }
+  }, [vh]);
+
   return (
     <>
       <div className={styles.feedSelectorWrapper}>
@@ -33,11 +51,14 @@ export default function Feed({ orgId }: FeedProps) {
         <hr className={styles.feedIntroRule} />
         <main className={styles.feedPosts}>
           {posts ? (
-            posts?.map((post) => <FeedPost key={post._id} post={post} />)
+            posts?.map((post, idx) => {
+              return <FeedPost key={post._id} post={post} />;
+            })
           ) : (
             <FeedSkeleton />
           )}
         </main>
+        <div ref={endOfFeed} />
       </div>
     </>
   );
