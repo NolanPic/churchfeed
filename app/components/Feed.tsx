@@ -2,7 +2,7 @@
 
 import styles from "./Feed.module.css";
 import FeedSelector from "./FeedSelector";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -15,14 +15,21 @@ interface FeedProps {
 }
 
 export default function Feed({ orgId }: FeedProps) {
+  const itemsPerPage = 10;
   const [feedId] = useState<Id<"feeds">>(
     "k9731m7p1z48t2dtjv640fpesd7hbrg2" as Id<"feeds">
   );
 
-  const posts = useQuery(api.posts.getPublicFeedPosts, {
-    orgId,
-    feedId,
-  });
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.posts.getPublicFeedPosts,
+    {
+      orgId,
+      feedId,
+    },
+    {
+      initialNumItems: itemsPerPage,
+    }
+  );
 
   const vh = useViewportHeight();
   const endOfFeed = useRef<HTMLDivElement>(null);
@@ -30,16 +37,18 @@ export default function Feed({ orgId }: FeedProps) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log(`isIntersecting: ${entries[0].isIntersecting}`);
+        if (entries[0].isIntersecting) {
+          loadMore(itemsPerPage);
+        }
       },
       {
-        rootMargin: `${vh + vh * 0.5}px`,
+        rootMargin: `${vh * 0.5}px`,
       }
     );
     if (endOfFeed.current) {
       observer.observe(endOfFeed.current);
     }
-  }, [vh]);
+  }, [vh, loadMore]);
 
   return (
     <>
@@ -50,12 +59,12 @@ export default function Feed({ orgId }: FeedProps) {
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <hr className={styles.feedIntroRule} />
         <main className={styles.feedPosts}>
-          {posts ? (
-            posts?.map((post) => {
+          {status === "LoadingFirstPage" ? (
+            <FeedSkeleton />
+          ) : (
+            results.map((post) => {
               return <FeedPost key={post._id} post={post} />;
             })
-          ) : (
-            <FeedSkeleton />
           )}
         </main>
         <div ref={endOfFeed} />
