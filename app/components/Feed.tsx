@@ -61,6 +61,7 @@ export default function Feed({ orgId }: FeedProps) {
     if (endOfFeed.current) {
       observer.observe(endOfFeed.current);
     }
+    return () => observer.disconnect();
   }, [vh]);
 
   return (
