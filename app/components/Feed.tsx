@@ -34,12 +34,25 @@ export default function Feed({ orgId }: FeedProps) {
   const vh = useViewportHeight();
   const endOfFeed = useRef<HTMLDivElement>(null);
 
+  const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
+
+  const handleIntersection = (
+    entries: IntersectionObserverEntry[],
+    _observer: IntersectionObserver
+  ) => {
+    if (entries[0].isIntersecting && status === "CanLoadMore") {
+      loadMore(itemsPerPage);
+    }
+  };
+
+  useEffect(() => {
+    intersectionCb.current = handleIntersection;
+  });
+
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore(itemsPerPage);
-        }
+      (entries, observer) => {
+        intersectionCb.current?.(entries, observer);
       },
       {
         rootMargin: `${vh * 0.5}px`,
@@ -48,7 +61,7 @@ export default function Feed({ orgId }: FeedProps) {
     if (endOfFeed.current) {
       observer.observe(endOfFeed.current);
     }
-  }, [vh, loadMore]);
+  }, [vh]);
 
   return (
     <>
