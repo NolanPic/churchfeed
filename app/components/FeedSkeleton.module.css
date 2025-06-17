@@ -3,6 +3,19 @@
   padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
 }
 
+.skeleton {
+  background-color: var(--light);
+  background-image: linear-gradient(
+    90deg,
+    var(--white) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    var(--white) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 3s infinite ease-in-out;
+  opacity: 0.4;
+}
+
 .skeletonFeedPost {
   display: flex;
   gap: var(--spacing4);
@@ -10,15 +23,12 @@
 }
 
 .skeletonAvatar {
-  background-color: var(--accent);
   border-radius: 50%;
   width: 34px;
   height: 34px;
   display: grid;
   place-items: center;
-  opacity: 0.5;
   flex-shrink: 0;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 .skeletonPostRight {
@@ -35,44 +45,34 @@
   width: 90px;
   height: 16px;
   border-radius: 4px;
-  background: var(--light);
   margin-bottom: 4px;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 .skeletonTimestamp {
   width: 60px;
   height: 12px;
   border-radius: 4px;
-  background: var(--light);
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 .skeletonMessageThread {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  background: var(--light);
   margin-left: auto;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 .skeletonContentLine1 {
   width: 80%;
   height: 16px;
   border-radius: 4px;
-  background: var(--light);
   margin-top: var(--spacing2);
   margin-bottom: 8px;
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 .skeletonContentLine2 {
   width: 60%;
   height: 16px;
   border-radius: 4px;
-  background: var(--light);
-  animation: skeleton-loading 1.2s infinite ease-in-out;
 }
 
 @keyframes skeleton-loading {
