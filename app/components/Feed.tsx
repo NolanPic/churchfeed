@@ -16,9 +16,11 @@ interface FeedProps {
 
 export default function Feed({ orgId }: FeedProps) {
   const itemsPerPage = 10;
-  const [feedId] = useState<Id<"feeds">>(
-    "k9731m7p1z48t2dtjv640fpesd7hbrg2" as Id<"feeds">
+  const [feedId, setFeedId] = useState<Id<"feeds"> | undefined>(
+    "k9731m7p1z48t2dtjv640fpesd7hbrg2" as Id<"feeds"> | undefined
   );
+
+  useEffect(() => setFeedId(undefined), [orgId]);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getPublicFeedPosts,

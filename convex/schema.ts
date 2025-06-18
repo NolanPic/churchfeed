@@ -23,7 +23,7 @@ export default defineSchema({
       v.literal("private"),
       v.literal("open"),
     ),
-  }),
+  }).index("by_org", ["orgId"]).index("by_org_privacy", ["orgId", "privacy"]),
   userFeeds: defineTable({
     ...defaultColumns,
     userId: v.id("users"),
@@ -35,7 +35,7 @@ export default defineSchema({
     feedId: v.id("feeds"),
     posterId: v.id("users"),
     content: v.string(),
-  }).index("by_org_feed", ["orgId", "feedId"]),
+  }).index("by_org", ["orgId"]),
   messages: defineTable({
     ...defaultColumns,
     postId: v.id("posts"),
