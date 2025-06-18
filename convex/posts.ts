@@ -1,13 +1,7 @@
-import { query, QueryCtx } from "./_generated/server";
+import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { Id } from "./_generated/dataModel";
-
-const getFeedsForPublicPosts = (ctx: QueryCtx, args: { orgId: Id<"organizations"> }) => {
-  return ctx.db.query("feeds")
-    .withIndex("by_org_privacy", (q) => q.eq("orgId", args.orgId).eq("privacy", "public"))
-    .collect();
-}
+import { getFeedsForPublicPosts } from "./feeds";
 
 export const getPublicFeedPosts = query({
   args: { 

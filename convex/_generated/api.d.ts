@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
+import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
@@ -28,6 +29,7 @@ import type * as posts from "../posts.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  feeds: typeof feeds;
   http: typeof http;
   organizations: typeof organizations;
   posts: typeof posts;
