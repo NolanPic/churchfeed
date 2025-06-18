@@ -6,7 +6,18 @@ import { Doc } from "@/convex/_generated/dataModel";
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ["p", "br", "strong", "em", "ul", "li", "ol", "a", "img"],
+    ALLOWED_TAGS: [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "ul",
+      "li",
+      "ol",
+      "a",
+      "img",
+      "iframe",
+    ],
     ALLOWED_ATTR: ["href", "target", "src", "width", "height"],
   });
 };

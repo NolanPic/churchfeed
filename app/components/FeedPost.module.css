@@ -52,5 +52,11 @@
         p:not(:last-child) {
             margin-bottom: var(--spacing3);
         }
+
+        iframe {
+            max-width: 100%;
+            border: none;
+            border-radius: var(--spacing3);
+        }
     }
 }
