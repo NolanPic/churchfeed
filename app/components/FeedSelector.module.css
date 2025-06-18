@@ -1,13 +1,25 @@
 .feedSelector {
+    cursor: pointer;
     width: 174px;
-    height: 32px;
+    height: 36px;
     margin: 0 auto;
     background-color: var(--mid);
+    position: relative;
+    bottom: -4px;
     display: grid;
     place-items: center;
+    grid-template-columns: 1fr auto;
     border-radius: 12px 12px 0 0;
     box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
     -21px 16px 64px -36px rgba(0,0,0,0.25);
     font-family: var(--font-gentium-plus);
     font-size: var(--text-regular);
+}
+
+.feedSelectorText {
+    margin-left: var(--spacing4);
+}
+
+.dropdownArrow {
+    margin-right: var(--spacing4);
 }
