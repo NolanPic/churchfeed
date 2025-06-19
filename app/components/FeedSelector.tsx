@@ -4,6 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import Backdrop from "./common/Backdrop";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function FeedSelector({
   selectedFeedId,
@@ -45,46 +46,54 @@ export default function FeedSelector({
             alt="Expand feed selector"
           />
         </button>
-        {isOpen && (
-          <ul
-            className={styles.feedSelectorDropdown}
-            id="feed-selector-dropdown"
-            role="listbox"
-            tabIndex={-1}
-            aria-multiselectable={false}
-          >
-            <li>
-              <label>
-                <input
-                  type="radio"
-                  checked={selectedFeedId === "all"}
-                  onChange={() => selectFeed("all")}
-                  id={`option-all`}
-                  role="option"
-                  aria-selected={selectedFeedId === "all"}
-                />
-                <span>All feeds</span>
-              </label>
-            </li>
-            {feeds.map((feed) => (
-              <li key={feed._id}>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.ul
+              initial={{ height: "36px", borderWidth: 0 }}
+              animate={{ height: "auto", borderWidth: 1 }}
+              exit={{ height: "36px", borderWidth: 0 }}
+              transition={{ duration: 0.15 }}
+              className={styles.feedSelectorDropdown}
+              id="feed-selector-dropdown"
+              role="listbox"
+              tabIndex={-1}
+              aria-multiselectable={false}
+            >
+              <li>
                 <label>
                   <input
                     type="radio"
-                    checked={selectedFeedId === feed._id}
-                    onChange={() => selectFeed(feed._id)}
-                    id={`option-${feed._id}`}
+                    checked={selectedFeedId === "all"}
+                    onChange={() => selectFeed("all")}
+                    id={`option-all`}
                     role="option"
-                    aria-selected={selectedFeedId === feed._id}
+                    aria-selected={selectedFeedId === "all"}
                   />
-                  <span>{feed.name}</span>
+                  <span>All feeds</span>
                 </label>
               </li>
-            ))}
-          </ul>
-        )}
+              {feeds.map((feed) => (
+                <li key={feed._id}>
+                  <label>
+                    <input
+                      type="radio"
+                      checked={selectedFeedId === feed._id}
+                      onChange={() => selectFeed(feed._id)}
+                      id={`option-${feed._id}`}
+                      role="option"
+                      aria-selected={selectedFeedId === feed._id}
+                    />
+                    <span>{feed.name}</span>
+                  </label>
+                </li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
       </nav>
-      {isOpen && <Backdrop onClick={() => setIsOpen(false)} />}
+      <AnimatePresence>
+        {isOpen && <Backdrop onClick={() => setIsOpen(false)} />}
+      </AnimatePresence>
     </>
   );
 }

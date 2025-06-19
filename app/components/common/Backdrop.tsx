@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import styles from "./Backdrop.module.css";
+import { motion } from "framer-motion";
 
 export default function Backdrop({ onClick }: { onClick: () => void }) {
   useEffect(() => {
@@ -16,5 +17,13 @@ export default function Backdrop({ onClick }: { onClick: () => void }) {
     };
   }, []);
 
-  return <div className={styles.backdrop} onClick={onClick}></div>;
+  return (
+    <motion.div
+      className={styles.backdrop}
+      onClick={onClick}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    ></motion.div>
+  );
 }
