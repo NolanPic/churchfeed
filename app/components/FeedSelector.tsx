@@ -29,9 +29,14 @@ export default function FeedSelector({
   return (
     <>
       <nav className={styles.feedSelector}>
-        <div
-          className={styles.feedSelectorClickable}
+        <button
+          className={styles.feedSelectorButton}
           onClick={() => setIsOpen(!isOpen)}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-controls="feed-selector-dropdown"
+          aria-activedescendant={`option-${selectedFeedId}`}
+          aria-expanded={isOpen}
         >
           <span className={styles.selectedFeedName}>{selectedFeed}</span>
           <img
@@ -39,13 +44,41 @@ export default function FeedSelector({
             src="/icons/dropdown-arrow.svg"
             alt="Expand feed selector"
           />
-        </div>
+        </button>
         {isOpen && (
-          <ul className={styles.feedSelectorDropdown}>
-            <li onClick={() => selectFeed("all")}>All feeds</li>
+          <ul
+            className={styles.feedSelectorDropdown}
+            id="feed-selector-dropdown"
+            role="listbox"
+            tabIndex={-1}
+            aria-multiselectable={false}
+          >
+            <li>
+              <label>
+                <input
+                  type="radio"
+                  checked={selectedFeedId === "all"}
+                  onChange={() => selectFeed("all")}
+                  id={`option-all`}
+                  role="option"
+                  aria-selected={selectedFeedId === "all"}
+                />
+                <span>All feeds</span>
+              </label>
+            </li>
             {feeds.map((feed) => (
-              <li key={feed._id} onClick={() => selectFeed(feed._id)}>
-                {feed.name}
+              <li key={feed._id}>
+                <label>
+                  <input
+                    type="radio"
+                    checked={selectedFeedId === feed._id}
+                    onChange={() => selectFeed(feed._id)}
+                    id={`option-${feed._id}`}
+                    role="option"
+                    aria-selected={selectedFeedId === feed._id}
+                  />
+                  <span>{feed.name}</span>
+                </label>
               </li>
             ))}
           </ul>
