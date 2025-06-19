@@ -10,6 +10,7 @@
     -21px 16px 64px -36px rgba(0,0,0,0.25);
     font-family: var(--font-gentium-plus);
     font-size: var(--text-regular);
+    z-index: 2;
 }
 
 .feedSelectorClickable {
@@ -39,6 +40,8 @@
     background-color: var(--mid);
     border: 1px solid var(--accent);
     border-radius: 12px;
+    box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+    -21px 16px 64px -36px rgba(0,0,0,0.25);
     list-style: none;
     padding: 0;
     margin: 0;

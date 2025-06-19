@@ -3,6 +3,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import Backdrop from "./common/Backdrop";
 
 export default function FeedSelector({
   selectedFeedId,
@@ -26,28 +27,31 @@ export default function FeedSelector({
   };
 
   return (
-    <nav className={styles.feedSelector}>
-      <div
-        className={styles.feedSelectorClickable}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={styles.selectedFeedName}>{selectedFeed}</span>
-        <img
-          className={styles.dropdownArrow}
-          src="/icons/dropdown-arrow.svg"
-          alt="Expand feed selector"
-        />
-      </div>
-      {isOpen && (
-        <ul className={styles.feedSelectorDropdown}>
-          <li onClick={() => selectFeed("all")}>All feeds</li>
-          {feeds.map((feed) => (
-            <li key={feed._id} onClick={() => selectFeed(feed._id)}>
-              {feed.name}
-            </li>
-          ))}
-        </ul>
-      )}
-    </nav>
+    <>
+      <nav className={styles.feedSelector}>
+        <div
+          className={styles.feedSelectorClickable}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className={styles.selectedFeedName}>{selectedFeed}</span>
+          <img
+            className={styles.dropdownArrow}
+            src="/icons/dropdown-arrow.svg"
+            alt="Expand feed selector"
+          />
+        </div>
+        {isOpen && (
+          <ul className={styles.feedSelectorDropdown}>
+            <li onClick={() => selectFeed("all")}>All feeds</li>
+            {feeds.map((feed) => (
+              <li key={feed._id} onClick={() => selectFeed(feed._id)}>
+                {feed.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </nav>
+      {isOpen && <Backdrop onClick={() => setIsOpen(false)} />}
+    </>
   );
 }
