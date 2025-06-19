@@ -9,6 +9,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import FeedPost from "./FeedPost";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
+import { motion } from "framer-motion";
 
 interface FeedProps {
   orgId: Id<"organizations">;
@@ -71,7 +72,12 @@ export default function Feed({ orgId }: FeedProps) {
       </div>
       <div className={styles.feedWrapper}>
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
-        <hr className={styles.feedIntroRule} />
+        <motion.hr
+          initial={{ width: 0 }}
+          animate={{ width: "210px" }}
+          transition={{ duration: 0.25 }}
+          className={styles.feedIntroRule}
+        />
         <main className={styles.feedPosts}>
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
