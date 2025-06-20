@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { useState } from "react";
 import Backdrop from "./common/Backdrop";
 import { motion, AnimatePresence } from "framer-motion";
+import classNames from "classnames";
 
 export default function FeedSelector({
   selectedFeedId,
@@ -59,7 +60,12 @@ export default function FeedSelector({
               tabIndex={-1}
               aria-multiselectable={false}
             >
-              <li>
+              <li
+                key="all"
+                className={classNames({
+                  [styles.selectedFeed]: selectedFeedId === "all",
+                })}
+              >
                 <label>
                   <input
                     type="radio"
@@ -73,7 +79,12 @@ export default function FeedSelector({
                 </label>
               </li>
               {feeds.map((feed) => (
-                <li key={feed._id}>
+                <li
+                  key={feed._id}
+                  className={classNames({
+                    [styles.selectedFeed]: selectedFeedId === feed._id,
+                  })}
+                >
                   <label>
                     <input
                       type="radio"

@@ -71,3 +71,15 @@
         overflow: hidden;
     }
 }
+
+.selectedFeed {
+    & span {
+        &::before {
+            position: relative;
+            right: var(--spacing2);
+            content: "•";
+            color: var(--accent);
+
+        }
+    }
+}
