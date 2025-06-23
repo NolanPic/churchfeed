@@ -1,11 +1,11 @@
 :root {
 
   /* Breakpoints */
-  --breakpoint-xsm: 20rem; /* 320px */
-  --breakpoint-sm: 34rem; /* 544px */
-  --breakpoint-md: 48rem; /* 768px */
-  --breakpoint-lg: 63.25rem; /* 1012px */
-  --breakpoint-xl: 80rem; /* 1280px */
+  @custom-media --xs (width <= 22.5rem); /* 360px */
+  @custom-media --sm (width <= 30rem); /* 480px */
+  @custom-media --md (width <= 48rem); /* 768px */
+  @custom-media --lg (width <= 64rem); /* 1024px */
+  @custom-media --xl (width <= 90rem); /* 1440 */
 
   /* Colors */
   --dark: #2D3250;
@@ -16,7 +16,7 @@
   --accent: #F6B17A;
   --white: #E0E0E0;
 
-  /* Text sizes */
+  /* Font sizes */
   --text-base: 1rem; /* 16px */
   --text-md: 1.25rem; /* 20px */
   --text-lg: 1.5rem; /* 24px */
@@ -47,6 +47,13 @@
   --spacing22: 5.5rem;   /* 88px */
   --spacing23: 5.75rem;  /* 92px */
   --spacing24: 6rem;     /* 96px */
+}
+
+@media (--sm) {
+  :root {
+    --text-md: 1rem;
+    --text-xl: 2rem;
+  }
 }
 
 html,
