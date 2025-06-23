@@ -1,6 +1,6 @@
 .feedWrapper {
     margin: 0 auto;
-    width: 640px;
+    max-width: 640px;
 }
 
 .mainTitle,
