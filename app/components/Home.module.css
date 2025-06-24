@@ -20,8 +20,24 @@
 }
 
 .lightPointer {
-    height: 52px;
+    --pointer-height: 52px;
+    height: var(--pointer-height);
     width: 3px;
     background-color: var(--accent);
-    margin: 42px auto;
+    margin: var(--spacing11) auto;
+}
+
+@media (--sm) {
+    .mainTitle {
+        margin-top: var(--spacing6);
+    }
+
+    .lightPointer {
+        --pointer-height: 30px;
+        margin: var(--spacing7) auto;
+    }
+
+    .location {
+        font-size: var(--text-base);
+    }
 }

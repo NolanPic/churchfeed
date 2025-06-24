@@ -17,6 +17,7 @@
   --white: #E0E0E0;
 
   /* Font sizes */
+  --text-sm: 0.75rem; /* 12px */
   --text-base: 1rem; /* 16px */
   --text-md: 1.25rem; /* 20px */
   --text-lg: 1.5rem; /* 24px */
@@ -51,8 +52,7 @@
 
 @media (--sm) {
   :root {
-    --text-md: 1rem;
-    --text-xl: 2rem;
+    --text-xl: 2.5rem;
   }
 }
 

@@ -17,7 +17,7 @@ export default function Home(props: {
       <h2 className={styles.location}>{org?.location}</h2>
       <motion.div
         initial={{ height: 0 }}
-        animate={{ height: "52px" }}
+        animate={{ height: "var(--pointer-height)" }}
         transition={{ duration: 0.25 }}
         className={styles.lightPointer}
       ></motion.div>
