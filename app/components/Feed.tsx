@@ -74,7 +74,7 @@ export default function Feed({ orgId }: FeedProps) {
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <motion.hr
           initial={{ width: 0 }}
-          animate={{ width: "210px" }}
+          animate={{ width: "var(--intro-rule-width)" }}
           transition={{ duration: 0.25 }}
           className={styles.feedIntroRule}
         />

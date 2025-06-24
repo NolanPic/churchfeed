@@ -60,3 +60,15 @@
         }
     }
 }
+
+@media (--sm) {
+    .feedPost {
+        padding: 0 var(--spacing3) var(--spacing8) var(--spacing3);
+
+        .postAuthorAvatar {
+            width: 32px;
+            height: 32px;
+            font-size: var(--text-sm);
+        }
+    }
+}
