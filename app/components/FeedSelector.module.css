@@ -63,6 +63,7 @@
 
     & label {
         cursor: pointer;
+        display: block;
     }
 
     & input {
