@@ -13,9 +13,5 @@ export default async function App() {
     }
   );
 
-  return orgSubdomain ? (
-    <Home preloadedOrg={preloadedOrg} />
-  ) : (
-    <div>No organization found</div>
-  );
+  return <Home preloadedOrg={preloadedOrg} />;
 }

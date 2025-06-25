@@ -11,6 +11,10 @@ export default function Home(props: {
 }) {
   const org = usePreloadedQuery(props.preloadedOrg);
 
+  if (org === null) {
+    return <div>No organization found</div>;
+  }
+
   return (
     <div className={styles.feedWrapper}>
       <h1 className={styles.mainTitle}>{org?.name}</h1>
