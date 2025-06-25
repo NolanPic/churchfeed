@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "setup:local": "npm run setup:certs && npm run setup:dns && npm run setup:caddy",
+    "setup:certs": "node scripts/setup-certs.js",
+    "setup:dns": "node scripts/setup-dns.js",
+    "setup:caddy": "node scripts/setup-caddy.js",
+    "dev": "caddy start --config Caddyfile && npm run dev:nextjs",
+    "dev:stop": "caddy stop",
+    "dev:nextjs": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
