@@ -10,14 +10,16 @@ import classNames from "classnames";
 export default function FeedSelector({
   selectedFeedId,
   setSelectedFeedId,
+  orgId,
 }: {
   selectedFeedId: Id<"feeds"> | "all";
   setSelectedFeedId: (feedId: Id<"feeds"> | "all") => void;
+  orgId: Id<"organizations">;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const feeds =
     useQuery(api.feeds.getPublicFeeds, {
-      orgId: "j9741k251gw6wwt80s9vq3agfd7erh7s" as Id<"organizations">,
+      orgId,
     }) || [];
 
   const selectedFeed =
