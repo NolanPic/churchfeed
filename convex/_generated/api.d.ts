@@ -18,6 +18,7 @@ import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
+import type * as seed from "../seed.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   organizations: typeof organizations;
   posts: typeof posts;
+  seed: typeof seed;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
