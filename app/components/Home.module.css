@@ -27,6 +27,15 @@
     margin: var(--spacing11) auto;
 }
 
+.notFound {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    height: 100vh;
+    font-size: var(--text-xl);
+    margin: 0 var(--spacing6)
+}
+
 @media (--sm) {
     .mainTitle {
         margin-top: var(--spacing6);

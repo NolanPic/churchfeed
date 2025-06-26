@@ -12,7 +12,11 @@ export default function Home(props: {
   const org = usePreloadedQuery(props.preloadedOrg);
 
   if (org === null) {
-    return <div>No organization found</div>;
+    return (
+      <div className={styles.notFound}>
+        <p>Hmm, that doesn't exist. 🤔🤷‍♀️</p>
+      </div>
+    );
   }
 
   return (
