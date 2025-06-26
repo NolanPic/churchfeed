@@ -9,6 +9,13 @@ const defaultColumns = {
 
 export default defineSchema({
   ...authTables,
+  users: defineTable({
+    email: v.string(),
+    emailVerificationTime: v.optional(v.number()),
+    name: v.string(),
+    image: v.optional(v.string()),
+    orgId: v.id("organizations"),
+  }).index("by_org", ["orgId"]),
   organizations: defineTable({
     name: v.string(),
     location: v.string(),
