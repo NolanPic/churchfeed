@@ -68,7 +68,11 @@ export default function Feed({ orgId }: FeedProps) {
   return (
     <>
       <div className={styles.feedSelectorWrapper}>
-        <FeedSelector selectedFeedId={feedId} setSelectedFeedId={setFeedId} />
+        <FeedSelector
+          orgId={orgId}
+          selectedFeedId={feedId}
+          setSelectedFeedId={setFeedId}
+        />
       </div>
       <div className={styles.feedWrapper}>
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>

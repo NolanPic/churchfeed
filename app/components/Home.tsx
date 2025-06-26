@@ -7,9 +7,13 @@ import Feed from "./Feed";
 import { motion } from "framer-motion";
 
 export default function Home(props: {
-  preloadedOrg: Preloaded<typeof api.organizations.getOrganization>;
+  preloadedOrg: Preloaded<typeof api.organizations.getOrganizationBySubdomain>;
 }) {
   const org = usePreloadedQuery(props.preloadedOrg);
+
+  if (org === null) {
+    return <div>No organization found</div>;
+  }
 
   return (
     <div className={styles.feedWrapper}>
