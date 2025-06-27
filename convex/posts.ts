@@ -27,7 +27,7 @@ export const getPublicFeedPosts = query({
 
     const posts = await cxt.db
       .query("posts")
-      .withIndex("by_org", (q) =>
+      .withIndex("by_org_and_postedAt", (q) =>
         q.eq("orgId", orgId),
       )
       .filter((q) => q.or(...feedIds.map(id => q.eq(q.field("feedId"), id))))

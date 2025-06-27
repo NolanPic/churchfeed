@@ -43,7 +43,7 @@ export default defineSchema({
     posterId: v.id("users"),
     content: v.string(),
     postedAt: v.optional(v.number()),
-  }).index("by_org", ["orgId"]),
+  }).index("by_org_and_postedAt", ["orgId", "postedAt"]),
   messages: defineTable({
     ...defaultColumns,
     postId: v.id("posts"),
