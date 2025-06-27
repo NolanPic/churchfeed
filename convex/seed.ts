@@ -76,6 +76,7 @@ export const seedPost = mutation({
     feedId: v.id("feeds"),
     posterId: v.id("users"),
     content: v.string(),
+    postedAt: v.number(),
   },
   handler: async (ctx, args) => {
     const updatedAt = Date.now();
@@ -85,6 +86,7 @@ export const seedPost = mutation({
       feedId: args.feedId,
       posterId: args.posterId,
       content: args.content,
+      postedAt: args.postedAt,
       updatedAt,
     });
   },
@@ -140,6 +142,7 @@ export const seedDatabase = mutation({
       // Posts data (will be distributed across feeds)
       posts: v.array(v.object({
         content: v.string(),
+        postedAt: v.number(),
         feedIndex: v.number(), // Index of feed in the feeds array
         userIndex: v.number(), // Index of user in the users array
       })),
@@ -230,6 +233,7 @@ export const seedDatabase = mutation({
             feedId: orgResults.feedIds[post.feedIndex],
             posterId: orgResults.userIds[post.userIndex],
             content: post.content,
+            postedAt: post.postedAt,
           });
           orgResults.postIds.push(postId);
         }

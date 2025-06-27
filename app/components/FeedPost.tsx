@@ -50,7 +50,7 @@ export default function FeedPost({ post }: FeedPostProps) {
           <div className={styles.postInfo}>
             <div className={styles.postAuthorName}>{post.author?.name}</div>
             <div className={styles.postTimestamp}>
-              {getFormattedTimestamp(post._creationTime)}
+              {getFormattedTimestamp(post.postedAt ?? post._creationTime)}
             </div>
             <img
               className={styles.postMessageThread}
