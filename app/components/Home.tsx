@@ -14,7 +14,7 @@ export default function Home(props: {
   if (org === null) {
     return (
       <div className={styles.notFound}>
-        <p>Hmm, that doesn't exist. 🤔🤷‍♀️</p>
+        <p>Hmm, that doesn&apos;t exist. 🤔🤷‍♀️</p>
       </div>
     );
   }

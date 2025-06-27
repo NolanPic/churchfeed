@@ -2,7 +2,7 @@
 
 import styles from "./Feed.module.css";
 import FeedSelector from "./FeedSelector";
-import { usePaginatedQuery, useQuery } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -37,10 +37,7 @@ export default function Feed({ orgId }: FeedProps) {
 
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
-  const handleIntersection = (
-    entries: IntersectionObserverEntry[],
-    _observer: IntersectionObserver
-  ) => {
+  const handleIntersection = (entries: IntersectionObserverEntry[]) => {
     if (entries[0].isIntersecting && status === "CanLoadMore") {
       loadMore(itemsPerPage);
     }

@@ -7,12 +7,14 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 const lato = Lato({
   variable: "--font-lato",
   weight: ["400"],
+  subsets: ["latin"],
 });
 
 const gentiumPlus = Gentium_Plus({
   variable: "--font-gentium-plus",
   weight: ["400", "700"],
   style: ["normal", "italic"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
