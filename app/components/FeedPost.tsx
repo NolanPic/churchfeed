@@ -2,6 +2,7 @@ import DOMPurify from "dompurify";
 import styles from "./FeedPost.module.css";
 import { formatDistanceToNow } from "date-fns";
 import { Doc } from "@/convex/_generated/dataModel";
+import Image from "next/image";
 
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
@@ -52,10 +53,12 @@ export default function FeedPost({ post }: FeedPostProps) {
             <div className={styles.postTimestamp}>
               {getFormattedTimestamp(post.postedAt ?? post._creationTime)}
             </div>
-            <img
+            <Image
               className={styles.postMessageThread}
               src="/icons/messages.svg"
               alt="View message thread"
+              width={20}
+              height={20}
             />
           </div>
           <div

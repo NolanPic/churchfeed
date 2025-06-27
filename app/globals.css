@@ -48,10 +48,8 @@
   --spacing22: 5.5rem;   /* 88px */
   --spacing23: 5.75rem;  /* 92px */
   --spacing24: 6rem;     /* 96px */
-}
 
-@media (--sm) {
-  :root {
+  @media (--sm) {
     --text-xl: 2.5rem;
   }
 }

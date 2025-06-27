@@ -6,6 +6,7 @@ import { useState } from "react";
 import Backdrop from "./common/Backdrop";
 import { motion, AnimatePresence } from "framer-motion";
 import classNames from "classnames";
+import Image from "next/image";
 
 export default function FeedSelector({
   selectedFeedId,
@@ -43,10 +44,12 @@ export default function FeedSelector({
           aria-expanded={isOpen}
         >
           <span className={styles.selectedFeedName}>{selectedFeed}</span>
-          <img
+          <Image
             className={styles.dropdownArrow}
             src="/icons/dropdown-arrow.svg"
             alt="Expand feed selector"
+            width={10}
+            height={8}
           />
         </button>
         <AnimatePresence>
