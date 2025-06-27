@@ -1,295 +1,1394 @@
 {
-    "organizations": [
-      {
-        "orgName": "King's Cross Church",
-        "orgLocation": "Bellingham, WA",
-        "orgHost": "kingscross.churchfeed.dev",
-        
-        "users": [
-          { "email": "pastor@kingscross.church", "name": "Pastor David Thompson" },
-          { "email": "worship@kingscross.church", "name": "Rachel Martinez" },
-          { "email": "outreach@kingscross.church", "name": "James Parker" },
-          { "email": "youth@kingscross.church", "name": "Sarah Chen" },
-          { "email": "admin@kingscross.church", "name": "Margaret Foster" }
-        ],
-        
-        "feeds": [
-          { "name": "Sunday Services", "privacy": "public" },
-          { "name": "Ministry Teams", "privacy": "public" },
-          { "name": "Prayer & Support", "privacy": "public" },
-          { "name": "Leadership Updates", "privacy": "private" },
-          { "name": "Community Outreach", "privacy": "open" }
-        ],
-        
-        "userFeeds": [
-          { "userIndex": 0, "feedIndex": 0, "owner": true },
-          { "userIndex": 0, "feedIndex": 1, "owner": true },
-          { "userIndex": 0, "feedIndex": 2, "owner": true },
-          { "userIndex": 0, "feedIndex": 3, "owner": true },
-          { "userIndex": 0, "feedIndex": 4, "owner": true },
-          
-          { "userIndex": 1, "feedIndex": 0, "owner": false },
-          { "userIndex": 1, "feedIndex": 1, "owner": true },
-          { "userIndex": 1, "feedIndex": 2, "owner": false },
-          { "userIndex": 1, "feedIndex": 3, "owner": false },
-          { "userIndex": 1, "feedIndex": 4, "owner": false },
-          
-          { "userIndex": 2, "feedIndex": 0, "owner": false },
-          { "userIndex": 2, "feedIndex": 1, "owner": false },
-          { "userIndex": 2, "feedIndex": 2, "owner": false },
-          { "userIndex": 2, "feedIndex": 3, "owner": false },
-          { "userIndex": 2, "feedIndex": 4, "owner": true },
-          
-          { "userIndex": 3, "feedIndex": 0, "owner": false },
-          { "userIndex": 3, "feedIndex": 1, "owner": false },
-          { "userIndex": 3, "feedIndex": 2, "owner": false },
-          { "userIndex": 3, "feedIndex": 3, "owner": false },
-          { "userIndex": 3, "feedIndex": 4, "owner": false },
-          
-          { "userIndex": 4, "feedIndex": 0, "owner": false },
-          { "userIndex": 4, "feedIndex": 1, "owner": false },
-          { "userIndex": 4, "feedIndex": 2, "owner": true },
-          { "userIndex": 4, "feedIndex": 3, "owner": false },
-          { "userIndex": 4, "feedIndex": 4, "owner": false }
-        ],
-        
-        "posts": [
-          { "content": "<p>This Sunday we're beginning our new sermon series 'Walking in Faith' based on Hebrews 11. Pastor David will be sharing about the heroes of faith and what we can learn from their journeys.</p><p>Service starts at 10:30 AM with worship led by Rachel and the team. We'll have coffee and fellowship in the lobby starting at 10:00 AM.</p><p>Don't forget to bring your Bibles and take notes - we'll be diving deep into God's Word together!</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>What a powerful service we had yesterday! The Lord really moved during our time of worship and prayer.</p><p>For those who missed it, the sermon recording will be available on our website by Wednesday. Pastor David's message on 'Stepping Out in Faith' was exactly what many of us needed to hear.</p>", "feedIndex": 0, "userIndex": 1 },
-          
-          { "content": "<p>Reminder that this Sunday we're celebrating Communion together as a church family. Please come with hearts prepared to remember what Christ has done for us.</p><p>We'll also be taking up a special offering for the Johnson family as they prepare for their mission work in Ecuador. Every gift, no matter the size, makes a difference.</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>Next Sunday is our monthly baptism service! We have three people who will be sharing their testimonies and taking this important step of obedience.</p><p>Please come early to support Tom, Lisa, and young Michael as they publicly declare their faith. The service will start at 10:15 AM to allow extra time for the baptisms.</p><p>If you've been thinking about baptism yourself, please talk to Pastor David or one of the elders. We'd love to help you take this next step in your faith journey.</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>The worship team is looking for a few more voices to join our Sunday morning choir! We practice on Thursday evenings from 7:00-8:30 PM in the sanctuary.</p><p>No audition required - just a heart that loves to worship and a willingness to serve. We especially need tenor and bass voices, but all parts are welcome.</p><p>Contact Rachel if you're interested or have any questions. We'd love to have you join us in leading our congregation in worship!</p>", "feedIndex": 1, "userIndex": 1 },
-          
-          { "content": "<p>Our children's ministry team needs volunteers for Sunday morning classes! We have opportunities to serve with ages 3-5, elementary, and middle school students.</p><p>The time commitment is just one Sunday per month, and all materials are provided. We'll also provide training and ongoing support to help you feel confident in your role.</p><p>These kids are the future of our church, and investing in them is one of the most important things we can do. Please prayerfully consider how God might be calling you to serve.</p>", "feedIndex": 1, "userIndex": 4 },
-          
-          { "content": "<p>The men's ministry is organizing a work day this Saturday starting at 8:00 AM. We'll be doing some maintenance around the church building and helping Mrs. Peterson with her yard work.</p><p>Bring work gloves, tools if you have them, and a servant's heart. We'll provide coffee, donuts, and lunch for all volunteers.</p><p>This is a great opportunity for fellowship while serving others. All skill levels welcome - there's something for everyone to do!</p>", "feedIndex": 1, "userIndex": 2 },
-          
-          { "content": "<p>Ladies, mark your calendars for our monthly women's tea this Saturday afternoon at 2:00 PM in the fellowship hall.</p><p>This month we're discussing the book 'Jesus Calling' by Sarah Young. Even if you haven't read it, come join us for fellowship, prayer, and encouragement.</p><p>Please bring a small snack to share. We'll provide tea, coffee, and light refreshments. Looking forward to seeing you there!</p>", "feedIndex": 1, "userIndex": 4 },
-          
-          { "content": "<p>Please keep the Williams family in your prayers as they navigate John's recent job loss. They're trusting God for provision and direction in this difficult season.</p><p>If you'd like to help practically, they could use meal support over the next few weeks. There's a sign-up sheet in the lobby, or you can contact Margaret to coordinate.</p><p>Let's show them the love of Christ through our actions and support during this challenging time.</p>", "feedIndex": 2, "userIndex": 4 },
-          
-          { "content": "<p>Urgent prayer request: Baby Emma, born to the Martinez family, is in the NICU and needs our prayers. She was born premature at 32 weeks and is fighting hard.</p><p>The doctors are hopeful, but the next few weeks are critical. Please pray for Emma's development and healing, and for peace and strength for her parents and big brother.</p><p>Cards and meals would be appreciated. Contact the church office for more details on how to help this precious family.</p>", "feedIndex": 2, "userIndex": 0 },
-          
-          { "content": "<p>Thank you all for your prayers and support during my recent surgery. I'm recovering well and feeling your love through every card, meal, and prayer.</p><p>The doctors say everything went perfectly, and I should be back to full strength in a few more weeks. God is so good, and His people are such a blessing.</p><p>I hope to be back in church next Sunday to thank you all in person. Your kindness has overwhelmed my heart with gratitude.</p>", "feedIndex": 2, "userIndex": 3 },
-          
-          { "content": "<p>Please remember our missionaries, the Chen family, who are serving in Thailand. They're facing some challenging situations with their visa status and need our prayers for God's intervention.</p><p>They're also in need of additional financial support to continue their work with street children in Bangkok. If God is calling you to support them, you can give through the church office.</p><p>They send their love and gratitude for your continued prayers and support. They're seeing God work in amazing ways among the children they serve.</p>", "feedIndex": 2, "userIndex": 0 },
-          
-          { "content": "<p>This month's leadership meeting will focus on our upcoming building expansion plans. We've been praying about this for over a year, and it's time to seek God's direction for the next steps.</p><p>The architectural firm will present three different options for expanding our children's wing and adding a larger fellowship hall.</p><p>Please continue to pray for wisdom as we make these important decisions. We want to be good stewards of what God has given us while preparing for future growth.</p>", "feedIndex": 3, "userIndex": 0 },
-          
-          { "content": "<p>Board meeting minutes from last Tuesday are now available in the church office. Key decisions included approving the new youth pastor candidate and moving forward with the parking lot resurfacing project.</p><p>We also discussed the need for additional small group leaders as our congregation continues to grow. If you feel called to lead a small group, please speak with Pastor David.</p>", "feedIndex": 3, "userIndex": 4 },
-          
-          { "content": "<p>Our community food bank is running low on several essential items. We're especially in need of canned proteins, pasta, rice, and baby formula.</p><p>The food bank serves over 200 families in our area each month, and your donations make a real difference in people's lives.</p><p>There's a collection box in the lobby, or you can drop items off at the church office during the week. Thank you for your generosity in serving our neighbors in need.</p>", "feedIndex": 4, "userIndex": 2 },
-          
-          { "content": "<p>This Saturday we're partnering with three other local churches for a neighborhood cleanup day. We'll meet at Riverside Park at 9:00 AM and work until noon.</p><p>Bring work gloves, trash bags will be provided. This is a great opportunity to serve our community alongside our brothers and sisters from other churches.</p><p>Lunch will be provided for all volunteers. Please sign up in the lobby so we know how much food to prepare.</p>", "feedIndex": 4, "userIndex": 2 },
-          
-          { "content": "<p>The homeless shelter downtown is looking for volunteers to help serve dinner on the third Thursday of each month. This is an ongoing commitment that our church has maintained for over five years.</p><p>We typically need 6-8 volunteers each month to help with meal preparation, serving, and cleanup. It's a humbling and rewarding experience that really opens your eyes to God's heart for the marginalized.</p><p>Contact James if you're interested in joining this ministry team. Training is provided, and we always go as a group to support each other.</p>", "feedIndex": 4, "userIndex": 2 }
-        ],
-        
-        "messages": [
-          { "postIndex": 0, "userIndex": 2, "content": "<p>Looking forward to this series! Hebrews 11 is one of my favorite chapters.</p>" },
-          { "postIndex": 0, "userIndex": 3, "content": "<p>Perfect timing for this message. I've been struggling with some faith decisions lately.</p>" },
-          { "postIndex": 1, "userIndex": 4, "content": "<p>So thankful for our church family and the way God speaks through Pastor David's messages.</p>" },
-          { "postIndex": 2, "userIndex": 1, "content": "<p>Communion always reminds me of God's incredible love and sacrifice.</p>" },
-          { "postIndex": 2, "userIndex": 2, "content": "<p>Happy to support the Johnson family - their heart for missions is inspiring.</p>" },
-          { "postIndex": 3, "userIndex": 1, "content": "<p>So excited to witness these baptisms! There's nothing quite like seeing people take this step.</p>" },
-          { "postIndex": 3, "userIndex": 4, "content": "<p>I remember my own baptism here five years ago. Such a special day!</p>" },
-          { "postIndex": 4, "userIndex": 0, "content": "<p>What a wonderful way to serve! The worship team brings such joy to our services.</p>" },
-          { "postIndex": 4, "userIndex": 2, "content": "<p>I'll be praying about joining. I love to sing but I'm a bit nervous!</p>" },
-          { "postIndex": 5, "userIndex": 1, "content": "<p>Children's ministry is such important work. These kids are amazing!</p>" },
-          { "postIndex": 6, "userIndex": 0, "content": "<p>Count me in for Saturday! Love these opportunities to serve together.</p>" },
-          { "postIndex": 6, "userIndex": 3, "content": "<p>I'll bring my truck and some extra tools. This sounds like a great day!</p>" },
-          { "postIndex": 7, "userIndex": 1, "content": "<p>Looking forward to the fellowship and discussion. Love our women's ministry!</p>" },
-          { "postIndex": 8, "userIndex": 0, "content": "<p>Absolutely keeping them in prayer. Job loss is so stressful.</p>" },
-          { "postIndex": 8, "userIndex": 1, "content": "<p>I'll sign up to bring a meal. What a blessing to be able to help!</p>" },
-          { "postIndex": 9, "userIndex": 1, "content": "<p>Praying for little Emma and her family. God is the great healer!</p>" },
-          { "postIndex": 9, "userIndex": 4, "content": "<p>Those NICU nurses are angels. Trusting God for Emma's complete healing.</p>" },
-          { "postIndex": 10, "userIndex": 0, "content": "<p>So grateful you're healing well! God is good all the time.</p>" },
-          { "postIndex": 10, "userIndex": 2, "content": "<p>Can't wait to see you back in church! Your testimony through this has been powerful.</p>" },
-          { "postIndex": 11, "userIndex": 1, "content": "<p>The Chens are such faithful servants. Keeping them in daily prayer.</p>" },
-          { "postIndex": 14, "userIndex": 0, "content": "<p>Thank you for organizing this! Our community needs to see the church in action.</p>" },
-          { "postIndex": 14, "userIndex": 1, "content": "<p>Great way to partner with other churches too. Unity in action!</p>" },
-          { "postIndex": 15, "userIndex": 3, "content": "<p>Count me in! Always enjoyed our cleanup days.</p>" },
-          { "postIndex": 16, "userIndex": 0, "content": "<p>This ministry has transformed my heart. Highly recommend getting involved!</p>" },
-          { "postIndex": 16, "userIndex": 4, "content": "<p>Such important work. These folks need to know they're loved and valued.</p>" }
-        ]
-      },
-      {
-        "orgName": "Redemption Chapel",
-        "orgLocation": "Spokane, WA", 
-        "orgHost": "redemption.churchfeed.dev",
-        
-        "users": [
-          { "email": "pastor@redemption.church", "name": "Pastor Michael Rodriguez" },
-          { "email": "music@redemption.church", "name": "Hannah Kim" },
-          { "email": "families@redemption.church", "name": "Robert Johnson" },
-          { "email": "care@redemption.church", "name": "Susan White" }
-        ],
-        
-        "feeds": [
-          { "name": "Weekly Messages", "privacy": "public" },
-          { "name": "Life Groups", "privacy": "public" }, 
-          { "name": "Family Ministry", "privacy": "public" },
-          { "name": "Pastoral Care", "privacy": "open" }
-        ],
-        
-        "userFeeds": [
-          { "userIndex": 0, "feedIndex": 0, "owner": true },
-          { "userIndex": 0, "feedIndex": 1, "owner": true },
-          { "userIndex": 0, "feedIndex": 2, "owner": true },
-          { "userIndex": 0, "feedIndex": 3, "owner": true },
-          
-          { "userIndex": 1, "feedIndex": 0, "owner": false },
-          { "userIndex": 1, "feedIndex": 1, "owner": false },
-          { "userIndex": 1, "feedIndex": 2, "owner": false },
-          { "userIndex": 1, "feedIndex": 3, "owner": false },
-          
-          { "userIndex": 2, "feedIndex": 0, "owner": false },
-          { "userIndex": 2, "feedIndex": 1, "owner": false },
-          { "userIndex": 2, "feedIndex": 2, "owner": true },
-          { "userIndex": 2, "feedIndex": 3, "owner": false },
-          
-          { "userIndex": 3, "feedIndex": 0, "owner": false },
-          { "userIndex": 3, "feedIndex": 1, "owner": false },
-          { "userIndex": 3, "feedIndex": 2, "owner": false },
-          { "userIndex": 3, "feedIndex": 3, "owner": true }
-        ],
-        
-        "posts": [
-          { "content": "<p>This Sunday's message will be on 'Finding Hope in Dark Times' from Psalm 27. In a world full of uncertainty and struggle, God's Word provides the anchor our souls need.</p><p>We'll explore how David found strength in the Lord during his most difficult seasons, and how we can apply those same principles to our lives today.</p><p>Join us at 9:00 AM and 11:00 AM as we dive into this powerful passage together.</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>Thank you to everyone who joined us for our annual church retreat last weekend! What an incredible time of fellowship, worship, and spiritual growth.</p><p>The testimonies shared around the campfire Saturday night were so powerful. God is clearly moving in our church family in amazing ways.</p><p>If you missed it this year, mark your calendars for next October. We're already planning what promises to be an even more impactful retreat.</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>Easter is just around the corner! We're planning several special services and events to celebrate the resurrection of our Lord and Savior.</p><p>Good Friday service will be at 7:00 PM, focusing on the cross and Christ's sacrifice for us. Sunday we'll have sunrise service at 7:00 AM followed by breakfast, then our regular services at 9:00 and 11:00 AM.</p><p>Please invite your friends and family to join us as we celebrate the greatest victory in history!</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>Our new life group study on the Book of Romans starts next week! We have groups meeting on Tuesday evenings, Wednesday mornings, and Thursday evenings.</p><p>This will be an 8-week study diving deep into Paul's masterpiece on salvation, grace, and Christian living. Study guides are available in the church lobby.</p><p>Life groups are where real community happens. If you're not already in a group, this is a perfect time to jump in and get connected!</p>", "feedIndex": 1, "userIndex": 0 },
-          
-          { "content": "<p>The Wednesday morning life group has been such a blessing! We're studying prayer together and actually spending time praying for each other during our meetings.</p><p>There's still room for a few more people if anyone wants to join us. We meet at 10:00 AM in the conference room and wrap up by 11:30 AM.</p><p>Childcare is available, and we always have coffee and light snacks. Come as you are - no preparation required!</p>", "feedIndex": 1, "userIndex": 3 },
-          
-          { "content": "<p>Life group leaders, don't forget about our monthly training meeting this Saturday at 9:00 AM. We'll be discussing how to handle difficult conversations and pastoral care within small groups.</p><p>Pastor Michael will be sharing some practical tools for shepherding your group members well. Coffee and pastries will be provided.</p><p>Thank you all for your faithful service in leading these vital ministry groups!</p>", "feedIndex": 1, "userIndex": 0 },
-          
-          { "content": "<p>Parents, we're excited to announce our new family devotional resource! Each week we'll provide discussion questions and activities to help you have meaningful spiritual conversations at home.</p><p>Research shows that children who grow up in homes where faith is discussed regularly are much more likely to maintain their faith as adults.</p><p>Pick up your family devotional packet in the lobby this Sunday, or download it from our website. Let's partner together in raising the next generation for Christ!</p>", "feedIndex": 2, "userIndex": 2 },
-          
-          { "content": "<p>Our children's Christmas program practice starts this week! All kids ages 4-12 are invited to participate in this year's production of 'The Greatest Gift'.</p><p>Practices will be on Saturday mornings from 10:00 AM to 11:30 AM for the next six weeks. Costumes will be provided, and no experience is necessary.</p><p>This is always a highlight of our Christmas season, and the kids love being part of telling the nativity story. Please encourage your children to participate!</p>", "feedIndex": 2, "userIndex": 2 },
-          
-          { "content": "<p>Family game night was a huge success! We had over 40 people of all ages enjoying fellowship and friendly competition together.</p><p>The intergenerational connections were beautiful to watch - teenagers teaching card games to seniors, parents playing with other people's kids, and lots of laughter filling the fellowship hall.</p><p>We'll definitely be doing this again soon. Keep an eye out for the next family game night announcement!</p>", "feedIndex": 2, "userIndex": 2 },
-          
-          { "content": "<p>If you or someone you know is walking through a difficult season, please don't hesitate to reach out for support. Our pastoral care team is here to listen, pray, and provide practical help when needed.</p><p>We have trained volunteers who can provide meal support, transportation to medical appointments, help with errands, or simply a listening ear during tough times.</p><p>Church family means we don't walk through valleys alone. Let us come alongside you in whatever you're facing.</p>", "feedIndex": 3, "userIndex": 3 },
-          
-          { "content": "<p>Our grief support group continues to meet the first and third Monday of each month at 6:30 PM. This is a safe space for anyone who has experienced the loss of a loved one.</p><p>Whether your loss was recent or years ago, grief has no timeline. Sometimes we need extra support as we navigate holidays, anniversaries, and other difficult milestones.</p><p>If you know someone who might benefit from this group, please let them know about it. Healing happens best in community.</p>", "feedIndex": 3, "userIndex": 3 }
-        ],
-        
-        "messages": [
-          { "postIndex": 0, "userIndex": 1, "content": "<p>Perfect timing for this message. I've been struggling with anxiety lately.</p>" },
-          { "postIndex": 0, "userIndex": 2, "content": "<p>Psalm 27 is such a powerful reminder of God's faithfulness.</p>" },
-          { "postIndex": 1, "userIndex": 3, "content": "<p>The retreat was amazing! Still processing all God showed me that weekend.</p>" },
-          { "postIndex": 1, "userIndex": 1, "content": "<p>Those campfire testimonies brought me to tears. God is so good!</p>" },
-          { "postIndex": 2, "userIndex": 2, "content": "<p>Already planning to invite my neighbors to Easter service!</p>" },
-          { "postIndex": 3, "userIndex": 1, "content": "<p>Romans is such a rich book. Excited for this study!</p>" },
-          { "postIndex": 3, "userIndex": 2, "content": "<p>I've been wanting to join a life group. Thursday evenings work perfect for me.</p>" },
-          { "postIndex": 4, "userIndex": 1, "content": "<p>The Wednesday group has been life-changing for me. Highly recommend!</p>" },
-          { "postIndex": 4, "userIndex": 2, "content": "<p>Learning so much about prayer. God is answering in amazing ways!</p>" },
-          { "postIndex": 6, "userIndex": 0, "content": "<p>What a fantastic resource! Family devotions have been a game-changer for us.</p>" },
-          { "postIndex": 6, "userIndex": 1, "content": "<p>So grateful for practical tools to disciple our children at home.</p>" },
-          { "postIndex": 7, "userIndex": 0, "content": "<p>My kids are so excited about the Christmas program!</p>" },
-          { "postIndex": 7, "userIndex": 3, "content": "<p>These programs create such wonderful memories for families.</p>" },
-          { "postIndex": 8, "userIndex": 0, "content": "<p>My 8-year-old is still talking about game night! Such a fun evening.</p>" },
-          { "postIndex": 8, "userIndex": 1, "content": "<p>Loved seeing the generations connect through games and laughter.</p>" },
-          { "postIndex": 9, "userIndex": 0, "content": "<p>So grateful for our care team. They were such a blessing during my dad's illness.</p>" },
-          { "postIndex": 9, "userIndex": 2, "content": "<p>This is what church family is all about - caring for one another.</p>" },
-          { "postIndex": 10, "userIndex": 0, "content": "<p>The grief support group helped me so much after losing my spouse.</p>" },
-          { "postIndex": 10, "userIndex": 1, "content": "<p>Grief shared is grief diminished. Thank you for this ministry.</p>" }
-        ]
-      },
-      {
-        "orgName": "Christ the King",
-        "orgLocation": "Tacoma, WA",
-        "orgHost": "christtheking.churchfeed.dev",
-        
-        "users": [
-          { "email": "lead@ctk.church", "name": "Pastor Jennifer Adams" },
-          { "email": "worship@ctk.church", "name": "Daniel Park" },
-          { "email": "connect@ctk.church", "name": "Lisa Thompson" }
-        ],
-        
-        "feeds": [
-          { "name": "Sunday Worship", "privacy": "public" },
-          { "name": "Connect Groups", "privacy": "public" },
-          { "name": "Serve Opportunities", "privacy": "public" },
-          { "name": "Prayer Ministry", "privacy": "open" }
-        ],
-        
-        "userFeeds": [
-          { "userIndex": 0, "feedIndex": 0, "owner": true },
-          { "userIndex": 0, "feedIndex": 1, "owner": true },
-          { "userIndex": 0, "feedIndex": 2, "owner": true },
-          { "userIndex": 0, "feedIndex": 3, "owner": true },
-          
-          { "userIndex": 1, "feedIndex": 0, "owner": false },
-          { "userIndex": 1, "feedIndex": 1, "owner": false },
-          { "userIndex": 1, "feedIndex": 2, "owner": false },
-          { "userIndex": 1, "feedIndex": 3, "owner": false },
-          
-          { "userIndex": 2, "feedIndex": 0, "owner": false },
-          { "userIndex": 2, "feedIndex": 1, "owner": true },
-          { "userIndex": 2, "feedIndex": 2, "owner": true },
-          { "userIndex": 2, "feedIndex": 3, "owner": false }
-        ],
-        
-        "posts": [
-          { "content": "<p>Join us this Sunday as we continue our series 'Living as Kingdom Citizens.' Pastor Jennifer will be speaking on 'Love Your Enemies' from Matthew 5:43-48.</p><p>This is one of Jesus' most challenging commands, but also one of the most transformative. We'll explore what it practically looks like to love those who hurt us.</p><p>Worship starts at 10:30 AM with coffee and connection time beginning at 10:00 AM in the lobby.</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>What an incredible morning of worship we had yesterday! The presence of God was so tangible as we sang 'How Great Thou Art' together.</p><p>Thank you to Daniel and the worship team for leading us into such a meaningful time of praise. The new song 'King of Kings' really captured the heart of our series.</p><p>For those who missed it, the sermon audio will be posted on our website by Thursday.</p>", "feedIndex": 0, "userIndex": 1 },
-          
-          { "content": "<p>This Sunday we're having a baptism celebration! Three of our church family members will be taking this important step of obedience and faith.</p><p>Please come early to support Maria, Josh, and young Sophia as they publicly declare their commitment to follow Jesus. The service will begin at 10:15 AM to allow time for the baptisms.</p><p>There will be a special reception following the service to celebrate these new beginnings in Christ!</p>", "feedIndex": 0, "userIndex": 0 },
-          
-          { "content": "<p>Connect Groups are the heartbeat of our church community! These smaller gatherings are where we build meaningful relationships and grow in our faith together.</p><p>We have groups meeting throughout the week at various times and locations. Whether you're looking for Bible study, fellowship, or support, there's a group for you.</p><p>New groups are starting this month, so it's a perfect time to get connected. Stop by the connection table in the lobby for more information.</p>", "feedIndex": 1, "userIndex": 2 },
-          
-          { "content": "<p>Our Young Adults Connect Group had an amazing time at the hiking retreat last weekend! Nothing builds community like getting outdoors together and enjoying God's creation.</p><p>We hiked Mount Pilchuck, shared meals around the campfire, and had some deep conversations about faith and life. Several people mentioned it was exactly what they needed.</p><p>If you're in your 20s or 30s and looking for community, we'd love to have you join us for our next gathering!</p>", "feedIndex": 1, "userIndex": 2 },
-          
-          { "content": "<p>The Wednesday evening Connect Group studying the Book of Acts is seeing God move in powerful ways! Last week we discussed the early church's commitment to fellowship and sharing.</p><p>It's been amazing to see our group put these principles into practice - supporting each other through job searches, celebrating new babies, and praying through life decisions together.</p><p>We still have room for a few more people. Join us Wednesday at 7:00 PM in the fellowship hall!</p>", "feedIndex": 1, "userIndex": 0 },
-          
-          { "content": "<p>Serve Day is coming up on Saturday, March 15th! We're partnering with five local organizations to make a positive impact in our community.</p><p>Projects include serving at the food bank, cleaning up Wapato Park, visiting nursing home residents, organizing donations at the women's shelter, and helping with yard work for elderly neighbors.</p><p>This is a fantastic opportunity for the whole family to serve together. Sign-ups begin this Sunday in the lobby!</p>", "feedIndex": 2, "userIndex": 2 },
-          
-          { "content": "<p>Our monthly serve opportunity at the downtown rescue mission was incredibly meaningful. Serving dinner to our homeless neighbors reminds us of Christ's heart for the marginalized.</p><p>The conversations we had were just as important as the meal we provided. Every person has a story, and showing dignity and respect can be just as nourishing as food.</p><p>Thank you to the 12 volunteers who participated. Our next opportunity is the second Saturday of next month.</p>", "feedIndex": 2, "userIndex": 2 },
-          
-          { "content": "<p>We're looking for volunteers to help with our new tutoring program for local elementary students. No teaching experience required - just a heart for kids and basic reading/math skills.</p><p>The program runs Tuesday and Thursday afternoons from 3:30-5:00 PM in our education wing. We provide all materials and training.</p><p>What a privilege to invest in these children's education while showing them the love of Christ through our actions!</p>", "feedIndex": 2, "userIndex": 0 },
-          
-          { "content": "<p>Prayer is the foundation of everything we do as a church. Our weekly prayer gathering every Tuesday at 6:30 PM continues to be a powerful time of seeking God together.</p><p>We pray for our church family, our community, our nation, and our world. There's something special that happens when believers come together in unified prayer.</p><p>Join us in the sanctuary this Tuesday as we lift up the upcoming missions trip and several families facing health challenges.</p>", "feedIndex": 3, "userIndex": 0 },
-          
-          { "content": "<p>Thank you for all the prayers for my mother's cancer treatment. The doctors are amazed at how well she's responding to chemotherapy!</p><p>Your faithful prayers and the meals you've provided have been such a blessing to our family during this difficult time. We truly feel surrounded by love and support.</p><p>Please continue to pray for strength for her remaining treatments and for complete healing. We serve a God who still performs miracles!</p>", "feedIndex": 3, "userIndex": 1 },
-          
-          { "content": "<p>Our prayer team is available every Sunday after service for anyone who needs prayer. Whether you're facing health issues, relationship struggles, financial stress, or spiritual battles, we're here for you.</p><p>You'll find our prayer team members in the front corner of the sanctuary after each service. Everything shared is kept confidential, and we believe God hears and answers prayer.</p><p>Don't carry your burdens alone - let your church family help carry them in prayer with you.</p>", "feedIndex": 3, "userIndex": 0 }
-        ],
-        
-        "messages": [
-          { "postIndex": 0, "userIndex": 1, "content": "<p>This is such a challenging but necessary topic. Excited to dig into this passage!</p>" },
-          { "postIndex": 0, "userIndex": 2, "content": "<p>Perfect timing for this message. I've been struggling with forgiveness lately.</p>" },
-          { "postIndex": 1, "userIndex": 0, "content": "<p>Daniel and the team did an amazing job leading us in worship yesterday!</p>" },
-          { "postIndex": 1, "userIndex": 2, "content": "<p>That new song really ministered to my heart. Beautiful choice!</p>" },
-          { "postIndex": 2, "userIndex": 1, "content": "<p>So excited to witness these baptisms! There's nothing quite like seeing new life in Christ.</p>" },
-          { "postIndex": 2, "userIndex": 2, "content": "<p>I remember my own baptism here three years ago. Such a special day!</p>" },
-          { "postIndex": 3, "userIndex": 0, "content": "<p>Connect Groups have been life-changing for our family. Highly recommend!</p>" },
-          { "postIndex": 3, "userIndex": 1, "content": "<p>Been thinking about joining a group. This seems like perfect timing!</p>" },
-          { "postIndex": 4, "userIndex": 0, "content": "<p>Hiking and fellowship - what a perfect combination! Sounds amazing.</p>" },
-          { "postIndex": 4, "userIndex": 1, "content": "<p>I'm in my late 20s and looking for community. How do I connect with this group?</p>" },
-          { "postIndex": 5, "userIndex": 1, "content": "<p>The Book of Acts is so relevant for church community today!</p>" },
-          { "postIndex": 5, "userIndex": 2, "content": "<p>Wednesday evenings work perfect for me. I'd love to join!</p>" },
-          { "postIndex": 6, "userIndex": 0, "content": "<p>Count our family in for Serve Day! The kids love helping others.</p>" },
-          { "postIndex": 6, "userIndex": 1, "content": "<p>What a great way to show Christ's love through action!</p>" },
-          { "postIndex": 7, "userIndex": 0, "content": "<p>Serving at the mission always puts life in perspective. Such important work.</p>" },
-          { "postIndex": 8, "userIndex": 1, "content": "<p>I'd love to help with tutoring! Kids are so much fun to work with.</p>" },
-          { "postIndex": 8, "userIndex": 2, "content": "<p>What a wonderful way to invest in our community's children!</p>" },
-          { "postIndex": 9, "userIndex": 1, "content": "<p>Tuesday prayer meetings have become the highlight of my week!</p>" },
-          { "postIndex": 9, "userIndex": 2, "content": "<p>There's such power when we pray together as a church family.</p>" },
-          { "postIndex": 10, "userIndex": 0, "content": "<p>Praising God for answered prayers! Your mother is in our continued prayers.</p>" },
-          { "postIndex": 10, "userIndex": 2, "content": "<p>God is still in the healing business! So grateful for this good report.</p>" },
-          { "postIndex": 11, "userIndex": 1, "content": "<p>The prayer team has been such a blessing to me personally.</p>" },
-          { "postIndex": 11, "userIndex": 2, "content": "<p>So grateful for this ministry. Sometimes we all need extra prayer support.</p>" }
-        ]
-      }
-    ]
-  } 
+  "organizations": [
+    {
+      "orgName": "King's Cross Church",
+      "orgLocation": "Bellingham, WA",
+      "orgHost": "kingscross.churchfeed.dev",
+      "users": [
+        {
+          "email": "pastor@kingscross.church",
+          "name": "Pastor David Thompson"
+        },
+        {
+          "email": "worship@kingscross.church",
+          "name": "Rachel Martinez"
+        },
+        {
+          "email": "outreach@kingscross.church",
+          "name": "James Parker"
+        },
+        {
+          "email": "youth@kingscross.church",
+          "name": "Sarah Chen"
+        },
+        {
+          "email": "admin@kingscross.church",
+          "name": "Margaret Foster"
+        }
+      ],
+      "feeds": [
+        {
+          "name": "Sunday Services",
+          "privacy": "public"
+        },
+        {
+          "name": "Ministry Teams",
+          "privacy": "public"
+        },
+        {
+          "name": "Prayer & Support",
+          "privacy": "public"
+        },
+        {
+          "name": "Leadership Updates",
+          "privacy": "private"
+        },
+        {
+          "name": "Community Outreach",
+          "privacy": "open"
+        }
+      ],
+      "userFeeds": [
+        {
+          "userIndex": 0,
+          "feedIndex": 0,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 1,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 3,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 4,
+          "owner": true
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 1,
+          "owner": true
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 4,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 4,
+          "owner": true
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 4,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 4,
+          "owner": false
+        }
+      ],
+      "posts": [
+        {
+          "content": "<p>This Sunday we're beginning our new sermon series 'Walking in Faith' based on Hebrews 11. Pastor David will be sharing about the heroes of faith and what we can learn from their journeys.</p><p>Service starts at 10:30 AM with worship led by Rachel and the team. We'll have coffee and fellowship in the lobby starting at 10:00 AM.</p><p>Don't forget to bring your Bibles and take notes - we'll be diving deep into God's Word together!</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1749431538585
+        },
+        {
+          "content": "<p>What a powerful service we had yesterday! The Lord really moved during our time of worship and prayer.</p><p>For those who missed it, the sermon recording will be available on our website by Wednesday. Pastor David's message on 'Stepping Out in Faith' was exactly what many of us needed to hear.</p>",
+          "feedIndex": 0,
+          "userIndex": 1,
+          "postedAt": 1750014738585
+        },
+        {
+          "content": "<p>Reminder that this Sunday we're celebrating Communion together as a church family. Please come with hearts prepared to remember what Christ has done for us.</p><p>We'll also be taking up a special offering for the Johnson family as they prepare for their mission work in Ecuador. Every gift, no matter the size, makes a difference.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1750191138585
+        },
+        {
+          "content": "<p>Next Sunday is our monthly baptism service! We have three people who will be sharing their testimonies and taking this important step of obedience.</p><p>Please come early to support Tom, Lisa, and young Michael as they publicly declare their faith. The service will start at 10:15 AM to allow extra time for the baptisms.</p><p>If you've been thinking about baptism yourself, please talk to Pastor David or one of the elders. We'd love to help you take this next step in your faith journey.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1751037138585
+        },
+        {
+          "content": "<p>The worship team is looking for a few more voices to join our Sunday morning choir! We practice on Thursday evenings from 7:00-8:30 PM in the sanctuary.</p><p>No audition required - just a heart that loves to worship and a willingness to serve. We especially need tenor and bass voices, but all parts are welcome.</p><p>Contact Rachel if you're interested or have any questions. We'd love to have you join us in leading our congregation in worship!</p>",
+          "feedIndex": 1,
+          "userIndex": 1,
+          "postedAt": 1749568338586
+        },
+        {
+          "content": "<p>Our children's ministry team needs volunteers for Sunday morning classes! We have opportunities to serve with ages 3-5, elementary, and middle school students.</p><p>The time commitment is just one Sunday per month, and all materials are provided. We'll also provide training and ongoing support to help you feel confident in your role.</p><p>These kids are the future of our church, and investing in them is one of the most important things we can do. Please prayerfully consider how God might be calling you to serve.</p>",
+          "feedIndex": 1,
+          "userIndex": 4,
+          "postedAt": 1749809538586
+        },
+        {
+          "content": "<p>The men's ministry is organizing a work day this Saturday starting at 8:00 AM. We'll be doing some maintenance around the church building and helping Mrs. Peterson with her yard work.</p><p>Bring work gloves, tools if you have them, and a servant's heart. We'll provide coffee, donuts, and lunch for all volunteers.</p><p>This is a great opportunity for fellowship while serving others. All skill levels welcome - there's something for everyone to do!</p>",
+          "feedIndex": 1,
+          "userIndex": 2,
+          "postedAt": 1750504338586
+        },
+        {
+          "content": "<p>Ladies, mark your calendars for our monthly women's tea this Saturday afternoon at 2:00 PM in the fellowship hall.</p><p>This month we're discussing the book 'Jesus Calling' by Sarah Young. Even if you haven't read it, come join us for fellowship, prayer, and encouragement.</p><p>Please bring a small snack to share. We'll provide tea, coffee, and light refreshments. Looking forward to seeing you there!</p>",
+          "feedIndex": 1,
+          "userIndex": 4,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>Please keep the Williams family in your prayers as they navigate John's recent job loss. They're trusting God for provision and direction in this difficult season.</p><p>If you'd like to help practically, they could use meal support over the next few weeks. There's a sign-up sheet in the lobby, or you can contact Margaret to coordinate.</p><p>Let's show them the love of Christ through our actions and support during this challenging time.</p>",
+          "feedIndex": 2,
+          "userIndex": 4,
+          "postedAt": 1748362338586
+        },
+        {
+          "content": "<p>Urgent prayer request: Baby Emma, born to the Martinez family, is in the NICU and needs our prayers. She was born premature at 32 weeks and is fighting hard.</p><p>The doctors are hopeful, but the next few weeks are critical. Please pray for Emma's development and healing, and for peace and strength for her parents and big brother.</p><p>Cards and meals would be appreciated. Contact the church office for more details on how to help this precious family.</p>",
+          "feedIndex": 2,
+          "userIndex": 0,
+          "postedAt": 1749377538586
+        },
+        {
+          "content": "<p>Thank you all for your prayers and support during my recent surgery. I'm recovering well and feeling your love through every card, meal, and prayer.</p><p>The doctors say everything went perfectly, and I should be back to full strength in a few more weeks. God is so good, and His people are such a blessing.</p><p>I hope to be back in church next Sunday to thank you all in person. Your kindness has overwhelmed my heart with gratitude.</p>",
+          "feedIndex": 2,
+          "userIndex": 3,
+          "postedAt": 1750147938586
+        },
+        {
+          "content": "<p>Please remember our missionaries, the Chen family, who are serving in Thailand. They're facing some challenging situations with their visa status and need our prayers for God's intervention.</p><p>They're also in need of additional financial support to continue their work with street children in Bangkok. If God is calling you to support them, you can give through the church office.</p><p>They send their love and gratitude for your continued prayers and support. They're seeing God work in amazing ways among the children they serve.</p>",
+          "feedIndex": 2,
+          "userIndex": 0,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>This month's leadership meeting will focus on our upcoming building expansion plans. We've been praying about this for over a year, and it's time to seek God's direction for the next steps.</p><p>The architectural firm will present three different options for expanding our children's wing and adding a larger fellowship hall.</p><p>Please continue to pray for wisdom as we make these important decisions. We want to be good stewards of what God has given us while preparing for future growth.</p>",
+          "feedIndex": 3,
+          "userIndex": 0,
+          "postedAt": 1750432338586
+        },
+        {
+          "content": "<p>Board meeting minutes from last Tuesday are now available in the church office. Key decisions included approving the new youth pastor candidate and moving forward with the parking lot resurfacing project.</p><p>We also discussed the need for additional small group leaders as our congregation continues to grow. If you feel called to lead a small group, please speak with Pastor David.</p>",
+          "feedIndex": 3,
+          "userIndex": 4,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>Our community food bank is running low on several essential items. We're especially in need of canned proteins, pasta, rice, and baby formula.</p><p>The food bank serves over 200 families in our area each month, and your donations make a real difference in people's lives.</p><p>There's a collection box in the lobby, or you can drop items off at the church office during the week. Thank you for your generosity in serving our neighbors in need.</p>",
+          "feedIndex": 4,
+          "userIndex": 2,
+          "postedAt": 1750126338586
+        },
+        {
+          "content": "<p>This Saturday we're partnering with three other local churches for a neighborhood cleanup day. We'll meet at Riverside Park at 9:00 AM and work until noon.</p><p>Bring work gloves, trash bags will be provided. This is a great opportunity to serve our community alongside our brothers and sisters from other churches.</p><p>Lunch will be provided for all volunteers. Please sign up in the lobby so we know how much food to prepare.</p>",
+          "feedIndex": 4,
+          "userIndex": 2,
+          "postedAt": 1750817538586
+        },
+        {
+          "content": "<p>The homeless shelter downtown is looking for volunteers to help serve dinner on the third Thursday of each month. This is an ongoing commitment that our church has maintained for over five years.</p><p>We typically need 6-8 volunteers each month to help with meal preparation, serving, and cleanup. It's a humbling and rewarding experience that really opens your eyes to God's heart for the marginalized.</p><p>Contact James if you're interested in joining this ministry team. Training is provided, and we always go as a group to support each other.</p>",
+          "feedIndex": 4,
+          "userIndex": 2,
+          "postedAt": 1751037138586
+        }
+      ],
+      "messages": [
+        {
+          "postIndex": 0,
+          "userIndex": 2,
+          "content": "<p>Looking forward to this series! Hebrews 11 is one of my favorite chapters.</p>"
+        },
+        {
+          "postIndex": 0,
+          "userIndex": 3,
+          "content": "<p>Perfect timing for this message. I've been struggling with some faith decisions lately.</p>"
+        },
+        {
+          "postIndex": 1,
+          "userIndex": 4,
+          "content": "<p>So thankful for our church family and the way God speaks through Pastor David's messages.</p>"
+        },
+        {
+          "postIndex": 2,
+          "userIndex": 1,
+          "content": "<p>Communion always reminds me of God's incredible love and sacrifice.</p>"
+        },
+        {
+          "postIndex": 2,
+          "userIndex": 2,
+          "content": "<p>Happy to support the Johnson family - their heart for missions is inspiring.</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 1,
+          "content": "<p>So excited to witness these baptisms! There's nothing quite like seeing people take this step.</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 4,
+          "content": "<p>I remember my own baptism here five years ago. Such a special day!</p>"
+        },
+        {
+          "postIndex": 4,
+          "userIndex": 0,
+          "content": "<p>What a wonderful way to serve! The worship team brings such joy to our services.</p>"
+        },
+        {
+          "postIndex": 4,
+          "userIndex": 2,
+          "content": "<p>I'll be praying about joining. I love to sing but I'm a bit nervous!</p>"
+        },
+        {
+          "postIndex": 5,
+          "userIndex": 1,
+          "content": "<p>Children's ministry is such important work. These kids are amazing!</p>"
+        },
+        {
+          "postIndex": 6,
+          "userIndex": 0,
+          "content": "<p>Count me in for Saturday! Love these opportunities to serve together.</p>"
+        },
+        {
+          "postIndex": 6,
+          "userIndex": 3,
+          "content": "<p>I'll bring my truck and some extra tools. This sounds like a great day!</p>"
+        },
+        {
+          "postIndex": 7,
+          "userIndex": 1,
+          "content": "<p>Looking forward to the fellowship and discussion. Love our women's ministry!</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 0,
+          "content": "<p>Absolutely keeping them in prayer. Job loss is so stressful.</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 1,
+          "content": "<p>I'll sign up to bring a meal. What a blessing to be able to help!</p>"
+        },
+        {
+          "postIndex": 9,
+          "userIndex": 1,
+          "content": "<p>Praying for little Emma and her family. God is the great healer!</p>"
+        },
+        {
+          "postIndex": 9,
+          "userIndex": 4,
+          "content": "<p>Those NICU nurses are angels. Trusting God for Emma's complete healing.</p>"
+        },
+        {
+          "postIndex": 10,
+          "userIndex": 0,
+          "content": "<p>So grateful you're healing well! God is good all the time.</p>"
+        },
+        {
+          "postIndex": 10,
+          "userIndex": 2,
+          "content": "<p>Can't wait to see you back in church! Your testimony through this has been powerful.</p>"
+        },
+        {
+          "postIndex": 11,
+          "userIndex": 1,
+          "content": "<p>The Chens are such faithful servants. Keeping them in daily prayer.</p>"
+        },
+        {
+          "postIndex": 14,
+          "userIndex": 0,
+          "content": "<p>Thank you for organizing this! Our community needs to see the church in action.</p>"
+        },
+        {
+          "postIndex": 14,
+          "userIndex": 1,
+          "content": "<p>Great way to partner with other churches too. Unity in action!</p>"
+        },
+        {
+          "postIndex": 15,
+          "userIndex": 3,
+          "content": "<p>Count me in! Always enjoyed our cleanup days.</p>"
+        },
+        {
+          "postIndex": 16,
+          "userIndex": 0,
+          "content": "<p>This ministry has transformed my heart. Highly recommend getting involved!</p>"
+        },
+        {
+          "postIndex": 16,
+          "userIndex": 4,
+          "content": "<p>Such important work. These folks need to know they're loved and valued.</p>"
+        }
+      ]
+    },
+    {
+      "orgName": "Redemption Chapel",
+      "orgLocation": "Spokane, WA",
+      "orgHost": "redemption.churchfeed.dev",
+      "users": [
+        {
+          "email": "pastor@redemption.church",
+          "name": "Pastor Michael Rodriguez"
+        },
+        {
+          "email": "music@redemption.church",
+          "name": "Hannah Kim"
+        },
+        {
+          "email": "families@redemption.church",
+          "name": "Robert Johnson"
+        },
+        {
+          "email": "care@redemption.church",
+          "name": "Susan White"
+        }
+      ],
+      "feeds": [
+        {
+          "name": "Weekly Messages",
+          "privacy": "public"
+        },
+        {
+          "name": "Life Groups",
+          "privacy": "public"
+        },
+        {
+          "name": "Family Ministry",
+          "privacy": "public"
+        },
+        {
+          "name": "Pastoral Care",
+          "privacy": "open"
+        }
+      ],
+      "userFeeds": [
+        {
+          "userIndex": 0,
+          "feedIndex": 0,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 1,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 3,
+          "owner": true
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 3,
+          "owner": true
+        }
+      ],
+      "posts": [
+        {
+          "content": "<p>This Sunday's message will be on 'Finding Hope in Dark Times' from Psalm 27. In a world full of uncertainty and struggle, God's Word provides the anchor our souls need.</p><p>We'll explore how David found strength in the Lord during his most difficult seasons, and how we can apply those same principles to our lives today.</p><p>Join us at 9:00 AM and 11:00 AM as we dive into this powerful passage together.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1750309938586
+        },
+        {
+          "content": "<p>Thank you to everyone who joined us for our annual church retreat last weekend! What an incredible time of fellowship, worship, and spiritual growth.</p><p>The testimonies shared around the campfire Saturday night were so powerful. God is clearly moving in our church family in amazing ways.</p><p>If you missed it this year, mark your calendars for next October. We're already planning what promises to be an even more impactful retreat.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1750399938586
+        },
+        {
+          "content": "<p>Easter is just around the corner! We're planning several special services and events to celebrate the resurrection of our Lord and Savior.</p><p>Good Friday service will be at 7:00 PM, focusing on the cross and Christ's sacrifice for us. Sunday we'll have sunrise service at 7:00 AM followed by breakfast, then our regular services at 9:00 and 11:00 AM.</p><p>Please invite your friends and family to join us as we celebrate the greatest victory in history!</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>Our new life group study on the Book of Romans starts next week! We have groups meeting on Tuesday evenings, Wednesday mornings, and Thursday evenings.</p><p>This will be an 8-week study diving deep into Paul's masterpiece on salvation, grace, and Christian living. Study guides are available in the church lobby.</p><p>Life groups are where real community happens. If you're not already in a group, this is a perfect time to jump in and get connected!</p>",
+          "feedIndex": 1,
+          "userIndex": 0,
+          "postedAt": 1750007538586
+        },
+        {
+          "content": "<p>The Wednesday morning life group has been such a blessing! We're studying prayer together and actually spending time praying for each other during our meetings.</p><p>There's still room for a few more people if anyone wants to join us. We meet at 10:00 AM in the conference room and wrap up by 11:30 AM.</p><p>Childcare is available, and we always have coffee and light snacks. Come as you are - no preparation required!</p>",
+          "feedIndex": 1,
+          "userIndex": 3,
+          "postedAt": 1750471938586
+        },
+        {
+          "content": "<p>Life group leaders, don't forget about our monthly training meeting this Saturday at 9:00 AM. We'll be discussing how to handle difficult conversations and pastoral care within small groups.</p><p>Pastor Michael will be sharing some practical tools for shepherding your group members well. Coffee and pastries will be provided.</p><p>Thank you all for your faithful service in leading these vital ministry groups!</p>",
+          "feedIndex": 1,
+          "userIndex": 0,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>Parents, we're excited to announce our new family devotional resource! Each week we'll provide discussion questions and activities to help you have meaningful spiritual conversations at home.</p><p>Research shows that children who grow up in homes where faith is discussed regularly are much more likely to maintain their faith as adults.</p><p>Pick up your family devotional packet in the lobby this Sunday, or download it from our website. Let's partner together in raising the next generation for Christ!</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1750043538586
+        },
+        {
+          "content": "<p>Our children's Christmas program practice starts this week! All kids ages 4-12 are invited to participate in this year's production of 'The Greatest Gift'.</p><p>Practices will be on Saturday mornings from 10:00 AM to 11:30 AM for the next six weeks. Costumes will be provided, and no experience is necessary.</p><p>This is always a highlight of our Christmas season, and the kids love being part of telling the nativity story. Please encourage your children to participate!</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1750651938586
+        },
+        {
+          "content": "<p>Family game night was a huge success! We had over 40 people of all ages enjoying fellowship and friendly competition together.</p><p>The intergenerational connections were beautiful to watch - teenagers teaching card games to seniors, parents playing with other people's kids, and lots of laughter filling the fellowship hall.</p><p>We'll definitely be doing this again soon. Keep an eye out for the next family game night announcement!</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>If you or someone you know is walking through a difficult season, please don't hesitate to reach out for support. Our pastoral care team is here to listen, pray, and provide practical help when needed.</p><p>We have trained volunteers who can provide meal support, transportation to medical appointments, help with errands, or simply a listening ear during tough times.</p><p>Church family means we don't walk through valleys alone. Let us come alongside you in whatever you're facing.</p>",
+          "feedIndex": 3,
+          "userIndex": 3,
+          "postedAt": 1750950738586
+        },
+        {
+          "content": "<p>Our grief support group continues to meet the first and third Monday of each month at 6:30 PM. This is a safe space for anyone who has experienced the loss of a loved one.</p><p>Whether your loss was recent or years ago, grief has no timeline. Sometimes we need extra support as we navigate holidays, anniversaries, and other difficult milestones.</p><p>If you know someone who might benefit from this group, please let them know about it. Healing happens best in community.</p>",
+          "feedIndex": 3,
+          "userIndex": 3,
+          "postedAt": 1751037138586
+        }
+      ],
+      "messages": [
+        {
+          "postIndex": 0,
+          "userIndex": 1,
+          "content": "<p>Perfect timing for this message. I've been struggling with anxiety lately.</p>"
+        },
+        {
+          "postIndex": 0,
+          "userIndex": 2,
+          "content": "<p>Psalm 27 is such a powerful reminder of God's faithfulness.</p>"
+        },
+        {
+          "postIndex": 1,
+          "userIndex": 3,
+          "content": "<p>The retreat was amazing! Still processing all God showed me that weekend.</p>"
+        },
+        {
+          "postIndex": 1,
+          "userIndex": 1,
+          "content": "<p>Those campfire testimonies brought me to tears. God is so good!</p>"
+        },
+        {
+          "postIndex": 2,
+          "userIndex": 2,
+          "content": "<p>Already planning to invite my neighbors to Easter service!</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 1,
+          "content": "<p>Romans is such a rich book. Excited for this study!</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 2,
+          "content": "<p>I've been wanting to join a life group. Thursday evenings work perfect for me.</p>"
+        },
+        {
+          "postIndex": 4,
+          "userIndex": 1,
+          "content": "<p>The Wednesday group has been life-changing for me. Highly recommend!</p>"
+        },
+        {
+          "postIndex": 4,
+          "userIndex": 2,
+          "content": "<p>Learning so much about prayer. God is answering in amazing ways!</p>"
+        },
+        {
+          "postIndex": 6,
+          "userIndex": 0,
+          "content": "<p>What a fantastic resource! Family devotions have been a game-changer for us.</p>"
+        },
+        {
+          "postIndex": 6,
+          "userIndex": 1,
+          "content": "<p>So grateful for practical tools to disciple our children at home.</p>"
+        },
+        {
+          "postIndex": 7,
+          "userIndex": 0,
+          "content": "<p>My kids are so excited about the Christmas program!</p>"
+        },
+        {
+          "postIndex": 7,
+          "userIndex": 3,
+          "content": "<p>These programs create such wonderful memories for families.</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 0,
+          "content": "<p>My 8-year-old is still talking about game night! Such a fun evening.</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 1,
+          "content": "<p>Loved seeing the generations connect through games and laughter.</p>"
+        },
+        {
+          "postIndex": 9,
+          "userIndex": 0,
+          "content": "<p>So grateful for our care team. They were such a blessing during my dad's illness.</p>"
+        },
+        {
+          "postIndex": 9,
+          "userIndex": 2,
+          "content": "<p>This is what church family is all about - caring for one another.</p>"
+        },
+        {
+          "postIndex": 10,
+          "userIndex": 0,
+          "content": "<p>The grief support group helped me so much after losing my spouse.</p>"
+        },
+        {
+          "postIndex": 10,
+          "userIndex": 1,
+          "content": "<p>Grief shared is grief diminished. Thank you for this ministry.</p>"
+        }
+      ]
+    },
+    {
+      "orgName": "Sovereign Grace",
+      "orgLocation": "Franklin, TN",
+      "orgHost": "sovereigngrace.churchfeed.dev",
+      "users": [
+        {
+          "email": "pastor@sovereigngrace.church",
+          "name": "Pastor Daniel Matthews"
+        },
+        {
+          "email": "elder@sovereigngrace.church",
+          "name": "Elder James Thompson"
+        },
+        {
+          "email": "deacon@sovereigngrace.church",
+          "name": "Deacon Michael Carter"
+        },
+        {
+          "email": "member@sovereigngrace.church",
+          "name": "Sarah Williams"
+        },
+        {
+          "email": "admin@sovereigngrace.church",
+          "name": "Rebecca Davis"
+        }
+      ],
+      "feeds": [
+        {
+          "name": "Church Announcements",
+          "privacy": "public"
+        },
+        {
+          "name": "Prayer Requests",
+          "privacy": "public"
+        },
+        {
+          "name": "Ministry Updates",
+          "privacy": "public"
+        },
+        {
+          "name": "Elder Board",
+          "privacy": "private"
+        }
+      ],
+      "userFeeds": [
+        {
+          "userIndex": 0,
+          "feedIndex": 0,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 1,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 0,
+          "feedIndex": 3,
+          "owner": true
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 1,
+          "feedIndex": 3,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 2,
+          "feedIndex": 2,
+          "owner": true
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 3,
+          "feedIndex": 2,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 0,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 1,
+          "owner": false
+        },
+        {
+          "userIndex": 4,
+          "feedIndex": 2,
+          "owner": false
+        }
+      ],
+      "posts": [
+        {
+          "content": "<p>Grace and peace to you all in the name of our Lord Jesus Christ. This Sunday, we continue our expository series through the book of Romans, examining chapter 8:28-30 - God's sovereign purpose in salvation.</p><p>Please arrive a few minutes early for corporate prayer at 9:45 AM. The Lord's Supper will be observed following the morning service.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1745075538586
+        },
+        {
+          "content": "<p>Our monthly men's breakfast and Bible study will meet this Saturday at 7:00 AM in Fellowship Hall. We're studying through R.C. Sproul's 'Chosen by God' and discussing the doctrines of grace.</p><p>All men are welcome to join us for fellowship and time in God's Word. Please let Deacon Carter know if you plan to attend so we can prepare adequate food.</p>",
+          "feedIndex": 0,
+          "userIndex": 2,
+          "postedAt": 1746061938586
+        },
+        {
+          "content": "<p>The Ladies' Bible Study has begun a new study on the book of Titus, focusing on godly living and sound doctrine. We meet every Tuesday at 10:00 AM in the church library.</p><p>This study is open to all ladies in the congregation. Childcare is provided for nursing mothers and young children. Please see Rebecca Davis for study materials.</p>",
+          "feedIndex": 0,
+          "userIndex": 4,
+          "postedAt": 1746295938586
+        },
+        {
+          "content": "<p>Next Sunday evening, we will have our monthly church business meeting following the evening service at 6:00 PM. All members are encouraged to attend as we discuss ministry updates and upcoming decisions.</p><p>The elder board will present the proposed budget for the upcoming fiscal year and provide updates on our church planting partnership with Grace Baptist Church in Nashville.</p>",
+          "feedIndex": 0,
+          "userIndex": 1,
+          "postedAt": 1746634338586
+        },
+        {
+          "content": "<p>Our Wednesday evening prayer meeting continues to be a sweet time of fellowship and intercession. We meet at 7:00 PM in the sanctuary for corporate prayer and Bible study.</p><p>This week, Pastor Matthews will be leading us through Ephesians 6:10-20, examining the believer's spiritual warfare and the armor of God. All are welcome to join us for this edifying time.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1747534338586
+        },
+        {
+          "content": "<p>The annual church retreat at Camp Hallelujah is scheduled for Labor Day weekend (September 1-3). This year's theme is 'Sola Scriptura: The Sufficiency of God's Word' with guest speaker Dr. Steven Lawson.</p><p>Registration forms are available in the church foyer. The cost is $85 per person, which includes lodging and meals. Scholarships are available for families in need - please speak privately with Pastor Matthews or Elder Thompson.</p>",
+          "feedIndex": 0,
+          "userIndex": 2,
+          "postedAt": 1747631538586
+        },
+        {
+          "content": "<p>Our evangelism training course continues next Thursday at 7:00 PM. We're learning biblical methods for sharing the gospel and will be studying Ray Comfort's 'The Way of the Master' approach.</p><p>Remember that evangelism is not reserved for pastors and missionaries - every believer is called to be a witness for Christ. Join us as we equip ourselves to give a reason for the hope that is within us.</p>",
+          "feedIndex": 0,
+          "userIndex": 1,
+          "postedAt": 1748275938586
+        },
+        {
+          "content": "<p>The church library has received several new additions to our theology section, including works by John Owen, Charles Spurgeon, and John Calvin. These books are available for checkout by all members.</p><p>We especially encourage our new members to take advantage of these resources as they grow in their understanding of biblical doctrine and Reformed theology.</p>",
+          "feedIndex": 0,
+          "userIndex": 4,
+          "postedAt": 1748751138586
+        },
+        {
+          "content": "<p>This Sunday marks the beginning of our annual missions conference. We'll be hosting missionary families from Brazil, Japan, and Eastern Europe throughout the week.</p><p>There will be special presentations each evening at 7:00 PM, and we'll have the opportunity to hear how God is working around the world. Please plan to attend and learn how our church can better support the Great Commission.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1749017538586
+        },
+        {
+          "content": "<p>Our youth group (ages 13-18) will be attending the Ligonier Youth Conference in Orlando this November. The theme is 'Reformation Foundations' and will cover essential doctrines of the Christian faith.</p><p>The cost is $350 per student, which includes transportation, lodging, and conference fees. Please see Deacon Carter for registration information and payment plans.</p>",
+          "feedIndex": 0,
+          "userIndex": 2,
+          "postedAt": 1749478338586
+        },
+        {
+          "content": "<p>The deacons' fund has been established to help members of our congregation who are facing financial hardship. If you or someone you know is in need of assistance, please speak confidentially with one of our deacons.</p><p>All requests are handled with complete discretion and love. We believe that caring for one another is part of our calling as the body of Christ.</p>",
+          "feedIndex": 0,
+          "userIndex": 2,
+          "postedAt": 1749924738586
+        },
+        {
+          "content": "<p>Our church's commitment to expository preaching means we work systematically through books of the Bible, allowing Scripture to interpret Scripture. This approach ensures we address topics God deems important rather than following cultural trends.</p><p>We believe this method best serves the congregation by providing a comprehensive understanding of God's Word and protecting against selective interpretation.</p>",
+          "feedIndex": 0,
+          "userIndex": 0,
+          "postedAt": 1750079538586
+        },
+        {
+          "content": "<p>The church covenant renewal ceremony will take place next month. All members are asked to prayerfully consider their commitment to biblical church membership and the responsibilities that entails.</p><p>This is an opportunity for us to reaffirm our commitment to one another and to the doctrines and practices that define our congregation according to Scripture.</p>",
+          "feedIndex": 0,
+          "userIndex": 1,
+          "postedAt": 1750417938586
+        },
+        {
+          "content": "<p>Our monthly church discipline meeting will address matters brought before the elder board. While these situations are always handled with great care and prayer, they reflect our commitment to biblical church governance.</p><p>We believe that loving discipline, when necessary, helps restore wayward believers and maintains the purity of the local church as outlined in Matthew 18 and 1 Corinthians 5.</p>",
+          "feedIndex": 0,
+          "userIndex": 1,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>Please join me in praying for Mrs. Henderson who is scheduled for surgery this Thursday morning. The doctors will be removing a tumor, and we're trusting in the Lord's sovereign will for her healing.</p><p>Her family has requested prayer specifically for peace during this uncertain time and for wisdom for the medical team. Let us remember that our God works all things together for good for those who love Him.</p>",
+          "feedIndex": 1,
+          "userIndex": 3,
+          "postedAt": 1742440338586
+        },
+        {
+          "content": "<p>Brother Johnson's job situation continues to be a source of concern. He was laid off last month and has been struggling to find new employment that will support his family of five.</p><p>Please pray for God's provision and for open doors. If anyone knows of job opportunities in construction or manual labor, please reach out to him directly or through the church office.</p>",
+          "feedIndex": 1,
+          "userIndex": 2,
+          "postedAt": 1743343938586
+        },
+        {
+          "content": "<p>Our missionary family, the Rodriguezes, serving in Brazil have requested urgent prayer. Political unrest in their region has made ministry work increasingly dangerous, and they're seeking God's wisdom about their future there.</p><p>Pray for their safety, for the local believers they serve, and for God's clear direction regarding whether they should remain or relocate to a safer area for the sake of their young children.</p>",
+          "feedIndex": 1,
+          "userIndex": 0,
+          "postedAt": 1744135938586
+        },
+        {
+          "content": "<p>Sister Davis's mother has been diagnosed with Alzheimer's disease. This has been a difficult time for their family as they navigate the challenges of caring for a loved one with this condition.</p><p>Please pray for strength and patience for the family, and for God's grace to sustain them through this trial. Practical help with meals and transportation would also be welcomed.</p>",
+          "feedIndex": 1,
+          "userIndex": 4,
+          "postedAt": 1744953138586
+        },
+        {
+          "content": "<p>The Thompson family is facing significant financial hardship following medical bills from their son's emergency appendectomy. Insurance covered most costs, but the remaining balance is substantial for their family budget.</p><p>Please pray for God's provision and consider how you might practically help this family in their time of need. They have been faithful servants in our church for many years.</p>",
+          "feedIndex": 1,
+          "userIndex": 1,
+          "postedAt": 1745871138586
+        },
+        {
+          "content": "<p>Brother Williams has been battling depression following the loss of his job and struggles with finding purpose in this season of life. Please pray for his mental and spiritual health during this difficult time.</p><p>The elders are providing pastoral care and counseling, but he needs the prayers and encouragement of the entire congregation as he works through these challenges with biblical hope.</p>",
+          "feedIndex": 1,
+          "userIndex": 0,
+          "postedAt": 1746598338586
+        },
+        {
+          "content": "<p>Our college student, Emma Peterson, is struggling academically and spiritually in her freshman year at the state university. The secular environment has challenged her faith in ways she wasn't prepared for.</p><p>Please pray for her to remain grounded in biblical truth, to find solid Christian fellowship on campus, and for wisdom in her studies. Pray also for her parents as they support her from a distance.</p>",
+          "feedIndex": 1,
+          "userIndex": 3,
+          "postedAt": 1747026738586
+        },
+        {
+          "content": "<p>The Martinez family has been dealing with immigration issues that have created significant stress and uncertainty about their future in this country. Please pray for God's intervention and for legal resolution to their situation.</p><p>They have been faithful members of our congregation and need our prayers for peace and for God's will to be accomplished in their circumstances.</p>",
+          "feedIndex": 1,
+          "userIndex": 2,
+          "postedAt": 1747674738586
+        },
+        {
+          "content": "<p>Pastor Matthews has requested prayer for sermon preparation as he works through some particularly challenging passages in Romans. He desires to faithfully exposit God's Word and apply it clearly to our congregation.</p><p>Please pray for wisdom, clarity of thought, and the Spirit's guidance as he studies and prepares to feed the flock God has entrusted to his care.</p>",
+          "feedIndex": 1,
+          "userIndex": 1,
+          "postedAt": 1748574738586
+        },
+        {
+          "content": "<p>The church building's HVAC system requires major repairs that will cost approximately $8,000. Please pray for God's provision for these necessary expenses and for wisdom in managing our building maintenance needs.</p><p>The building and grounds committee is investigating options and seeking multiple estimates to ensure good stewardship of the congregation's resources.</p>",
+          "feedIndex": 1,
+          "userIndex": 2,
+          "postedAt": 1748902338586
+        },
+        {
+          "content": "<p>Sister Patterson's unbelieving husband has been increasingly hostile toward her faith and church attendance. This has created tension in their marriage and concern for their children's spiritual welfare.</p><p>Please pray for her husband's salvation, for wisdom in how she responds to his opposition, and for her children to see the reality of Christ in their mother's faithful witness.</p>",
+          "feedIndex": 1,
+          "userIndex": 0,
+          "postedAt": 1749525138586
+        },
+        {
+          "content": "<p>The community food pantry we support is running low on non-perishable items as demand has increased significantly this winter. They're specifically in need of canned goods, rice, and pasta.</p><p>Please prayerfully consider donating items or funds to help meet this need. This ministry provides an excellent opportunity to serve our neighbors and demonstrate Christ's love practically.</p>",
+          "feedIndex": 1,
+          "userIndex": 4,
+          "postedAt": 1749798738586
+        },
+        {
+          "content": "<p>Brother Stevens is recovering from a heart attack he suffered last week. The doctors say his prognosis is good, but he'll need several months of recovery and rehabilitation.</p><p>Please pray for his complete healing, for his family during this stressful time, and for his business which he may need to close temporarily while he recovers.</p>",
+          "feedIndex": 1,
+          "userIndex": 3,
+          "postedAt": 1750691538586
+        },
+        {
+          "content": "<p>Our church plant in west Franklin is in need of more families willing to commit to helping establish this new work. The core group currently has 12 adults but needs more committed members to become self-sustaining.</p><p>Please pray about whether God might be calling your family to be part of this church planting effort and for God to bring the right families together for this important work.</p>",
+          "feedIndex": 1,
+          "userIndex": 1,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>The prison ministry team visited Robertson County Correctional Facility again this month and had the privilege of witnessing two inmates profess faith in Christ. We praise God for His saving grace and ask for continued prayer for these new believers.</p><p>The men will need discipleship and support as they grow in their faith within a challenging environment. Please pray for their protection and spiritual growth.</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1744971138586
+        },
+        {
+          "content": "<p>Our partnership with the local pregnancy crisis center has resulted in three families receiving practical support this month. We've provided baby supplies, meals, and biblical counseling to women choosing life for their unborn children.</p><p>This ministry demonstrates our commitment to being truly pro-life by supporting mothers and families in practical ways. Please consider how you might volunteer or donate to this vital work.</p>",
+          "feedIndex": 2,
+          "userIndex": 4,
+          "postedAt": 1745651538586
+        },
+        {
+          "content": "<p>The street evangelism team distributed over 200 gospel tracts and had dozens of conversations about the gospel this month. We're encouraged by several individuals who expressed genuine interest and asked for prayer.</p><p>One man, Marcus, has begun attending our Wednesday evening services after our team witnessed to him downtown. Please pray for his continued interest and for the Spirit to work in his heart.</p>",
+          "feedIndex": 2,
+          "userIndex": 0,
+          "postedAt": 1746353538586
+        },
+        {
+          "content": "<p>Our monthly nursing home ministry continues to bear fruit. Several residents have expressed interest in the gospel, and we've been able to provide comfort and hope to many who are facing end-of-life concerns.</p><p>Mrs. Eleanor Bailey, age 87, professed faith in Christ last week after months of faithful witness from our team. Please pray for her assurance of salvation and continued growth in grace.</p>",
+          "feedIndex": 2,
+          "userIndex": 3,
+          "postedAt": 1746933138586
+        },
+        {
+          "content": "<p>The children's ministry has grown significantly this year with 15 new children enrolled in our Sunday school program. This growth necessitates additional teachers and classroom space, which is both a blessing and a challenge.</p><p>We're seeking godly men and women who love children and are committed to teaching biblical truth. Please prayerfully consider whether God is calling you to serve in this important ministry.</p>",
+          "feedIndex": 2,
+          "userIndex": 4,
+          "postedAt": 1747426338586
+        },
+        {
+          "content": "<p>Our benevolence fund helped five families this month with rent assistance, groceries, and utility bills. Each family also received gospel literature and an invitation to worship with us.</p><p>This ministry allows us to demonstrate Christ's love in practical ways while opening doors for gospel conversations. We give thanks for members' faithful giving that makes this outreach possible.</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1748081538586
+        },
+        {
+          "content": "<p>The biblical counseling ministry has added two new certified counselors to our team. Brothers Peterson and Wallace completed their training through the Association of Certified Biblical Counselors and are now available to help congregation members.</p><p>Biblical counseling provides hope and practical help for life's problems through the sufficient Word of God rather than secular psychology. This approach honors Scripture while providing real solutions for real problems.</p>",
+          "feedIndex": 2,
+          "userIndex": 1,
+          "postedAt": 1748225538586
+        },
+        {
+          "content": "<p>Our church bookstore has expanded to include children's books that teach sound doctrine in age-appropriate ways. These resources help parents fulfill their responsibility to train their children in biblical truth.</p><p>We've added titles by authors like Joni Eareckson Tada, R.C. Sproul, and Sally Lloyd-Jones that present the gospel clearly to young minds while maintaining theological accuracy.</p>",
+          "feedIndex": 2,
+          "userIndex": 4,
+          "postedAt": 1748704338586
+        },
+        {
+          "content": "<p>The youth discipleship program has begun using 'Truth and Grace Memory Book' to help our teenagers memorize key passages of Scripture. This systematic approach ensures they're building a foundation of biblical knowledge.</p><p>Scripture memory is a vital spiritual discipline that provides resources for evangelism, resisting temptation, and growing in grace. We encourage all families to participate in this valuable exercise.</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1749485538586
+        },
+        {
+          "content": "<p>Our missions conference generated significant interest in supporting our church planting efforts. Several families have committed to monthly support, and three young men expressed interest in pastoral ministry.</p><p>We praise God for hearts being stirred toward the Great Commission. Please continue to pray for these men as they consider whether God is calling them to full-time ministry and for the financial support needed for our missions work.</p>",
+          "feedIndex": 2,
+          "userIndex": 0,
+          "postedAt": 1749895938586
+        },
+        {
+          "content": "<p>The men's ministry has organized a quarterly service project to help elderly members with home maintenance needs. This month we repaired steps, cleaned gutters, and winterized homes for four families.</p><p>This practical ministry allows our men to demonstrate love for our church family while teaching our sons the importance of serving others sacrificially.</p>",
+          "feedIndex": 2,
+          "userIndex": 2,
+          "postedAt": 1749996738586
+        },
+        {
+          "content": "<p>Our church's commitment to church discipline bore fruit this month as Brother Mitchell was restored to fellowship after demonstrating genuine repentance for his previous unrepentant sin.</p><p>This restoration brings great joy to our congregation and demonstrates the redemptive purpose of biblical discipline. We thank God for His grace that brings sinners to repentance and fellowship.</p>",
+          "feedIndex": 2,
+          "userIndex": 1,
+          "postedAt": 1750475538586
+        },
+        {
+          "content": "<p>The ladies' ministry has begun a new outreach to young mothers in our community, offering biblical motherhood classes and practical parenting support rooted in Scripture.</p><p>This ministry addresses the desperate need for biblical wisdom in child-rearing and provides opportunities to share the gospel with unchurched families in our area.</p>",
+          "feedIndex": 2,
+          "userIndex": 4,
+          "postedAt": 1751026338586
+        },
+        {
+          "content": "<p>Our church's theological library has received a donation of rare Puritan works from the estate of longtime member Dr. Harrison. These volumes will be available for research and deeper theological study.</p><p>We encourage serious students of Scripture to take advantage of these resources, especially as we seek to understand our Reformed heritage and learn from faithful expositors of the past.</p>",
+          "feedIndex": 2,
+          "userIndex": 1,
+          "postedAt": 1751037138586
+        },
+        {
+          "content": "<p>The quarterly congregational meeting revealed concerning trends in our community outreach efforts. While we've maintained faithful preaching and biblical counseling, our evangelistic impact has declined over the past year.</p><p>We need to carefully examine whether we're becoming insular and failing in our responsibility to reach the lost with the gospel. The Great Commission demands that we be actively engaged in making disciples.</p>",
+          "feedIndex": 3,
+          "userIndex": 0,
+          "postedAt": 1743635538586
+        },
+        {
+          "content": "<p>Brother Wilson's situation requires our careful attention and biblical response. His public teaching on social media contradicts our church's doctrinal statement regarding the nature of salvation and has caused confusion among newer believers.</p><p>Matthew 18 requires us to address this matter directly and lovingly. If he remains unwilling to cease his public teaching of error, we may need to consider church discipline for the sake of truth and church unity.</p>",
+          "feedIndex": 3,
+          "userIndex": 1,
+          "postedAt": 1744179138586
+        },
+        {
+          "content": "<p>The proposed building expansion project requires significant financial commitment from our congregation. Current pledges total $180,000 of the needed $350,000 for the new educational wing and renovated sanctuary.</p><p>We must be careful not to burden the congregation beyond their ability to give while also ensuring we're good stewards of the growth God has given us. Additional prayer and financial counsel may be needed.</p>",
+          "feedIndex": 3,
+          "userIndex": 2,
+          "postedAt": 1745169138586
+        },
+        {
+          "content": "<p>Sister Anderson's request for divorce counseling presents a complex pastoral situation. While her husband's adultery provides biblical grounds for divorce, we want to exhaust all possibilities for reconciliation and restoration of their marriage.</p><p>We've arranged for intensive biblical counseling with a specialist in marriage restoration. Please pray for God's will to be accomplished and for wisdom in our pastoral care during this difficult situation.</p>",
+          "feedIndex": 3,
+          "userIndex": 0,
+          "postedAt": 1746169938586
+        },
+        {
+          "content": "<p>The assistant pastor search committee has narrowed candidates to three men, each with strengths and potential concerns. We need wisdom to discern God's choice for our congregation and future ministry direction.</p><p>Brother Thompson brings strong expository preaching but limited administrative experience. Brother Davis has excellent pastoral care skills but questions about his theological depth. Brother Lee offers both but may be overqualified for our small congregation.</p>",
+          "feedIndex": 3,
+          "userIndex": 1,
+          "postedAt": 1746936738586
+        },
+        {
+          "content": "<p>The youth ministry's recent retreat uncovered some troubling influences affecting our teenagers. Several have been exposed to progressive theological ideas through Christian colleges and social media that undermine biblical authority.</p><p>We need to strengthen our apologetics training and help our youth understand how to defend their faith in an increasingly hostile culture. Parents must be better equipped to address these challenges at home.</p>",
+          "feedIndex": 3,
+          "userIndex": 2,
+          "postedAt": 1747473138586
+        },
+        {
+          "content": "<p>Financial giving has decreased 15% over the past quarter, primarily due to three families relocating for employment. This affects our ability to maintain current ministry levels and support our missionary commitments.</p><p>We may need to reduce the assistant pastor salary budget and delay some building maintenance projects. However, we're committed to maintaining our missions support regardless of our own financial challenges.</p>",
+          "feedIndex": 3,
+          "userIndex": 1,
+          "postedAt": 1747602738586
+        },
+        {
+          "content": "<p>The denomination's recent theological drift requires our careful consideration regarding continued affiliation. Their newest position papers on gender and sexuality contradict our church's biblical convictions.</p><p>While we value denominational fellowship, we cannot compromise biblical truth for organizational unity. We may need to consider withdrawing our membership if these trends continue.</p>",
+          "feedIndex": 3,
+          "userIndex": 0,
+          "postedAt": 1748470338586
+        },
+        {
+          "content": "<p>Brother Thompson's concerns about Pastor Matthews' preaching style need addressing. While his expository method is sound, some members find his theological depth challenging and feel he's not practical enough for daily Christian living.</p><p>We must balance feeding the flock with meat while ensuring new believers receive milk appropriate for their spiritual development. Perhaps additional teaching venues could address this concern.</p>",
+          "feedIndex": 3,
+          "userIndex": 1,
+          "postedAt": 1749039138586
+        },
+        {
+          "content": "<p>The church plant in west Franklin is struggling more than anticipated. Low attendance and insufficient financial support threaten its viability as an independent work.</p><p>We need to decide whether to increase our support, merge the work back into our congregation, or seek partnership with another established church. This decision affects families who've committed to this church planting effort.</p>",
+          "feedIndex": 3,
+          "userIndex": 2,
+          "postedAt": 1750065138586
+        },
+        {
+          "content": "<p>The conflict between the Williams and Davis families over their children's Sunday school incident requires pastoral intervention. Both families claim the other's child was at fault, and the situation has created division.</p><p>Biblical peacemaking principles must be applied to resolve this conflict before it spreads to other families. We may need to bring in outside mediation if the families cannot reconcile through direct biblical confrontation.</p>",
+          "feedIndex": 3,
+          "userIndex": 0,
+          "postedAt": 1750558338586
+        },
+        {
+          "content": "<p>Our church's position on COVID-related restrictions created lasting division among some members. While most have moved forward, a core group continues to express disagreement with leadership decisions made during that period.</p><p>We need to address these concerns directly and help heal any remaining wounds. Unity in the body of Christ is essential for effective ministry and biblical witness to our community.</p>",
+          "feedIndex": 3,
+          "userIndex": 1,
+          "postedAt": 1751037138586
+        }
+      ],
+      "messages": [
+        {
+          "postIndex": 0,
+          "userIndex": 3,
+          "content": "<p>Looking forward to diving deeper into Romans 8. These are such encouraging truths about God's sovereign grace.</p>"
+        },
+        {
+          "postIndex": 0,
+          "userIndex": 2,
+          "content": "<p>The doctrines of predestination and perseverance are so comforting when understood biblically.</p>"
+        },
+        {
+          "postIndex": 1,
+          "userIndex": 3,
+          "content": "<p>I'll be there! These men's studies have been such a blessing and source of fellowship.</p>"
+        },
+        {
+          "postIndex": 1,
+          "userIndex": 0,
+          "content": "<p>Sproul's book is excellent for understanding election and God's sovereign choice in salvation.</p>"
+        },
+        {
+          "postIndex": 2,
+          "userIndex": 1,
+          "content": "<p>The ladies have really benefited from studying sound doctrine together. Titus is perfect for this.</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 3,
+          "content": "<p>It's important for all members to be informed about church decisions and direction.</p>"
+        },
+        {
+          "postIndex": 3,
+          "userIndex": 4,
+          "content": "<p>Excited to hear about the church planting partnership. This is how the kingdom grows.</p>"
+        },
+        {
+          "postIndex": 4,
+          "userIndex": 2,
+          "content": "<p>Prayer meeting has become the highlight of my week. Such sweet fellowship in seeking God together.</p>"
+        },
+        {
+          "postIndex": 5,
+          "userIndex": 1,
+          "content": "<p>Dr. Lawson is an excellent speaker. His commitment to expository preaching is exemplary.</p>"
+        },
+        {
+          "postIndex": 5,
+          "userIndex": 3,
+          "content": "<p>I'm planning to attend with my family. These retreats always strengthen our church bonds.</p>"
+        },
+        {
+          "postIndex": 6,
+          "userIndex": 4,
+          "content": "<p>Every believer needs to be equipped for evangelism. Thanks for organizing this training.</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 2,
+          "content": "<p>Missions conferences always challenge me to think more globally about God's kingdom work.</p>"
+        },
+        {
+          "postIndex": 8,
+          "userIndex": 4,
+          "content": "<p>Our children need to see that Christianity is global and that God is saving people from every tribe and tongue.</p>"
+        },
+        {
+          "postIndex": 9,
+          "userIndex": 1,
+          "content": "<p>The Ligonier conferences are excellent for grounding young people in Reformed theology.</p>"
+        },
+        {
+          "postIndex": 12,
+          "userIndex": 2,
+          "content": "<p>Church membership is a serious commitment that requires ongoing faithfulness and accountability.</p>"
+        },
+        {
+          "postIndex": 13,
+          "userIndex": 3,
+          "content": "<p>While church discipline is difficult, it's necessary for maintaining holiness and truth in the congregation.</p>"
+        },
+        {
+          "postIndex": 14,
+          "userIndex": 0,
+          "content": "<p>We'll be praying for Mrs. Henderson. God's will is always perfect, even when we can't understand it.</p>"
+        },
+        {
+          "postIndex": 14,
+          "userIndex": 2,
+          "content": "<p>The family is trusting in the Lord's sovereignty through this trial.</p>"
+        },
+        {
+          "postIndex": 15,
+          "userIndex": 4,
+          "content": "<p>I'll pass along information about possible job opportunities in the construction field.</p>"
+        },
+        {
+          "postIndex": 16,
+          "userIndex": 1,
+          "content": "<p>Missionary work often involves real danger, but God's call doesn't guarantee safety - only His presence.</p>"
+        },
+        {
+          "postIndex": 16,
+          "userIndex": 3,
+          "content": "<p>Praying for wisdom and for God's clear direction for their family's safety and ministry effectiveness.</p>"
+        },
+        {
+          "postIndex": 17,
+          "userIndex": 0,
+          "content": "<p>Alzheimer's is such a difficult trial. Praying for grace and strength for the entire family.</p>"
+        },
+        {
+          "postIndex": 18,
+          "userIndex": 4,
+          "content": "<p>Medical bills can be overwhelming. Let's see how we can practically help this faithful family.</p>"
+        },
+        {
+          "postIndex": 19,
+          "userIndex": 2,
+          "content": "<p>Depression is a real struggle that requires both pastoral care and community support.</p>"
+        },
+        {
+          "postIndex": 20,
+          "userIndex": 1,
+          "content": "<p>College can be spiritually challenging. Praying for Emma to remain grounded in biblical truth.</p>"
+        },
+        {
+          "postIndex": 21,
+          "userIndex": 0,
+          "content": "<p>Immigration issues create such stress and uncertainty. Praying for God's intervention and peace.</p>"
+        },
+        {
+          "postIndex": 22,
+          "userIndex": 3,
+          "content": "<p>Faithful exposition requires careful study and dependence on the Holy Spirit for understanding.</p>"
+        },
+        {
+          "postIndex": 24,
+          "userIndex": 1,
+          "content": "<p>Hostile spouses make Christian living challenging. Praying for her witness and his salvation.</p>"
+        },
+        {
+          "postIndex": 25,
+          "userIndex": 2,
+          "content": "<p>The food pantry is such a practical way to show Christ's love to our community.</p>"
+        },
+        {
+          "postIndex": 26,
+          "userIndex": 0,
+          "content": "<p>Heart attacks are serious. Praying for complete healing and for his family during recovery.</p>"
+        },
+        {
+          "postIndex": 27,
+          "userIndex": 3,
+          "content": "<p>Church planting requires committed families willing to sacrifice for the sake of the gospel.</p>"
+        },
+        {
+          "postIndex": 28,
+          "userIndex": 0,
+          "content": "<p>Praise God for salvation! Prison ministry often sees incredible fruit because people are desperate for hope.</p>"
+        },
+        {
+          "postIndex": 28,
+          "userIndex": 1,
+          "content": "<p>New believers in prison need strong discipleship to grow in hostile environments.</p>"
+        },
+        {
+          "postIndex": 29,
+          "userIndex": 3,
+          "content": "<p>Being truly pro-life means supporting mothers and babies with practical help, not just political activism.</p>"
+        },
+        {
+          "postIndex": 30,
+          "userIndex": 2,
+          "content": "<p>Street evangelism takes courage but often reaches people who would never enter a church building.</p>"
+        },
+        {
+          "postIndex": 30,
+          "userIndex": 4,
+          "content": "<p>Praise God for Marcus showing interest! Praying the Spirit continues working in his heart.</p>"
+        },
+        {
+          "postIndex": 31,
+          "userIndex": 1,
+          "content": "<p>Nursing home ministry is such important work. Many residents have never heard the gospel clearly.</p>"
+        },
+        {
+          "postIndex": 32,
+          "userIndex": 0,
+          "content": "<p>Growing children's ministry is a wonderful problem to have! We need faithful teachers who love God's Word.</p>"
+        },
+        {
+          "postIndex": 33,
+          "userIndex": 1,
+          "content": "<p>Benevolence that includes the gospel addresses both physical and spiritual needs.</p>"
+        },
+        {
+          "postIndex": 34,
+          "userIndex": 3,
+          "content": "<p>Biblical counseling offers real hope because it's based on God's sufficient Word rather than man's wisdom.</p>"
+        },
+        {
+          "postIndex": 35,
+          "userIndex": 2,
+          "content": "<p>Children need doctrinally sound books that teach truth without compromising biblical content.</p>"
+        },
+        {
+          "postIndex": 36,
+          "userIndex": 0,
+          "content": "<p>Scripture memory is foundational for spiritual growth and evangelistic effectiveness.</p>"
+        },
+        {
+          "postIndex": 37,
+          "userIndex": 4,
+          "content": "<p>Missions conferences should stir hearts toward the Great Commission and supporting gospel work.</p>"
+        },
+        {
+          "postIndex": 38,
+          "userIndex": 1,
+          "content": "<p>Practical service projects demonstrate love in action and teach our children to serve sacrificially.</p>"
+        },
+        {
+          "postIndex": 39,
+          "userIndex": 0,
+          "content": "<p>Restoration after church discipline is always the goal. Praise God for genuine repentance!</p>"
+        },
+        {
+          "postIndex": 40,
+          "userIndex": 2,
+          "content": "<p>Biblical motherhood classes address a desperate need in our culture for God's wisdom in parenting.</p>"
+        },
+        {
+          "postIndex": 41,
+          "userIndex": 1,
+          "content": "<p>The Puritan works are theological treasures that can deepen our understanding of biblical doctrine.</p>"
+        }
+      ]
+    }
+  ]
+}

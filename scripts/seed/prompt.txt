@@ -155,16 +155,14 @@ I want you to create the JSON seed data. Here is the format I want you to use:
 Note that the `{object}Index` property is referencing the index of the object that it is related to in that object's given array.
 
 Additional requirements:
-- Create 3 organizations
-- The names of the churches should avoid terms like, "Baptist", "Community", "Presbyterian", etc. Stick to simpler names like, "King's Cross", "Communion", "Christ the King", etc.
-- For each organization, make sure there are between 3 and 5 feeds
+- Create 1 organization
+- The names of the church should avoid terms like, "Baptist", "Community", "Presbyterian", etc. Stick to simpler names like, "King's Cross", "Communion", "Christ the King", etc.
+- For the organization, make sure there are between 3 and 5 feeds
 - 3 of the feeds in each organization should have a `privacy` of "public"
 - Create between 3 and 5 users for each organization
 - Each feed should have between 10-20 posts
 - Each post should have 0-7 messages
-- Each post should be detailed and have between 1 and 5 paragraphs of content.
+- Each post should be detailed and have between 1 and 4 paragraphs of content.
 - All content should be believable and look like a real church
-- The content should be focused on real things that go on in a church. This is not a social media feed where a user posts about anything they want. It should be based on small churches where the people do a lot of on-the-ground work
-
-
-Create a new file called `seed-data-{today's date}.json under the `scripts/seed` directory, and place the data there.
+- The content should be focused on real things that go on in a church. This is not a social media feed where a user posts about anything they want. It should be based on small Bible-believing churches where the people do a lot of on-the-ground work
+- Once you've generated the data, create a new file in `~/scripts/seed/` called `seed-data-{org-name}-{date}.json and save the data there.
