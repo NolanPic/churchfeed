@@ -3,11 +3,6 @@ import { render, RenderOptions } from "@testing-library/react";
 import { ConvexReactClient, ConvexProvider } from "convex/react";
 require("dotenv").config({ path: ".env.local" });
 
-console.log(
-  "process.env.NEXT_PUBLIC_CONVEX_URL",
-  process.env.NEXT_PUBLIC_CONVEX_URL
-);
-
 const convexClient = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 function ConvexTestProvider({ children }: { children: React.ReactNode }) {
