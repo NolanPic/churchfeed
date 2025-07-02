@@ -79,7 +79,7 @@ export default function Feed({ orgId }: FeedProps) {
           transition={{ duration: 0.25 }}
           className={styles.feedIntroRule}
         />
-        <main className={styles.feedPosts}>
+        <main className={styles.feedPosts} data-testid="feed-posts">
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
           ) : (
