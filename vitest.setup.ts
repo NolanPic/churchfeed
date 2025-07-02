@@ -1,0 +1,26 @@
+global.IntersectionObserver = class IntersectionObserver {
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) {
+    this.callback = callback;
+    this.options = options;
+  }
+
+  private callback: IntersectionObserverCallback;
+  private options?: IntersectionObserverInit;
+
+  readonly root: Element | null = null;
+  readonly rootMargin: string = "0px";
+  readonly thresholds: ReadonlyArray<number> = [0];
+
+  observe(element: Element): void {}
+
+  unobserve(element: Element): void {}
+
+  disconnect(): void {}
+
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+}; 

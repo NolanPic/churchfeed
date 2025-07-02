@@ -14,7 +14,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "node scripts/seed/seed.js",
-    "seed:clear": "node scripts/seed/seed.js clear"
+    "seed:clear": "node scripts/seed/seed.js clear",
+    "test": "vitest"
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
@@ -32,15 +33,21 @@
   "devDependencies": {
     "@csstools/postcss-global-data": "^3.0.0",
     "@eslint/eslintrc": "^3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.6.0",
     "dotenv": "^16.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
+    "jsdom": "^26.1.0",
     "postcss-custom-media": "^11.0.6",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^10.2.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   }
 }
