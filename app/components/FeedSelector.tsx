@@ -33,7 +33,7 @@ export default function FeedSelector({
 
   return (
     <>
-      <nav className={styles.feedSelector}>
+      <nav className={styles.feedSelector} data-testid="feed-selector">
         <button
           className={styles.feedSelectorButton}
           onClick={() => setIsOpen(!isOpen)}
