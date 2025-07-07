@@ -1,6 +1,8 @@
 import React from "react";
 import { render, RenderOptions } from "@testing-library/react";
-import { ConvexReactClient, ConvexProvider } from "convex/react";
+import { ConvexReactClient, ConvexProvider, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import Feed from "../Feed";
 require("dotenv").config({ path: ".env.local" });
 
 const convexClient = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
@@ -17,6 +19,25 @@ export function renderWithConvex(
     wrapper: ConvexTestProvider,
     ...options,
   });
+}
+
+export function FeedWithOrg() {
+  const testOrgHost = (global as any).TEST_ORG_HOST as string;
+  const subdomain = testOrgHost.split(".")[0];
+
+  const org = useQuery(api.organizations.getOrganizationBySubdomain, {
+    subdomain: subdomain,
+  });
+
+  if (org === undefined) {
+    return <div data-testid="loading">Loading...</div>;
+  }
+
+  if (org === null) {
+    return <div data-testid="error">Org not found</div>;
+  }
+
+  return <Feed orgId={org._id} />;
 }
 
 export * from "@testing-library/react";

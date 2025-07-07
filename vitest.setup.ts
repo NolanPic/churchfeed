@@ -24,3 +24,5 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
 }; 
+
+(global as any).TEST_ORG_HOST = `dokimazo.${process.env.HOST}`;
