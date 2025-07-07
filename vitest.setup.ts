@@ -25,4 +25,10 @@ global.IntersectionObserver = class IntersectionObserver {
   }
 }; 
 
+// Mock window.scrollTo for motion libraries
+Object.defineProperty(window, 'scrollTo', {
+  value: () => {},
+  writable: true
+});
+
 (global as any).TEST_ORG_HOST = `dokimazo.${process.env.HOST}`;
