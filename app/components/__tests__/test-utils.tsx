@@ -3,7 +3,9 @@ import { render, RenderOptions } from "@testing-library/react";
 import { ConvexReactClient, ConvexProvider, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Feed from "../Feed";
-require("dotenv").config({ path: ".env.local" });
+import { config } from "dotenv";
+
+config({ path: ".env.local" });
 
 const convexClient = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -22,7 +24,7 @@ export function renderWithConvex(
 }
 
 export function FeedWithOrg() {
-  const testOrgHost = (global as any).TEST_ORG_HOST as string;
+  const testOrgHost = global.TEST_ORG_HOST;
   const subdomain = testOrgHost.split(".")[0];
 
   const org = useQuery(api.organizations.getOrganizationBySubdomain, {

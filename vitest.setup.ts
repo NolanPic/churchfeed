@@ -31,4 +31,4 @@ Object.defineProperty(window, 'scrollTo', {
   writable: true
 });
 
-(global as any).TEST_ORG_HOST = `dokimazo.${process.env.HOST}`;
+global.TEST_ORG_HOST = `dokimazo.${process.env.HOST}`;
