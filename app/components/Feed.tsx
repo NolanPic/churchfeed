@@ -85,7 +85,9 @@ export default function Feed({ orgId, feedIdSlug }: FeedProps) {
             <FeedSkeleton />
           ) : (
             results.map((post) => {
-              return <FeedPost key={post._id} post={post} />;
+              return (
+                <FeedPost key={post._id} post={post} showSourceFeed={!feedId} />
+              );
             })
           )}
         </main>

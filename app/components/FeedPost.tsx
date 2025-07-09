@@ -3,6 +3,7 @@ import styles from "./FeedPost.module.css";
 import { formatDistanceToNow } from "date-fns";
 import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
+import Link from "next/link";
 
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
@@ -36,9 +37,12 @@ const getFormattedTimestamp = (timestamp: number) => {
 };
 
 interface FeedPostProps {
-  post: Doc<"posts"> & { author: Doc<"users"> | null };
+  post: Doc<"posts"> & { author: Doc<"users"> | null } & {
+    feed: Doc<"feeds"> | null;
+  };
+  showSourceFeed: boolean;
 }
-export default function FeedPost({ post }: FeedPostProps) {
+export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
   const { _id, content } = post;
 
   return (
@@ -53,6 +57,12 @@ export default function FeedPost({ post }: FeedPostProps) {
             <div className={styles.postTimestamp}>
               {getFormattedTimestamp(post.postedAt ?? post._creationTime)}
             </div>
+            {showSourceFeed && (
+              <div className={styles.postFeedName}>
+                &nbsp;in{" "}
+                <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
+              </div>
+            )}
             <Image
               className={styles.postMessageThread}
               src="/icons/messages.svg"

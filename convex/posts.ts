@@ -39,7 +39,8 @@ export const getPublicFeedPosts = query({
       page: await Promise.all(
         posts.page.map(async (post) => {
           const author = await cxt.db.get(post.posterId);
-          return { ...post, author };
+          const feed = await cxt.db.get(post.feedId);
+          return { ...post, author, feed };
         })
       )
     };

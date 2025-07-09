@@ -31,11 +31,25 @@
     .postAuthorName {
         font-weight: 600;
     }
-    
-    .postTimestamp {
+
+    .postTimestamp, 
+    .postFeedName,
+    .postFeedName a {
         color: var(--light);
         font-weight: 600;
+    }
+    
+    .postTimestamp {
         margin-left: var(--spacing3);
+    }
+
+    .postFeedName {
+        a {
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
 
     .postMessageThread {
