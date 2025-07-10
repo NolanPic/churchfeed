@@ -7,16 +7,19 @@ import Backdrop from "./common/Backdrop";
 import { motion, AnimatePresence } from "framer-motion";
 import classNames from "classnames";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function FeedSelector({
   selectedFeedId,
   setSelectedFeedId,
   orgId,
 }: {
-  selectedFeedId: Id<"feeds"> | "all";
-  setSelectedFeedId: (feedId: Id<"feeds"> | "all") => void;
+  selectedFeedId: Id<"feeds"> | null;
+  setSelectedFeedId: (feedId: Id<"feeds"> | null) => void;
   orgId: Id<"organizations">;
 }) {
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const feeds =
     useQuery(api.feeds.getPublicFeeds, {
@@ -26,9 +29,14 @@ export default function FeedSelector({
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
 
-  const selectFeed = (feedId: Id<"feeds"> | "all") => {
+  const selectFeed = (feedId: Id<"feeds"> | null) => {
     setIsOpen(false);
     setSelectedFeedId(feedId);
+    if (feedId) {
+      router.push(`/feed/${feedId}`);
+    } else {
+      router.push(`/`);
+    }
   };
 
   return (
@@ -68,17 +76,17 @@ export default function FeedSelector({
               <li
                 key="all"
                 className={classNames({
-                  [styles.selectedFeed]: selectedFeedId === "all",
+                  [styles.selectedFeed]: selectedFeedId === null,
                 })}
               >
                 <label>
                   <input
                     type="radio"
-                    checked={selectedFeedId === "all"}
-                    onChange={() => selectFeed("all")}
+                    checked={selectedFeedId === null}
+                    onChange={() => selectFeed(null)}
                     id={`option-all`}
                     role="option"
-                    aria-selected={selectedFeedId === "all"}
+                    aria-selected={selectedFeedId === null}
                   />
                   <span>All feeds</span>
                 </label>

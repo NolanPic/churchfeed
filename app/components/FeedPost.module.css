@@ -31,19 +31,34 @@
     .postAuthorName {
         font-weight: 600;
     }
-    
-    .postTimestamp {
+
+    .postTimeAndSourceFeed, 
+    .postTimeAndSourceFeed a {
         color: var(--light);
         font-weight: 600;
+        min-width: 0;
+    }
+    
+    .postTimeAndSourceFeed {
         margin-left: var(--spacing3);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        flex: 1;
+
+        a:hover {
+            text-decoration: underline;
+            color: var(--white);
+        }
+
     }
 
     .postMessageThread {
-        flex-shrink: 0;
         margin-left: auto;
         width: 20px;
         height: 20px;
         object-fit: contain;
+        flex: 1;
     }
 
     .postContent {

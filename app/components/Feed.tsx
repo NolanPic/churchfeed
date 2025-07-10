@@ -13,19 +13,20 @@ import { motion } from "framer-motion";
 
 interface FeedProps {
   orgId: Id<"organizations">;
+  feedIdSlug: Id<"feeds"> | null;
 }
 
-export default function Feed({ orgId }: FeedProps) {
+export default function Feed({ orgId, feedIdSlug }: FeedProps) {
   const itemsPerPage = 10;
-  const [feedId, setFeedId] = useState<Id<"feeds"> | "all">("all");
+  const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
 
-  useEffect(() => setFeedId("all"), [orgId]);
+  useEffect(() => setFeedId(feedIdSlug), [orgId, feedIdSlug]);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getPublicFeedPosts,
     {
       orgId,
-      feedId: feedId === "all" ? undefined : feedId,
+      feedId: feedId === null ? undefined : feedId,
     },
     {
       initialNumItems: itemsPerPage,
@@ -84,7 +85,9 @@ export default function Feed({ orgId }: FeedProps) {
             <FeedSkeleton />
           ) : (
             results.map((post) => {
-              return <FeedPost key={post._id} post={post} />;
+              return (
+                <FeedPost key={post._id} post={post} showSourceFeed={!feedId} />
+              );
             })
           )}
         </main>
