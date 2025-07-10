@@ -23,7 +23,6 @@
     "@types/dompurify": "^3.0.5",
     "classnames": "^2.5.1",
     "convex": "^1.23.0",
-    "date-fns": "^4.1.0",
     "dompurify": "^3.2.6",
     "motion": "^12.18.1",
     "ms": "^2.1.3",
