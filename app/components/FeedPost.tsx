@@ -1,9 +1,9 @@
 import DOMPurify from "dompurify";
 import styles from "./FeedPost.module.css";
-import { formatDistanceToNow } from "date-fns";
 import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
+import { getFormattedTimestamp } from "./ui-utils";
 
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
@@ -32,10 +32,6 @@ const getAuthorInitialsAvatar = (authorName?: string) => {
   return initials;
 };
 
-const getFormattedTimestamp = (timestamp: number) => {
-  return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
-};
-
 interface FeedPostProps {
   post: Doc<"posts"> & { author: Doc<"users"> | null } & {
     feed: Doc<"feeds"> | null;
@@ -45,6 +41,22 @@ interface FeedPostProps {
 export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
   const { _id, content } = post;
 
+  const timestamp =
+    getFormattedTimestamp(post.postedAt ?? post._creationTime) + " ago";
+
+  const getTimeAndSourceFeed = () => {
+    if (showSourceFeed) {
+      return (
+        <>
+          {timestamp}
+          {" in  "}
+          <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
+        </>
+      );
+    }
+    return timestamp;
+  };
+
   return (
     <>
       <article key={_id} className={styles.feedPost}>
@@ -52,17 +64,15 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
           {getAuthorInitialsAvatar(post.author?.name)}
         </div>
         <div className={styles.postRight}>
-          <div className={styles.postInfo}>
-            <div className={styles.postAuthorName}>{post.author?.name}</div>
-            <div className={styles.postTimestamp}>
-              {getFormattedTimestamp(post.postedAt ?? post._creationTime)}
-            </div>
-            {showSourceFeed && (
-              <div className={styles.postFeedName}>
-                &nbsp;in{" "}
-                <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
-              </div>
-            )}
+          <p className={styles.postInfo}>
+            <span className={styles.postAuthorName}>{post.author?.name}</span>
+            <span
+              className={styles.postTimeAndSourceFeed}
+              title={`Posted ${timestamp} in ${post.feed?.name}`}
+            >
+              {getTimeAndSourceFeed()}
+            </span>
+
             <Image
               className={styles.postMessageThread}
               src="/icons/messages.svg"
@@ -70,7 +80,7 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
               width={20}
               height={20}
             />
-          </div>
+          </p>
           <div
             className={styles.postContent}
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
