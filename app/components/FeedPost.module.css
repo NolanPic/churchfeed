@@ -58,7 +58,6 @@
         width: 20px;
         height: 20px;
         object-fit: contain;
-        flex: 1;
     }
 
     .postContent {
