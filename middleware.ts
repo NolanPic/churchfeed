@@ -8,11 +8,11 @@ export function customMiddleware(request: NextRequest) {
   const response = NextResponse.next();
   const host = request.headers.get("host") || DEFAULT_DOMAIN;
   const orgSubdomain = getOrgSubdomain(host);
-  response.headers.set("x-org-host", orgSubdomain || MOCK_SUBDOMAIN_FOR_LOCALHOST || "");
+  response.headers.set("x-org-host", orgSubdomain || MOCK_SUBDOMAIN_FOR_LOCALHOST);
   return response;
 }
 
-export default clerkMiddleware((auth, request: NextRequest) => {
+export default clerkMiddleware((_auth, request: NextRequest) => {
   return customMiddleware(request);
 });
 
