@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
-    "@convex-dev/auth": "^0.0.87",
     "@types/dompurify": "^3.0.5",
     "classnames": "^2.5.1",
     "convex": "^1.23.0",
