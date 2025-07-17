@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
+    "@clerk/nextjs": "^6.25.4",
     "@types/dompurify": "^3.0.5",
     "classnames": "^2.5.1",
     "convex": "^1.23.0",
