@@ -1,6 +1,5 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
 
 const defaultColumns = {
   orgId: v.id("organizations"),
@@ -8,7 +7,6 @@ const defaultColumns = {
 };
 
 export default defineSchema({
-  ...authTables,
   users: defineTable({
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
