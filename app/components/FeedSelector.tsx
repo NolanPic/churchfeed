@@ -102,7 +102,7 @@ export default function FeedSelector({
                     <input
                       type="radio"
                       checked={selectedFeedId === feed._id}
-                      onChange={() => selectFeed(feed._id)}
+                      onChange={() => selectFeed(feed._id as Id<"feeds">)}
                       id={`option-${feed._id}`}
                       role="option"
                       aria-selected={selectedFeedId === feed._id}
