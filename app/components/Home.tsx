@@ -40,7 +40,7 @@ export default function Home({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
         >
-          <Feed orgId={org?._id} feedIdSlug={feedId} />
+          <Feed orgId={org?._id as Id<"organizations">} feedIdSlug={feedId} />
         </motion.div>
       )}
     </div>

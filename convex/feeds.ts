@@ -9,8 +9,9 @@ export const getFeedsForPublicPosts = (
   return ctx.db
     .query("feeds")
     .withIndex("by_org_privacy", (q) =>
-      q.eq("orgId", args.orgId).eq("privacy", "public")
+      q.eq("orgId", args.orgId)
     )
+    .filter((q) => q.eq(q.field("privacy"), "public"))
     .collect();
 };
 
