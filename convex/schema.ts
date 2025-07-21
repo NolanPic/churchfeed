@@ -19,6 +19,7 @@ export default defineSchema({
     location: v.string(),
     host: v.string(),
     updatedAt: v.number(),
+    settings: v.optional(v.any()),
   }).index("by_host", ["host"]),
   feeds: defineTable({
     ...defaultColumns,

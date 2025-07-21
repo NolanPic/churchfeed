@@ -15,6 +15,7 @@
     "lint": "next lint",
     "seed": "node scripts/seed/seed.js",
     "seed:clear": "node scripts/seed/seed.js clear",
+    "seed:demo": "node scripts/seed/set-demo.js",
     "test": "vitest"
   },
   "dependencies": {

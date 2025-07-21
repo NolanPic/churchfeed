@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 import Feed from "./Feed";
 import { motion } from "framer-motion";
 import { Id } from "@/convex/_generated/dataModel";
+import DemoModal from "./DemoModal";
 
 export default function Home({
   preloadedOrg,
@@ -43,6 +44,7 @@ export default function Home({
           <Feed orgId={org?._id as Id<"organizations">} feedIdSlug={feedId} />
         </motion.div>
       )}
+      <DemoModal isDemo={org?.settings?.demo === true} />
     </div>
   );
 }
