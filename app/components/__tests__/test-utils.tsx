@@ -39,7 +39,7 @@ export function FeedWithOrg() {
     return <div data-testid="error">Org not found</div>;
   }
 
-  return <Feed orgId={org._id} />;
+  return <Feed orgId={org._id} feedIdSlug={null} />;
 }
 
 export * from "@testing-library/react";
