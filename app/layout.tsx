@@ -6,7 +6,7 @@ import ConvexClientProvider from "./ConvexClientProvider";
 
 const lato = Lato({
   variable: "--font-lato",
-  weight: ["400"],
+  weight: ["400", "600"],
   subsets: ["latin"],
 });
 
