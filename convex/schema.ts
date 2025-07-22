@@ -48,4 +48,17 @@ export default defineSchema({
     senderId: v.id("users"),
     content: v.string(),
   }),
+  invites: defineTable({
+    orgId: v.id("organizations"),
+    email: v.string(),
+    name: v.string(),
+    token: v.optional(v.string()),
+    type: v.union(
+      v.literal("email"),
+      v.literal("link")
+    ),
+    expiresAt: v.number(),
+    usedAt: v.optional(v.number()),
+    feeds: v.array(v.id("feeds")), 
+  }) 
 });
