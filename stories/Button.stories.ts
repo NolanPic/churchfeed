@@ -1,54 +1,200 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { Button } from '../app/components/common/Button';
 
-import { fn } from 'storybook/test';
+// Example icon for testing
+const PlayIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM6 11.5v-7l5.25 3.5L6 11.5z"/>
+  </svg>
+);
 
-import { Button } from './Button';
+const ArrowIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 0L6.59 1.41 12.17 7H0v2h12.17l-5.58 5.59L8 16l8-8z"/>
+  </svg>
+);
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
-const meta = {
-  title: 'Example/Button',
+const meta: Meta<typeof Button> = {
+  title: 'Components/Button',
   component: Button,
   parameters: {
-    // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: 'centered',
+    docs: {
+      description: {
+        component: 'A versatile button component that can function as either a button or a Next.js Link. Supports icons and is fully accessible.',
+      },
+    },
   },
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
-  // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    backgroundColor: { control: 'color' },
+    children: {
+      control: 'text',
+      description: 'The content/label of the button',
+    },
+    icon: {
+      control: false,
+      description: 'Optional icon element to display alongside the text',
+    },
+    onClick: {
+      action: 'clicked',
+      description: 'Click handler for button variant',
+    },
+    className: {
+      control: 'text',
+      description: 'Additional CSS classes',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the button is disabled',
+    },
+    as: {
+      control: 'radio',
+      options: ['button', 'link'],
+      description: 'Render as button or Next.js Link',
+    },
+    href: {
+      control: 'text',
+      description: 'URL for link variant (required when as="link")',
+      if: { arg: 'as', eq: 'link' },
+    },
+    type: {
+      control: 'radio',
+      options: ['button', 'submit', 'reset'],
+      description: 'Button type (only for button variant)',
+      if: { arg: 'as', neq: 'link' },
+    },
   },
-  // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-  args: { onClick: fn() },
-} satisfies Meta<typeof Button>;
+  args: {
+    onClick: fn(),
+  },
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Primary: Story = {
+// Basic button stories
+export const Default: Story = {
   args: {
-    primary: true,
-    label: 'Button',
+    children: 'Continue',
   },
 };
 
-export const Secondary: Story = {
+export const WithIcon: Story = {
   args: {
-    label: 'Button',
+    children: 'Play Video',
+    icon: <PlayIcon />,
   },
 };
 
-export const Large: Story = {
+export const IconTrailing: Story = {
   args: {
-    size: 'large',
-    label: 'Button',
+    children: 'Next Step',
+    icon: <ArrowIcon />,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Button with an icon that comes after the text. Icons automatically adjust to the correct size (16x16px).',
+      },
+    },
   },
 };
 
-export const Small: Story = {
+export const Disabled: Story = {
   args: {
-    size: 'small',
-    label: 'Button',
+    children: 'Disabled Button',
+    disabled: true,
+  },
+};
+
+export const DisabledWithIcon: Story = {
+  args: {
+    children: 'Disabled',
+    icon: <PlayIcon />,
+    disabled: true,
+  },
+};
+
+// Link variant stories
+export const AsLink: Story = {
+  args: {
+    as: 'link',
+    href: '/dashboard',
+    children: 'Go to Dashboard',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Button rendered as a Next.js Link component for navigation.',
+      },
+    },
+  },
+};
+
+export const LinkWithIcon: Story = {
+  args: {
+    as: 'link',
+    href: '/profile',
+    children: 'View Profile',
+    icon: <ArrowIcon />,
+  },
+};
+
+export const DisabledLink: Story = {
+  args: {
+    as: 'link',
+    href: '/disabled',
+    children: 'Disabled Link',
+    disabled: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Links can also be disabled, preventing navigation and applying disabled styling.',
+      },
+    },
+  },
+};
+
+// Form button types
+export const SubmitButton: Story = {
+  args: {
+    type: 'submit',
+    children: 'Submit Form',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Submit button for use in forms.',
+      },
+    },
+  },
+};
+
+export const ResetButton: Story = {
+  args: {
+    type: 'reset',
+    children: 'Reset Form',
+  },
+};
+
+// Interactive examples
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <Button>Default</Button>
+      <Button icon={<PlayIcon />}>With Icon</Button>
+      <Button disabled>Disabled</Button>
+      <Button as="link" href="/example">Link</Button>
+      <Button as="link" href="/example" icon={<ArrowIcon />}>Link with Icon</Button>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Overview of all button variants side by side.',
+      },
+    },
   },
 };
