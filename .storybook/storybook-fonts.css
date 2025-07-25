@@ -1,0 +1,5 @@
+/* Font variables for Storybook since it's outside of Next.js' scope */
+:root {
+  --font-lato: 'Lato', sans-serif;
+  --font-gentium-plus: 'Gentium Plus', serif;
+} 
