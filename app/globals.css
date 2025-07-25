@@ -15,6 +15,8 @@
   --light2: #8387A1;
   --accent: #F6B17A;
   --white: #E0E0E0;
+  --gray: #d1d0d0;
+  --warning: #F67878;
 
   /* Font sizes */
   --text-sm: 0.75rem; /* 12px */
