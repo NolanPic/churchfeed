@@ -24,7 +24,7 @@
   appearance: none;
   
   &:hover {
-    background-color: color-mix(in srgb, var(--accent) 80%, var(--white));
+    background-color: color-mix(in srgb, var(--accent) 60%, #ff9f50);
     transform: translateY(-1px);
   }
 
@@ -35,6 +35,7 @@
 
   &:active {
     transform: translateY(0);
+    background-color: #ff9f50;
   }
 
   &:disabled,
