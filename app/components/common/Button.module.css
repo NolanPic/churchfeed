@@ -10,7 +10,7 @@
   text-decoration: none;
   
   background-color: var(--accent);
-  color: var(--dark);
+  color: var(--mid);
   border: none;
   border-radius: 12px;
   
@@ -20,37 +20,35 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   
-  /* Accessibility */
   outline: none;
-
   appearance: none;
-}
+  
+  &:hover {
+    background-color: color-mix(in srgb, var(--accent) 80%, var(--white));
+    transform: translateY(-1px);
+  }
 
-.button:hover {
-  background-color: color-mix(in srgb, var(--accent) 90%, black);
-  transform: translateY(-1px);
-}
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
-.button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+  &:active {
+    transform: translateY(0);
+  }
 
-.button:active {
-  transform: translateY(0);
-}
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
 
-.button:disabled,
-.button[aria-disabled="true"] {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.button:disabled:hover,
-.button[aria-disabled="true"]:hover {
-  background-color: var(--accent);
-  transform: none;
+  &:disabled:hover,
+  &[aria-disabled="true"]:hover {
+    background-color: var(--accent);
+    transform: none;
+  }
 }
 
 .icon {
@@ -60,9 +58,9 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-}
 
-.icon svg {
-  width: 100%;
-  height: 100%;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
