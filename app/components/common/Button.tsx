@@ -1,6 +1,5 @@
-import React from 'react';
-import Link from 'next/link';
-import styles from './Button.module.css';
+import Link from "next/link";
+import styles from "./Button.module.css";
 
 interface BaseButtonProps {
   children: React.ReactNode;
@@ -10,14 +9,14 @@ interface BaseButtonProps {
 }
 
 interface ButtonAsButton extends BaseButtonProps {
-  as?: 'button';
+  as?: "button";
   onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit";
   href?: never;
 }
 
 interface ButtonAsLink extends BaseButtonProps {
-  as: 'link';
+  as: "link";
   href: string;
   onClick?: never;
   type?: never;
@@ -28,34 +27,43 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 export const Button: React.FC<ButtonProps> = ({
   children,
   icon,
-  className = '',
+  className = "",
   disabled = false,
   ...props
 }) => {
   const baseClassName = `${styles.button} ${className}`;
 
-  if (props.as === 'link') {
+  const ButtonContent = () => (
+    <>
+      <span>{children}</span>
+      {icon && (
+        <span className={styles.icon} aria-hidden="true">
+          {icon}
+        </span>
+      )}
+    </>
+  );
+
+  if (props.as === "link") {
     return (
-      <Link 
-        href={props.href} 
+      <Link
+        href={props.href}
         className={baseClassName}
         aria-disabled={disabled}
       >
-        {icon && <span className={styles.icon} aria-hidden="true">{icon}</span>}
-        <span>{children}</span>
+        <ButtonContent />
       </Link>
     );
   }
 
   return (
     <button
-      type={props.type || 'button'}
+      type={props.type || "button"}
       onClick={props.onClick}
       disabled={disabled}
       className={baseClassName}
     >
-      {icon && <span className={styles.icon} aria-hidden="true">{icon}</span>}
-      <span>{children}</span>
+      <ButtonContent />
     </button>
   );
 };
