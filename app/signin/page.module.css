@@ -1,0 +1,33 @@
+.signinCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--mid);
+    border-radius: 12px;
+    width: 400px;
+    height: 368px;
+    margin: 0 auto;
+    padding: var(--spacing9) var(--spacing14);
+
+    h1 {
+        font-size: var(--text-xl);
+        font-weight: 400;
+        font-family: var(--font-gentium-plus);
+    }
+
+    .signinInput,
+    .signinButton {
+        margin-top: var(--spacing9);
+    }
+}
+
+@media (--sm) {
+    .signinCard {
+        max-width: calc(100% - var(--spacing8));
+        margin: 0 var(--spacing4);
+        height: auto;
+    }
+}
+
+
+
