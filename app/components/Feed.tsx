@@ -10,17 +10,19 @@ import FeedPost from "./FeedPost";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { motion } from "framer-motion";
+import { useOrganization } from "../context/OrganizationProvider";
 
 interface FeedProps {
-  orgId: Id<"organizations">;
   feedIdSlug: Id<"feeds"> | null;
 }
 
-export default function Feed({ orgId, feedIdSlug }: FeedProps) {
+export default function Feed({ feedIdSlug }: FeedProps) {
   const itemsPerPage = 10;
   const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
+  const org = useOrganization();
+  const orgId = org?._id as Id<"organizations">;
 
-  useEffect(() => setFeedId(feedIdSlug), [orgId, feedIdSlug]);
+  useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getPublicFeedPosts,

@@ -1,20 +1,15 @@
 "use client";
 
-import styles from "./Home.module.css";
-import { Preloaded, usePreloadedQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import Feed from "./Feed";
-import { motion } from "framer-motion";
-import { Id } from "@/convex/_generated/dataModel";
+import { motion } from "motion/react";
+import { useOrganization } from "../context/OrganizationProvider";
+import styles from "./OrganizationLayout.module.css";
 
-export default function Home({
-  preloadedOrg,
-  feedId,
+export default function OrganizationLayout({
+  children,
 }: {
-  preloadedOrg: Preloaded<typeof api.organizations.getOrganizationBySubdomain>;
-  feedId: Id<"feeds"> | null;
+  children: React.ReactNode;
 }) {
-  const org = usePreloadedQuery(preloadedOrg);
+  const org = useOrganization();
 
   if (org === null) {
     return (
@@ -40,7 +35,7 @@ export default function Home({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
         >
-          <Feed orgId={org?._id as Id<"organizations">} feedIdSlug={feedId} />
+          {children}
         </motion.div>
       )}
     </div>
