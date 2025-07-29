@@ -21,11 +21,12 @@
   font-size: var(--text-base);
   font-weight: 600;
   line-height: var(--spacing6);
-  background-color: var(--mid);
+  background-color: var(--mid2);
   color: var(--white);
   transition: all 0.2s ease-in-out;
   outline: none;
   width: 100%;
+  height: 38px;
 }
 
 .input:focus {

@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useState,
   useRef,
   useId,
@@ -48,11 +49,14 @@ export const OneTimePassword = forwardRef<
     setValues(newValues);
     const code = newValues.join("");
     onChange?.(code);
+  };
 
-    if (code.length === slots && newValues.every((val) => val)) {
+  useEffect(() => {
+    const code = values.join("");
+    if (code.length === slots && values.every((val) => val)) {
       onComplete?.(code);
     }
-  };
+  }, [values, slots, onComplete]);
 
   const handleChange = (index: number, value: string) => {
     const newValue = value.slice(-1);

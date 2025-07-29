@@ -4,6 +4,7 @@ import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
 import { getFormattedTimestamp } from "./ui-utils";
+import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
@@ -40,6 +41,7 @@ interface FeedPostProps {
 }
 export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
   const { _id, content } = post;
+  const user = useAuthedUser();
 
   const timestamp =
     getFormattedTimestamp(post.postedAt ?? post._creationTime) + " ago";
@@ -73,13 +75,15 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
               {getTimeAndSourceFeed()}
             </span>
 
-            <Image
-              className={styles.postMessageThread}
-              src="/icons/messages.svg"
-              alt="View message thread"
-              width={20}
-              height={20}
-            />
+            {user?.isSignedIn && (
+              <Image
+                className={styles.postMessageThread}
+                src="/icons/messages.svg"
+                alt="View message thread"
+                width={20}
+                height={20}
+              />
+            )}
           </p>
           <div
             className={styles.postContent}

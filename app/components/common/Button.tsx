@@ -1,9 +1,10 @@
 import Link from "next/link";
 import styles from "./Button.module.css";
+import Icon from "./Icon";
 
 interface BaseButtonProps {
   children: React.ReactNode;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | string;
   className?: string;
   disabled?: boolean;
 }
@@ -38,7 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
       <span>{children}</span>
       {icon && (
         <span className={styles.icon} aria-hidden="true">
-          {icon}
+          {typeof icon === "string" ? <Icon name={icon} /> : icon}
         </span>
       )}
     </>

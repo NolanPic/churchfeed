@@ -1,0 +1,49 @@
+.signinCard {
+    background-color: var(--mid);
+    border-radius: 12px;
+    width: 400px;
+    height: 368px;
+    margin: 0 auto;
+    padding: var(--spacing9) var(--spacing14);
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        font-size: var(--text-xl);
+        font-weight: 400;
+        font-family: var(--font-gentium-plus);
+        text-align: center;
+    }
+
+    .signinEmail,
+    .continueButton {
+        margin-top: var(--spacing9);
+    }
+    
+    .otpMessage,
+    .otpInput,
+    .signinButton {
+        margin-top: var(--spacing6);
+    }
+
+    .otpMessage {
+        font-style: italic;
+        text-align: center;
+    }
+}
+
+@media (--sm) {
+    .signinCard {
+        max-width: calc(100% - var(--spacing8));
+        margin: 0 var(--spacing4);
+        height: auto;
+    }
+}
+
+
+
