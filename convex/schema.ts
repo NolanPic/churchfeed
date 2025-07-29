@@ -14,7 +14,7 @@ export default defineSchema({
     image: v.optional(v.string()),
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
-  }).index("by_org", ["orgId"]).index("by_org_and_email", ["orgId", "email"]),
+  }).index("by_org", ["orgId"]).index("by_org_and_email", ["orgId", "email"]).index("by_clerk_and_org_id", ["clerkId", "orgId"]),
   organizations: defineTable({
     name: v.string(),
     location: v.string(),
