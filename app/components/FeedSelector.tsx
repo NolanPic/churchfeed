@@ -63,6 +63,7 @@ export default function FeedSelector({
         <AnimatePresence>
           {isOpen && (
             <motion.ul
+              style={isOpen ? { zIndex: 2 } : {}}
               initial={{ height: "36px", borderWidth: 0 }}
               animate={{ height: "auto", borderWidth: 1 }}
               exit={{ height: "36px", borderWidth: 0 }}
