@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getFormattedTimestamp } from "./ui-utils";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import UserAvatar from "./UserAvatar";
 
 // TODO: move to backend e.g. sanitize before saving to db
 const sanitizeHtml = (html: string) => {
@@ -25,16 +26,10 @@ const sanitizeHtml = (html: string) => {
   });
 };
 
-const getAuthorInitialsAvatar = (authorName?: string) => {
-  const initials = authorName
-    ?.split(" ")
-    .map((name) => name[0])
-    .join("");
-  return initials;
-};
-
 interface FeedPostProps {
-  post: Doc<"posts"> & { author: Doc<"users"> | null } & {
+  post: Doc<"posts"> & {
+    author: Omit<Doc<"users">, "image"> & { image: string | null };
+  } & {
     feed: Doc<"feeds"> | null;
   };
   showSourceFeed: boolean;
@@ -63,7 +58,7 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
     <>
       <article key={_id} className={styles.feedPost}>
         <div className={styles.postAuthorAvatar}>
-          {getAuthorInitialsAvatar(post.author?.name)}
+          <UserAvatar user={post.author} size={34} />
         </div>
         <div className={styles.postRight}>
           <p className={styles.postInfo}>
