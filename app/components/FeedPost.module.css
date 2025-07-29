@@ -9,14 +9,6 @@
     }
 
     .postAuthorAvatar {
-        background-color: var(--accent);
-        border-radius: 50%;
-        width: 34px;
-        height: 34px;
-        display: grid;
-        place-items: center;
-        color: var(--dark);
-        font-weight: 600;
         flex-shrink: 0;
     }
 
