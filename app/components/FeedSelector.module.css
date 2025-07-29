@@ -10,7 +10,6 @@
     -21px 16px 64px -36px rgba(0,0,0,0.25);
     font-family: var(--font-gentium-plus);
     font-size: var(--text-base);
-    z-index: 2;
 }
 
 .feedSelectorButton {

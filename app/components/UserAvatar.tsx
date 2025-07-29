@@ -1,0 +1,39 @@
+import { Doc } from "@/convex/_generated/dataModel";
+import Image from "next/image";
+import styles from "./UserAvatar.module.css";
+import classNames from "classnames";
+
+const getAuthorInitialsAvatar = (authorName?: string) => {
+  const initials = authorName
+    ?.split(" ")
+    .map((name) => name[0])
+    .join("");
+  return initials;
+};
+
+interface UserAvatarProps {
+  user: Omit<Doc<"users">, "image"> & { image: string | null };
+  size: number;
+  highlight?: boolean;
+}
+
+const UserAvatar = ({ user, size, highlight }: UserAvatarProps) => {
+  const { name, image } = user;
+
+  const avatar = image ? (
+    <Image src={image} alt={name} width={size} height={size} />
+  ) : (
+    <span>{getAuthorInitialsAvatar(name)}</span>
+  );
+
+  return (
+    <div
+      className={classNames(styles.userAvatar, highlight && styles.highlight)}
+      style={{ width: size, height: size }}
+    >
+      {avatar}
+    </div>
+  );
+};
+
+export default UserAvatar;
