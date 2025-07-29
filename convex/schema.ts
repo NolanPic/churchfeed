@@ -11,7 +11,7 @@ export default defineSchema({
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
     name: v.string(),
-    image: v.optional(v.string()),
+    image: v.optional(v.id("_storage")),
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),

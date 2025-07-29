@@ -32,6 +32,16 @@ export const getUserByClerkId = query({
                 .eq("clerkId", args.clerkId)
                 .eq("orgId", args.orgId))
             .first();
-        return user;
+
+        if (!user) {
+            return null;
+        }
+
+        const image = user.image ? await ctx.storage.getUrl(user.image) : null;
+
+        return {
+            ...user,
+            image,
+        };
     },
 });
