@@ -50,7 +50,10 @@ export const OneTimePassword = forwardRef<
     onChange?.(code);
 
     if (code.length === slots && newValues.every((val) => val)) {
-      onComplete?.(code);
+      // Delay onComplete to allow onChange state updates to complete
+      setTimeout(() => {
+        onComplete?.(code);
+      }, 0);
     }
   };
 
