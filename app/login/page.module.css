@@ -1,7 +1,4 @@
 .signinCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: var(--mid);
     border-radius: 12px;
     width: 400px;
@@ -9,15 +6,34 @@
     margin: 0 auto;
     padding: var(--spacing9) var(--spacing14);
 
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     h1 {
         font-size: var(--text-xl);
         font-weight: 400;
         font-family: var(--font-gentium-plus);
+        text-align: center;
     }
 
-    .signinInput,
-    .signinButton {
+    .signinEmail,
+    .continueButton {
         margin-top: var(--spacing9);
+    }
+    
+    .otpMessage,
+    .otpInput,
+    .signinButton {
+        margin-top: var(--spacing6);
+    }
+
+    .otpMessage {
+        font-style: italic;
+        text-align: center;
     }
 }
 
