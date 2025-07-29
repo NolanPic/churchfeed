@@ -16,6 +16,7 @@ export const doesUserExist = query({
         return {
             userExists: !!user,
             clerkUserExists: !!user?.clerkId,
+            deactivated: !!user?.deactivatedAt,
         };
     },
   });

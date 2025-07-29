@@ -27,7 +27,7 @@ export default function SignIn() {
     email,
     orgId,
   });
-  const { userExists, clerkUserExists } = doesUserExist || {};
+  const { userExists, clerkUserExists, deactivated } = doesUserExist || {};
 
   const handleSubmitEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +38,8 @@ export default function SignIn() {
       setError("We couldn't find this account");
     } else if (!clerkUserExists) {
       setError("Could not log in. Please contact support");
+    } else if (deactivated) {
+      setError("This account is deactivated");
     } else if (isLoaded) {
       setError(undefined);
 
