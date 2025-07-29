@@ -1,7 +1,9 @@
 "use client";
 
+import UserAvatarMenu from "./UserAvatarMenu";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
+import { usePathname } from "next/navigation";
 import styles from "./OrganizationLayout.module.css";
 
 export default function OrganizationLayout({
@@ -10,6 +12,7 @@ export default function OrganizationLayout({
   children: React.ReactNode;
 }) {
   const org = useOrganization();
+  const pathname = usePathname();
 
   if (org === null) {
     return (
@@ -21,6 +24,11 @@ export default function OrganizationLayout({
 
   return (
     <div className={styles.feedWrapper}>
+      {pathname !== "/login" && (
+        <div className={styles.userAvatarMenu}>
+          <UserAvatarMenu />
+        </div>
+      )}
       <h1 className={styles.mainTitle}>{org?.name}</h1>
       <h2 className={styles.location}>{org?.location}</h2>
       <motion.div

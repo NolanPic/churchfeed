@@ -3,6 +3,12 @@
     max-width: 640px;
 }
 
+.userAvatarMenu {
+    position: absolute;
+    top: var(--spacing9);
+    right: var(--spacing9);
+}
+
 .mainTitle,
 .location {
     font-family: var(--font-gentium-plus);
