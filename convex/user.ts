@@ -1,5 +1,13 @@
-import { query } from "./_generated/server";
+import { Id, Doc } from "./_generated/dataModel";
+import { UserIdentity } from "convex/server";
+import { query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+
+export type AuthResult<T = any> = 
+  | { success: true; clerkUser: UserIdentity; user: Doc<"users">; data?: T }
+  | { success: false; reason: 'unauthenticated' | 'user_not_found' | 'unauthorized' };
+
+type AuthContext = QueryCtx | MutationCtx;
 
 export const doesUserExist = query({
     args: {
@@ -45,3 +53,50 @@ export const getUserByClerkId = query({
         };
     },
 });
+
+export const getAuthenticatedUser = async (
+    ctx: AuthContext,
+    orgId: Id<"organizations">
+  ): Promise<Doc<"users"> | null> => {
+    const result = await getAuthResult(ctx, orgId);
+    return result.success ? result.user : null;
+  };
+
+/**
+ * Get authentication result
+ */
+export const getAuthResult = async (
+  ctx: AuthContext,
+  orgId: Id<"organizations">
+): Promise<AuthResult> => {
+  const clerkUser = await ctx.auth.getUserIdentity();
+  if (!clerkUser) {
+    return { success: false, reason: 'unauthenticated' };
+  }
+
+  const user = await ctx.db.query("users")
+    .withIndex("by_clerk_and_org_id", (q) => q
+      .eq("clerkId", clerkUser.subject)
+      .eq("orgId", orgId))
+    .first();
+
+  if (!user) {
+    return { success: false, reason: 'user_not_found' };
+  }
+
+  return { success: true, clerkUser, user };
+};
+
+/**
+ * Require authentication result (throw if unauthenticated)
+ */
+export const requireAuth = async (
+  ctx: AuthContext,
+  orgId: Id<"organizations">
+): Promise<{ clerkUser: UserIdentity; user: Doc<"users"> }> => {
+  const result = await getAuthResult(ctx, orgId);
+  if (!result.success) {
+    throw new Error(`Authentication failed: ${result.reason}`);
+  }
+  return { clerkUser: result.clerkUser, user: result.user };
+};
