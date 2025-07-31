@@ -36,7 +36,9 @@ export default defineSchema({
     userId: v.id("users"),
     feedId: v.id("feeds"),
     owner: v.boolean(),
-  }),
+  })
+  .index("by_user_and_feed", ["userId", "feedId"])
+  .index("by_userId", ["userId"]),
   posts: defineTable({
     ...defaultColumns,
     feedId: v.id("feeds"),
