@@ -1,25 +1,43 @@
 import { query, QueryCtx } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
+import { getAuthenticatedUser } from "./user";
 
-export const getFeedsForPublicPosts = (
-  ctx: QueryCtx,
-  args: { orgId: Id<"organizations"> }
-) => {
-  return ctx.db
-    .query("feeds")
-    .withIndex("by_org_privacy", (q) =>
-      q.eq("orgId", args.orgId)
-    )
-    .filter((q) => q.eq(q.field("privacy"), "public"))
-    .collect();
-};
-
-export const getPublicFeeds = query({
+export const getUserFeeds = query({
   args: {
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    return getFeedsForPublicPosts(ctx, args);
+    const user = await getAuthenticatedUser(ctx, args.orgId);
+    const publicFeeds = await getPublicFeeds(ctx, args.orgId);
+  
+    if (user) {
+      const feedsUserIsMemberOf = await getFeedsUserIsMemberOf(ctx, user._id);
+      return [...publicFeeds, ...feedsUserIsMemberOf];
+    } else {
+      return publicFeeds;
+    }
   },
 });
+
+export const getFeedsUserIsMemberOf = async (
+  ctx: QueryCtx,
+  userId: Id<"users">,
+) => {
+  const userFeeds = await getManyFrom(ctx.db, "userFeeds", "by_userId", userId);
+  const feedIds = userFeeds.map((userFeed) => userFeed.feedId);
+  const feedsUserIsMemberOf = await getAll(ctx.db, feedIds);
+
+  return feedsUserIsMemberOf.filter((feed) => feed !== null);
+}
+
+export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => { 
+  const publicFeeds = await ctx.db.query("feeds")
+  .withIndex("by_org_privacy", (q) =>
+    q.eq("orgId", orgId).eq("privacy", "public")
+  )
+  .collect();
+
+  return publicFeeds;
+};

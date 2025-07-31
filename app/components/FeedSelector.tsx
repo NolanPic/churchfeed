@@ -22,7 +22,7 @@ export default function FeedSelector({
 
   const [isOpen, setIsOpen] = useState(false);
   const feeds =
-    useQuery(api.feeds.getPublicFeeds, {
+    useQuery(api.feeds.getUserFeeds, {
       orgId,
     }) || [];
 
