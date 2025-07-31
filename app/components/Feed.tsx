@@ -25,10 +25,10 @@ export default function Feed({ feedIdSlug }: FeedProps) {
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
 
   const { results, status, loadMore } = usePaginatedQuery(
-    api.posts.getPublicFeedPosts,
+    api.posts.getUserPosts,
     {
       orgId,
-      feedId: feedId === null ? undefined : feedId,
+      selectedFeedId: feedId === null ? undefined : feedId,
     },
     {
       initialNumItems: itemsPerPage,
