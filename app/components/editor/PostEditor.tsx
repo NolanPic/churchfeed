@@ -2,6 +2,8 @@
 
 import Backdrop from "../common/Backdrop";
 import styles from "./PostEditor.module.css";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -9,10 +11,26 @@ interface PostEditorProps {
 }
 
 export default function PostEditor({ isOpen, setIsOpen }: PostEditorProps) {
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      StarterKit.configure({
+        bulletList: false,
+        code: false,
+        codeBlock: false,
+        heading: false,
+        horizontalRule: false,
+        strike: false,
+        underline: false,
+      }),
+    ],
+    content: "<p>What's happening?</p>",
+  });
+
   return (
     <>
       <div className={styles.postEditor} style={isOpen ? { zIndex: 2 } : {}}>
-        <em>What's happening?</em>
+        <EditorContent editor={editor} />
       </div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
