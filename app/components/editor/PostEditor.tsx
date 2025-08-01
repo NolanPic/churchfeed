@@ -1,6 +1,7 @@
 "use client";
 
 import Backdrop from "../common/Backdrop";
+import PostEditorToolbar from "./PostEditorToolbar";
 import styles from "./PostEditor.module.css";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -31,10 +32,16 @@ export default function PostEditor({ isOpen, setIsOpen }: PostEditorProps) {
     immediatelyRender: false,
   });
 
+  const onPost = () => {
+    const content = editor?.getJSON();
+    console.log(content);
+  };
+
   return (
     <>
       <div className={styles.postEditor} style={isOpen ? { zIndex: 2 } : {}}>
         <EditorContent editor={editor} />
+        <PostEditorToolbar onPost={onPost} />
       </div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
