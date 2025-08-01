@@ -4,6 +4,7 @@ import Backdrop from "../common/Backdrop";
 import styles from "./PostEditor.module.css";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -23,8 +24,10 @@ export default function PostEditor({ isOpen, setIsOpen }: PostEditorProps) {
         strike: false,
         underline: false,
       }),
+      Placeholder.configure({
+        placeholder: "What's happening?",
+      }),
     ],
-    content: "<p>What's happening?</p>",
   });
 
   return (
