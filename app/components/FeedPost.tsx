@@ -7,25 +7,6 @@ import { getFormattedTimestamp } from "./ui-utils";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import UserAvatar from "./UserAvatar";
 
-// TODO: move to backend e.g. sanitize before saving to db
-const sanitizeHtml = (html: string) => {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      "p",
-      "br",
-      "strong",
-      "em",
-      "ul",
-      "li",
-      "ol",
-      "a",
-      "img",
-      "iframe",
-    ],
-    ALLOWED_ATTR: ["href", "target", "src", "width", "height"],
-  });
-};
-
 interface FeedPostProps {
   post: Doc<"posts"> & {
     author: Omit<Doc<"users">, "image"> & { image: string | null };
