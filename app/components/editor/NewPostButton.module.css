@@ -1,8 +1,8 @@
 .newPostButton {
     position: absolute;
-    left: calc(100% - 10px);
+    left: 100%;
     top: 50px;
-    width: 40px;
+    width: 30px;
     height: 40px;
     cursor: pointer;
     background-color: var(--mid);
@@ -38,5 +38,13 @@
         border-left: 0;
         top: 0;
         background-color: var(--mid2);
+        
+        .borderMask {
+            position: absolute;
+            left: -1;
+            width: 1px;
+            height: 100%;
+            background-color: var(--mid2);
+        }
     }
 }

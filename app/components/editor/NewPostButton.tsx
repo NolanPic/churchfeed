@@ -22,6 +22,7 @@ export default function NewPostButton({ isOpen, onClick }: NewPostButtonProps) {
       onClick={onClick}
       style={isOpen ? { zIndex: 3 } : {}}
     >
+      <div className={styles.borderMask} />
       <Icon name={icon} size={18} className={styles.newPostButtonIcon} />
       <span className={styles.newPostButtonText}>New post</span>
     </button>
