@@ -4,7 +4,7 @@ import { paginationOptsValidator } from "convex/server";
 import { getFeedsUserIsMemberOf, getPublicFeeds } from "./feeds";
 import { getAuthenticatedUser, requireAuth } from "./user";
 import { Doc, Id } from "./_generated/dataModel";
-
+import { fromJSONToHTML } from "./utils/postContentConverter";
 
 export const getUserPosts = query({
   args: {
@@ -29,7 +29,7 @@ export const getUserPosts = query({
       feeds = feeds.filter(feed => feed._id === selectedFeedId);
     }
 
-    const posts = await ctx.db
+    let posts = await ctx.db
       .query("posts")
       .withIndex("by_org_and_postedAt", (q) =>
         q.eq("orgId", orgId),
@@ -38,26 +38,26 @@ export const getUserPosts = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
-      const feedMap = new Map<Id<"feeds">, Doc<"feeds">>();
-      for(const feed of feeds) {
-        feedMap.set(feed._id, feed);
-      }
+    const feedMap = new Map<Id<"feeds">, Doc<"feeds">>();
+    for(const feed of feeds) {
+      feedMap.set(feed._id, feed);
+    }
+  
+    const enrichedPosts = await Promise.all(
+      posts.page.map(async (post) => {
+        const author = await ctx.db.get(post.posterId);
+        if (!author) return null; // skip posts with no author
+        
+        const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+        const feed = feedMap.get(post.feedId) || null;
+        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content) };
+      })
+    );
 
-      const postsWithMetadata = await Promise.all(
-        posts.page.map(async (post) => {
-          const author = await ctx.db.get(post.posterId);
-          if (!author) return null; // skip posts with no author
-          
-          const image = author.image ? await ctx.storage.getUrl(author.image) : null;
-          const feed = feedMap.get(post.feedId) || null;
-          return { ...post, author: { ...author, image }, feed };
-        })
-      );
-
-      return {
-        ...posts,
-        page: postsWithMetadata.filter((post) => post !== null)
-      };
+    return {
+      ...posts,
+      page: enrichedPosts.filter((post) => post !== null)
+    };
   }
 });
 

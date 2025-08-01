@@ -26,6 +26,7 @@
     "@tiptap/pm": "^3.0.9",
     "@tiptap/react": "^3.0.9",
     "@tiptap/starter-kit": "^3.0.9",
+    "@tiptap/static-renderer": "^3.0.9",
     "@types/dompurify": "^3.0.5",
     "classnames": "^2.5.1",
     "convex": "^1.23.0",
