@@ -43,16 +43,20 @@ export const getUserPosts = query({
         feedMap.set(feed._id, feed);
       }
 
+      const postsWithMetadata = await Promise.all(
+        posts.page.map(async (post) => {
+          const author = await ctx.db.get(post.posterId);
+          if (!author) return null; // skip posts with no author
+          
+          const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+          const feed = feedMap.get(post.feedId) || null;
+          return { ...post, author: { ...author, image }, feed };
+        })
+      );
+
       return {
         ...posts,
-        page: await Promise.all(
-          posts.page.map(async (post) => {
-            const author = await ctx.db.get(post.posterId);
-            const image = author?.image ? await ctx.storage.getUrl(author.image) : null;
-            const feed = feedMap.get(post.feedId);
-            return { ...post, author: { ...author, image }, feed };
-          })
-        )
+        page: postsWithMetadata.filter((post) => post !== null)
       };
   }
 });
