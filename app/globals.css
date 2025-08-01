@@ -131,6 +131,10 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--white);
 }
 
+.tiptap.ProseMirror-focused {
+  outline: none;
+}
+
 .tiptap p.is-editor-empty:first-child::before {
   color: var(--gray);
   font-style: italic;
