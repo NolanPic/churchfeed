@@ -30,7 +30,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     // Generate unique IDs for accessibility
-    const inputId = id || `input-${useId()}`;
+    const generatedId = useId();
+    const inputId = id || `input-${generatedId}`;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperTextId = helperText ? `${inputId}-helper` : undefined;
 

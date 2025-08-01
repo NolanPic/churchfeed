@@ -1,4 +1,5 @@
 import styles from "./Icon.module.css";
+import Image from "next/image";
 
 interface IconProps {
   name: string;
@@ -14,7 +15,7 @@ const Icon: React.FC<IconProps> = ({
   alt = "",
 }) => {
   return (
-    <img
+    <Image
       src={`/icons/${name}.svg`}
       alt={alt}
       width={size}
