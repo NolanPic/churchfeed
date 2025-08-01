@@ -1,4 +1,5 @@
 .feedWrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     background-color: var(--mid);
@@ -31,6 +32,8 @@
         gap: var(--spacing10);
     }
 }
+
+
 
 @media (--sm) {
     .feedWrapper {

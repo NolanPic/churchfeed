@@ -124,3 +124,22 @@ h1, h2, h3, h4, h5, h6 {
 #root, #__next {
   isolation: isolate;
 }
+
+/* Tiptap */
+.tiptap {
+  height: 100%;
+  color: var(--white);
+}
+
+.tiptap.ProseMirror-focused {
+  outline: none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--gray);
+  font-style: italic;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
