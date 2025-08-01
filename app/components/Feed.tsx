@@ -11,7 +11,8 @@ import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { motion } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
-import Icon from "./common/Icon";
+import PostEditor from "./editor/PostEditor";
+import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
 
 interface FeedProps {
@@ -80,14 +81,13 @@ export default function Feed({ feedIdSlug }: FeedProps) {
       </div>
       <div className={styles.feedWrapper}>
         {isSignedIn && (
-          <button
-            aria-label="New post"
-            className={styles.newPostButton}
-            onClick={() => setIsNewPostOpen(true)}
-          >
-            <Icon name="plus" size={18} className={styles.newPostButtonIcon} />
-            <span className={styles.newPostButtonText}>New post</span>
-          </button>
+          <NewPostButton
+            isOpen={isNewPostOpen}
+            onClick={() => setIsNewPostOpen(!isNewPostOpen)}
+          />
+        )}
+        {isNewPostOpen && (
+          <PostEditor isOpen={isNewPostOpen} setIsOpen={setIsNewPostOpen} />
         )}
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <motion.hr

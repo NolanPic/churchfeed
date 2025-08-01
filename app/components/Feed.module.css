@@ -33,41 +33,7 @@
     }
 }
 
-.newPostButton {
-    position: absolute;
-    left: calc(100% - 10px);
-    top: 50px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    background-color: var(--mid);
-    border: 0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
-    &:hover {
-        width: max-content;
-        padding: 0 var(--spacing3);
-        gap: var(--spacing2);
-
-        .newPostButtonText {
-            display: block;
-            color: var(--white);
-        }
-    }
-
-    .newPostButtonIcon {
-        display: inline;
-    }
-
-    .newPostButtonText {
-        display: none;
-        white-space: nowrap;
-    }
-}
 
 @media (--sm) {
     .feedWrapper {
