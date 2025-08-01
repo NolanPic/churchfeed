@@ -18,8 +18,15 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
   const { _id, content } = post;
   const user = useAuthedUser();
 
-  const timestamp =
-    getFormattedTimestamp(post.postedAt ?? post._creationTime) + " ago";
+  const getTimestamp = () => {
+    const postedAt = post.postedAt ?? post._creationTime;
+
+    return postedAt > Date.now() - 60000
+      ? "Just now"
+      : getFormattedTimestamp(postedAt) + " ago";
+  };
+
+  const timestamp = getTimestamp();
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed) {
