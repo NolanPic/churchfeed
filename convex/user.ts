@@ -5,7 +5,7 @@ import { v } from "convex/values";
 
 export type AuthResult<T = any> = 
   | { success: true; clerkUser: UserIdentity; user: Doc<"users">; data?: T }
-  | { success: false; reason: 'unauthenticated' | 'user_not_found' | 'unauthorized' };
+| { success: false; reason: 'unauthenticated' | 'user_not_found' | 'unauthorized' | 'user_deactivated' };
 
 type AuthContext = QueryCtx | MutationCtx;
 
@@ -82,6 +82,10 @@ export const getAuthResult = async (
 
   if (!user) {
     return { success: false, reason: 'user_not_found' };
+  }
+
+  if(user.deactivatedAt) {
+    return { success: false, reason: 'user_deactivated' };
   }
 
   return { success: true, clerkUser, user };
