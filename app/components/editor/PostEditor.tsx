@@ -13,7 +13,6 @@ interface PostEditorProps {
 
 export default function PostEditor({ isOpen, setIsOpen }: PostEditorProps) {
   const editor = useEditor({
-    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         bulletList: false,
@@ -28,6 +27,8 @@ export default function PostEditor({ isOpen, setIsOpen }: PostEditorProps) {
         placeholder: "What's happening?",
       }),
     ],
+    autofocus: true,
+    immediatelyRender: false,
   });
 
   return (
