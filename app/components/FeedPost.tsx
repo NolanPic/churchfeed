@@ -1,4 +1,3 @@
-import DOMPurify from "dompurify";
 import styles from "./FeedPost.module.css";
 import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
@@ -63,7 +62,7 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
           </p>
           <div
             className={styles.postContent}
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+            dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
       </article>
