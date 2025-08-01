@@ -1,8 +1,8 @@
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getFeedsUserIsMemberOf, getPublicFeeds } from "./feeds";
-import { getAuthenticatedUser } from "./user";
+import { getAuthenticatedUser, requireAuth } from "./user";
 import { Doc, Id } from "./_generated/dataModel";
 
 
@@ -58,5 +58,34 @@ export const getUserPosts = query({
         ...posts,
         page: postsWithMetadata.filter((post) => post !== null)
       };
+  }
+});
+
+export const createPost = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId, content } = args;
+
+    console.log("Creating post", args);
+
+    const authResult = await requireAuth(ctx, orgId);
+    const { user } = authResult;
+
+    const now = Date.now();
+
+    const postId = await ctx.db.insert("posts", {
+      orgId,
+      feedId,
+      posterId: user._id,
+      content,
+      postedAt: now,
+      updatedAt: now,
+    });
+
+    return postId;
   }
 });

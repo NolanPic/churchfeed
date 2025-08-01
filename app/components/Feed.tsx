@@ -87,7 +87,11 @@ export default function Feed({ feedIdSlug }: FeedProps) {
           />
         )}
         {isNewPostOpen && (
-          <PostEditor isOpen={isNewPostOpen} setIsOpen={setIsNewPostOpen} />
+          <PostEditor
+            isOpen={isNewPostOpen}
+            setIsOpen={setIsNewPostOpen}
+            feedId={feedId}
+          />
         )}
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <motion.hr
