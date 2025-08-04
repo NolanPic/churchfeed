@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Backdrop from "../common/Backdrop";
 import PostEditorToolbar from "./PostEditorToolbar";
 import styles from "./PostEditor.module.css";
@@ -25,6 +26,7 @@ export default function PostEditor({
   const [isPosting, setIsPosting] = useState(false);
   const createPost = useMutation(api.posts.createPost);
   const org = useOrganization();
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -43,6 +45,12 @@ export default function PostEditor({
     autofocus: true,
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    return () => {
+      editor?.destroy();
+    };
+  }, [editor]);
 
   const onPost = async () => {
     setIsPosting(true);
