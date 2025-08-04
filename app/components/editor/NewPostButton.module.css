@@ -15,17 +15,18 @@
 
     &:hover:not(.newPostButtonOpen) {
         width: max-content;
-        padding: 0 var(--spacing3);
-        gap: var(--spacing2);
+        padding-right: var(--spacing3);
 
         .newPostButtonText {
+            padding-left: var(--spacing2);
             display: block;
             color: var(--white);
         }
     }
 
     .newPostButtonIcon {
-        display: inline;
+        position: relative;
+        right: 1px;
     }
 
     .newPostButtonText {
