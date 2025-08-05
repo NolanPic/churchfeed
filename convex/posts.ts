@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
@@ -70,10 +70,14 @@ export const createPost = mutation({
   handler: async (ctx, args) => {
     const { orgId, feedId, content } = args;
 
-    console.log("Creating post", args);
-
     const authResult = await requireAuth(ctx, orgId);
     const { user } = authResult;
+
+    const canUserCreatePost = await canUserCreatePostHelper(ctx, user, feedId);
+
+    if(!canUserCreatePost) {
+      throw new Error("User does not have permission to create post in this feed");
+    }
 
     const now = Date.now();
 
@@ -89,3 +93,16 @@ export const createPost = mutation({
     return postId;
   }
 });
+
+const canUserCreatePostHelper = async (ctx: MutationCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
+  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+
+  const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
+  const userFeed = userFeedsWithMemberships.userFeeds.find(userFeed => userFeed.feedId === feedId);
+
+  if(!feed || !userFeed) {
+    return false;
+  }
+
+  return feed.memberPermissions?.includes("post") || userFeed.owner;
+}
