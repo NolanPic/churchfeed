@@ -1,4 +1,6 @@
 .feedSelector {
+    z-index: 2;
+    position: relative;
     width: 174px;
     height: 36px;
     margin: 0 auto;

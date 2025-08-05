@@ -1,0 +1,160 @@
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing2);
+  width: 100%;
+  position: relative;
+}
+
+.label {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--white);
+  line-height: var(--spacing5);
+  transition: color 0.2s ease-in-out;
+}
+
+.selectContainer {
+  position: relative;
+}
+
+.select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing3) var(--spacing4);
+  border: 0;
+  border-bottom: 2px solid var(--light);
+  border-radius: 2px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: var(--spacing6);
+  background-color: var(--mid2);
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  height: 38px;
+  appearance: none;
+}
+
+.select:focus {
+  border-color: var(--accent);
+}
+
+.select:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.select:disabled {
+  border: 0;
+  cursor: not-allowed;
+  color: var(--light2);
+  background-color: var(--mid2);
+}
+
+.select.error {
+  border: 2px solid var(--warning);
+}
+
+.select.error:focus {
+  border: 0;
+  border-bottom: 2px solid var(--warning);
+  transition: all 0.2s ease-in-out;
+}
+
+.selectText {
+  flex: 1;
+  text-align: left;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+  padding-left: var(--spacing3);
+}
+
+.select[aria-expanded="true"] .icon {
+  transform: scaleY(-1);
+}
+
+.optionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--mid2);
+  border-radius: 2px 2px 12px 12px;
+  box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+  -21px 16px 64px -36px rgba(0,0,0,0.25);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: var(--spacing1);
+}
+
+.option {
+  padding: var(--spacing3) var(--spacing4);
+  cursor: pointer;
+  color: var(--white);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: var(--spacing6);
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  box-sizing: border-box;
+
+  .optionText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.option:hover {
+  background-color: var(--mid);
+}
+
+.option.focused {
+  background-color: var(--mid);
+}
+
+.option.selected {
+  background-color: var(--accent);
+  color: var(--mid);
+}
+
+.option.selected:hover {
+  background-color: color-mix(in srgb, var(--accent) 90%, var(--light));
+}
+
+.helperText {
+  font-size: var(--text-sm);
+  color: var(--text-base);
+  line-height: var(--spacing5);
+}
+
+.errorMessage {
+  font-size: var(--text-sm);
+  color: var(--warning);
+  line-height: var(--spacing5);
+  font-weight: 600;
+}
+
+.label.disabled {
+  color: var(--light2);
+}

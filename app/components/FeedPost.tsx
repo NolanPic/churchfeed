@@ -1,4 +1,3 @@
-import DOMPurify from "dompurify";
 import styles from "./FeedPost.module.css";
 import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
@@ -6,25 +5,6 @@ import Link from "next/link";
 import { getFormattedTimestamp } from "./ui-utils";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import UserAvatar from "./UserAvatar";
-
-// TODO: move to backend e.g. sanitize before saving to db
-const sanitizeHtml = (html: string) => {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      "p",
-      "br",
-      "strong",
-      "em",
-      "ul",
-      "li",
-      "ol",
-      "a",
-      "img",
-      "iframe",
-    ],
-    ALLOWED_ATTR: ["href", "target", "src", "width", "height"],
-  });
-};
 
 interface FeedPostProps {
   post: Doc<"posts"> & {
@@ -38,8 +18,15 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
   const { _id, content } = post;
   const user = useAuthedUser();
 
-  const timestamp =
-    getFormattedTimestamp(post.postedAt ?? post._creationTime) + " ago";
+  const getTimestamp = () => {
+    const postedAt = post.postedAt ?? post._creationTime;
+
+    return postedAt > Date.now() - 60000
+      ? "Just now"
+      : getFormattedTimestamp(postedAt) + " ago";
+  };
+
+  const timestamp = getTimestamp();
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed) {
@@ -82,7 +69,7 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
           </p>
           <div
             className={styles.postContent}
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+            dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
       </article>

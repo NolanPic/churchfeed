@@ -11,6 +11,9 @@ import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { motion } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
+import PostEditor from "./editor/PostEditor";
+import NewPostButton from "./editor/NewPostButton";
+import { useAuthedUser } from "../hooks/useAuthedUser";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -19,8 +22,10 @@ interface FeedProps {
 export default function Feed({ feedIdSlug }: FeedProps) {
   const itemsPerPage = 10;
   const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
+  const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
+  const { isSignedIn } = useAuthedUser();
 
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
 
@@ -75,6 +80,19 @@ export default function Feed({ feedIdSlug }: FeedProps) {
         />
       </div>
       <div className={styles.feedWrapper}>
+        {isSignedIn && (
+          <NewPostButton
+            isOpen={isNewPostOpen}
+            onClick={() => setIsNewPostOpen(!isNewPostOpen)}
+          />
+        )}
+        {isNewPostOpen && (
+          <PostEditor
+            isOpen={isNewPostOpen}
+            setIsOpen={setIsNewPostOpen}
+            feedId={feedId}
+          />
+        )}
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <motion.hr
           initial={{ width: 0 }}

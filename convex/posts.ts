@@ -1,10 +1,10 @@
-import { query } from "./_generated/server";
+import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { getFeedsUserIsMemberOf, getPublicFeeds } from "./feeds";
-import { getAuthenticatedUser } from "./user";
+import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
+import { getAuthenticatedUser, requireAuth } from "./user";
 import { Doc, Id } from "./_generated/dataModel";
-
+import { fromJSONToHTML } from "./utils/postContentConverter";
 
 export const getUserPosts = query({
   args: {
@@ -21,7 +21,7 @@ export const getUserPosts = query({
     let feeds: Doc<"feeds">[] = [...publicFeeds];
 
     if(user) {
-      const feedsUserIsMemberOf = await getFeedsUserIsMemberOf(ctx, user._id);
+      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
       feeds = feeds.concat(feedsUserIsMemberOf);
     }
 
@@ -29,7 +29,7 @@ export const getUserPosts = query({
       feeds = feeds.filter(feed => feed._id === selectedFeedId);
     }
 
-    const posts = await ctx.db
+    let posts = await ctx.db
       .query("posts")
       .withIndex("by_org_and_postedAt", (q) =>
         q.eq("orgId", orgId),
@@ -38,25 +38,71 @@ export const getUserPosts = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
-      const feedMap = new Map<Id<"feeds">, Doc<"feeds">>();
-      for(const feed of feeds) {
-        feedMap.set(feed._id, feed);
-      }
+    const feedMap = new Map<Id<"feeds">, Doc<"feeds">>();
+    for(const feed of feeds) {
+      feedMap.set(feed._id, feed);
+    }
+  
+    const enrichedPosts = await Promise.all(
+      posts.page.map(async (post) => {
+        const author = await ctx.db.get(post.posterId);
+        if (!author) return null; // skip posts with no author
+        
+        const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+        const feed = feedMap.get(post.feedId) || null;
+        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content) };
+      })
+    );
 
-      const postsWithMetadata = await Promise.all(
-        posts.page.map(async (post) => {
-          const author = await ctx.db.get(post.posterId);
-          if (!author) return null; // skip posts with no author
-          
-          const image = author.image ? await ctx.storage.getUrl(author.image) : null;
-          const feed = feedMap.get(post.feedId) || null;
-          return { ...post, author: { ...author, image }, feed };
-        })
-      );
-
-      return {
-        ...posts,
-        page: postsWithMetadata.filter((post) => post !== null)
-      };
+    return {
+      ...posts,
+      page: enrichedPosts.filter((post) => post !== null)
+    };
   }
 });
+
+export const createPost = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId, content } = args;
+
+    const authResult = await requireAuth(ctx, orgId);
+    const { user } = authResult;
+
+    const canUserCreatePost = await canUserCreatePostHelper(ctx, user, feedId);
+
+    if(!canUserCreatePost) {
+      throw new Error("User does not have permission to create post in this feed");
+    }
+
+    const now = Date.now();
+
+    const postId = await ctx.db.insert("posts", {
+      orgId,
+      feedId,
+      posterId: user._id,
+      content,
+      postedAt: now,
+      updatedAt: now,
+    });
+
+    return postId;
+  }
+});
+
+const canUserCreatePostHelper = async (ctx: MutationCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
+  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+
+  const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
+  const userFeed = userFeedsWithMemberships.userFeeds.find(userFeed => userFeed.feedId === feedId);
+
+  if(!feed || !userFeed) {
+    return false;
+  }
+
+  return feed.memberPermissions?.includes("post") || userFeed.owner;
+}
