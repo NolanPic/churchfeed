@@ -52,17 +52,17 @@ export default function PostEditor({
     };
   }, [editor]);
 
-  const onPost = async () => {
+  const onPost = async (feedIdToPostTo: Id<"feeds">) => {
     setIsPosting(true);
     const content = editor?.getJSON();
 
-    if (!org || !feedId) {
+    if (!org || !feedIdToPostTo) {
       return;
     }
 
     await createPost({
       orgId: org?._id,
-      feedId,
+      feedId: feedIdToPostTo,
       content: JSON.stringify(content),
     });
     setIsPosting(false);
@@ -73,7 +73,11 @@ export default function PostEditor({
     <>
       <div className={styles.postEditor} style={isOpen ? { zIndex: 2 } : {}}>
         <EditorContent editor={editor} />
-        <PostEditorToolbar onPost={onPost} isPosting={isPosting} />
+        <PostEditorToolbar
+          onPost={onPost}
+          isPosting={isPosting}
+          feedId={feedId}
+        />
       </div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
