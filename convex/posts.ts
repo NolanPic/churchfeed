@@ -1,7 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { getFeedsUserIsMemberOf, getPublicFeeds } from "./feeds";
+import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
 import { getAuthenticatedUser, requireAuth } from "./user";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
@@ -21,7 +21,7 @@ export const getUserPosts = query({
     let feeds: Doc<"feeds">[] = [...publicFeeds];
 
     if(user) {
-      const feedsUserIsMemberOf = await getFeedsUserIsMemberOf(ctx, user._id);
+      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
       feeds = feeds.concat(feedsUserIsMemberOf);
     }
 

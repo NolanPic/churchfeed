@@ -13,7 +13,7 @@ export const getUserFeeds = query({
     const publicFeeds = await getPublicFeeds(ctx, args.orgId);
   
     if (user) {
-      const feedsUserIsMemberOf = await getFeedsUserIsMemberOf(ctx, user._id);
+      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
       return [...publicFeeds, ...feedsUserIsMemberOf];
     } else {
       return publicFeeds;
@@ -21,7 +21,24 @@ export const getUserFeeds = query({
   },
 });
 
-export const getFeedsUserIsMemberOf = async (
+export const getUserFeedsWithMemberships = query({
+  args: {
+    orgId: v.id("organizations"),
+  },
+  handler: async (ctx, args) => {
+    const user = await getAuthenticatedUser(ctx, args.orgId);
+
+    if(!user) {
+      return null;
+    }
+
+    const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+
+    return userFeedsWithMemberships;
+  },
+});
+
+export const getUserFeedsWithMembershipsHelper = async (
   ctx: QueryCtx,
   userId: Id<"users">,
 ) => {
@@ -29,7 +46,10 @@ export const getFeedsUserIsMemberOf = async (
   const feedIds = userFeeds.map((userFeed) => userFeed.feedId);
   const feedsUserIsMemberOf = await getAll(ctx.db, feedIds);
 
-  return feedsUserIsMemberOf.filter((feed) => feed !== null);
+  return {
+    userFeeds,
+    feeds: feedsUserIsMemberOf.filter((feed) => feed !== null),
+  };
 }
 
 export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => { 
