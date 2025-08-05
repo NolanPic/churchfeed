@@ -11,7 +11,7 @@ export interface SelectOption {
 
 export interface SelectProps {
   label?: string;
-  options: SelectOption[];
+  options?: SelectOption[];
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
@@ -66,7 +66,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       focusedIndex >= 0 ? `${selectId}-option-${focusedIndex}` : undefined;
 
     const hasError = Boolean(error);
-    const selectedOption = options.find(
+    const selectedOption = options?.find(
       (option) => option.value === currentValue
     );
 
@@ -104,8 +104,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         case " ":
           event.preventDefault();
           if (isOpen && focusedIndex >= 0) {
-            const option = options[focusedIndex];
-            handleOptionSelect(option.value);
+            const option = options?.[focusedIndex];
+            handleOptionSelect(option?.value ?? "");
           } else {
             setIsOpen(!isOpen);
           }
@@ -120,7 +120,10 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             setIsOpen(true);
             setFocusedIndex(0); // Start at first option when opening
           } else {
-            const nextIndex = Math.min(focusedIndex + 1, options.length - 1);
+            const nextIndex = Math.min(
+              focusedIndex + 1,
+              (options?.length ?? 0) - 1
+            );
             setFocusedIndex(nextIndex);
           }
           break;
@@ -197,9 +200,9 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               aria-labelledby={selectId}
               className={styles.optionsList}
             >
-              {options.map((option, index) => (
+              {options?.map((option, index) => (
                 <li
-                  key={option.value}
+                  key={option?.value}
                   id={`${selectId}-option-${index}`}
                   role="option"
                   aria-selected={option.value === currentValue}
