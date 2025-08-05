@@ -30,6 +30,10 @@ export default defineSchema({
       v.literal("private"),
       v.literal("open"),
     ),
+    memberPermissions: v.optional(v.array(v.union(
+      v.literal("post"),
+      v.literal("message"),
+    ))),
   }).index("by_org", ["orgId"]).index("by_org_privacy", ["orgId", "privacy"]),
   userFeeds: defineTable({
     ...defaultColumns,
