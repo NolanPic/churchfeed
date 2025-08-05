@@ -24,6 +24,7 @@ export default function PostEditor({
   feedId,
 }: PostEditorProps) {
   const [isPosting, setIsPosting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const createPost = useMutation(api.posts.createPost);
   const org = useOrganization();
 
@@ -54,24 +55,38 @@ export default function PostEditor({
 
   const onPost = async (feedIdToPostTo: Id<"feeds">) => {
     setIsPosting(true);
-    const content = editor?.getJSON();
+    const postContent = editor?.getJSON();
 
-    if (!org || !feedIdToPostTo) {
+    if (!postContent || !postContent.content?.[0]?.content) {
+      setError("Please add some content to your post");
+      setIsPosting(false);
       return;
     }
 
-    await createPost({
-      orgId: org?._id,
-      feedId: feedIdToPostTo,
-      content: JSON.stringify(content),
-    });
-    setIsPosting(false);
-    setIsOpen(false);
+    if (!org || !feedIdToPostTo) {
+      setError("No organization or feed found");
+      setIsPosting(false);
+      return;
+    }
+
+    try {
+      await createPost({
+        orgId: org?._id,
+        feedId: feedIdToPostTo,
+        content: JSON.stringify(postContent),
+      });
+      setIsPosting(false);
+      setIsOpen(false);
+    } catch (error) {
+      setError("Failed to create post");
+      setIsPosting(false);
+    }
   };
 
   return (
     <>
       <div className={styles.postEditor} style={isOpen ? { zIndex: 2 } : {}}>
+        {error && <div className={styles.error}>{error}</div>}
         <EditorContent editor={editor} />
         <PostEditorToolbar
           onPost={onPost}

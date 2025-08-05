@@ -12,3 +12,8 @@
     flex-direction: column;
     justify-content: space-between;
 }
+
+.error {
+    color: var(--warning);
+    font-size: var(--text-base);
+}
