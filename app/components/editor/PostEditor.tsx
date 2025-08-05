@@ -12,6 +12,13 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useOrganization } from "../../context/OrganizationProvider";
 import { Id } from "../../../convex/_generated/dataModel";
+
+interface EditorNode {
+  type: string;
+  text?: string;
+  content?: EditorNode[];
+}
+
 interface PostEditorProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -57,7 +64,7 @@ export default function PostEditor({
     setIsPosting(true);
     const postContent = editor?.getJSON();
 
-    if (!postContent || !postContent.content?.[0]?.content) {
+    if (!postContent || isEditorEmpty(postContent)) {
       setError("Please add some content to your post");
       setIsPosting(false);
       return;
@@ -97,4 +104,16 @@ export default function PostEditor({
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
   );
+}
+
+function isEditorEmpty(block: EditorNode): boolean {
+  if (!block || !block.type) {
+    return true;
+  }
+  if ("text" in block) {
+    return !block.text?.trim();
+  }
+  return block.content
+    ? block.content.every((childBlock) => isEditorEmpty(childBlock))
+    : true;
 }
