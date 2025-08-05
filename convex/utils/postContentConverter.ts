@@ -9,7 +9,18 @@ export function fromJSONToHTML(content: string) {
         return content;
     }
 
-    const html = renderToHTMLString({
+    let parsedContent;
+
+    try {
+        parsedContent = JSON.parse(content);
+    } catch(error) {
+        console.error("Failed to parse post content as JSON", error);
+    }   
+
+    let html = '';
+
+    try {
+    html = renderToHTMLString({
         extensions: [
             StarterKit.configure({
                 bulletList: false,
@@ -21,8 +32,11 @@ export function fromJSONToHTML(content: string) {
                 underline: false,
             }),
         ],
-        content: JSON.parse(content),
+        content: parsedContent,
     });
+    } catch(error) {
+        console.error("Failed to render post content to HTML", error);
+    }
 
     return html;
 }
