@@ -45,7 +45,7 @@ export const useAuthedUser = () => {
     clerkUser,
     organization: org,
     isSignedIn: isSignedIn && !!user,
-    isLoaded: isLoaded && !!user,
+    isLoaded,
     signOut,
     feeds: feedsWithMemberships,
   };
