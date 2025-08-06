@@ -40,12 +40,11 @@ export const useAuthedUser = () => {
     feedsWithMemberships.push({ ...feed, owner: userFeed?.owner ?? false });
   }
 
-
   return {
     user,
     clerkUser,
     organization: org,
-    isSignedIn,
+    isSignedIn: isSignedIn && !!user,
     isLoaded,
     signOut,
     feeds: feedsWithMemberships,
