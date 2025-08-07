@@ -1,16 +1,22 @@
 .postEditor {
+    --editor-open-min-height: 190px;
+    --editor-open-width: 100%;
+    --editor-closed-radius: 12px;
+    --editor-open-radius: 0px;
+    
     position: absolute;
-    width: 100%;
-    height: 190px;
+    right: 0;
+    width: var(--editor-open-width);
+    min-height: var(--editor-open-min-height);
     background-color: var(--mid2);
     border: 1px solid var(--accent);
     border-radius: 12px;
-    border-top-right-radius: 0;
     padding: var(--spacing8);
     padding-bottom: var(--spacing6);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
 }
 
 .error {
