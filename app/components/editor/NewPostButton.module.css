@@ -1,8 +1,13 @@
 .newPostButton {
+    --button-default-width: 30px;
+    --button-hover-width: 120px;
+    --button-default-top: 50px;
+    --button-editor-open-top: 0px;
+
     position: absolute;
     left: 100%;
-    top: 50px;
-    width: 30px;
+    top: var(--button-default-top);
+    width: var(--button-default-width);
     height: 40px;
     cursor: pointer;
     background-color: var(--mid);
@@ -12,6 +17,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 
     &:hover:not(.newPostButtonOpen) {
         width: max-content;
@@ -19,8 +25,6 @@
 
         .newPostButtonText {
             padding-left: var(--spacing2);
-            display: block;
-            color: var(--white);
         }
     }
 
@@ -30,7 +34,7 @@
     }
 
     .newPostButtonText {
-        display: none;
+        color: var(--white);
         white-space: nowrap;
     }
 
@@ -39,13 +43,6 @@
         border-left: 0;
         top: 0;
         background-color: var(--mid2);
-        
-        .borderMask {
-            position: absolute;
-            left: -1px;
-            width: 1px;
-            height: 100%;
-            background-color: var(--mid2);
-        }
+        transform: translateX(-1px);
     }
 }

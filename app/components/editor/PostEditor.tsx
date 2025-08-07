@@ -12,6 +12,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useOrganization } from "../../context/OrganizationProvider";
 import { Id } from "../../../convex/_generated/dataModel";
+import { motion } from "framer-motion";
 
 interface EditorNode {
   type: string;
@@ -90,9 +91,37 @@ export default function PostEditor({
     }
   };
 
+  const editorInitial = {
+    minHeight: 0,
+    width: 0,
+    opacity: 0,
+    borderTopRightRadius: "var(--editor-closed-radius)",
+  };
+  const editorOpen = {
+    minHeight: "var(--editor-open-min-height)",
+    width: "var(--editor-open-width)",
+    opacity: 1,
+    borderTopRightRadius: isOpen
+      ? "var(--editor-open-radius)"
+      : "var(--editor-closed-radius)",
+  };
+
   return (
     <>
-      <div className={styles.postEditor} style={isOpen ? { zIndex: 2 } : {}}>
+      <motion.div
+        className={styles.postEditor}
+        style={isOpen ? { zIndex: 2 } : {}}
+        initial={editorInitial}
+        animate={editorOpen}
+        exit={editorInitial}
+        transition={{
+          borderTopRightRadius: { duration: 0.1 },
+          duration: 0.5,
+          type: "spring",
+          stiffness: 350,
+          damping: 35,
+        }}
+      >
         {error && <div className={styles.error}>{error}</div>}
         <EditorContent editor={editor} />
         <PostEditorToolbar
@@ -100,7 +129,7 @@ export default function PostEditor({
           isPosting={isPosting}
           feedId={feedId}
         />
-      </div>
+      </motion.div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
   );

@@ -9,7 +9,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import FeedPost from "./FeedPost";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import NewPostButton from "./editor/NewPostButton";
@@ -86,13 +86,15 @@ export default function Feed({ feedIdSlug }: FeedProps) {
             onClick={() => setIsNewPostOpen(!isNewPostOpen)}
           />
         )}
-        {isNewPostOpen && (
-          <PostEditor
-            isOpen={isNewPostOpen}
-            setIsOpen={setIsNewPostOpen}
-            feedId={feedId}
-          />
-        )}
+        <AnimatePresence>
+          {isNewPostOpen && (
+            <PostEditor
+              isOpen={isNewPostOpen}
+              setIsOpen={setIsNewPostOpen}
+              feedId={feedId}
+            />
+          )}
+        </AnimatePresence>
         <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
         <motion.hr
           initial={{ width: 0 }}
