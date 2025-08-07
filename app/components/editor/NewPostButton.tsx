@@ -26,13 +26,22 @@ export default function NewPostButton({ isOpen, onClick }: NewPostButtonProps) {
     }
 
     if (!isOpen && isHovered) {
-      buttonAnimation.start({ width: "120px", top: "50px" });
+      buttonAnimation.start({
+        width: "var(--button-hover-width)",
+        top: "var(--button-default-top)",
+      });
       buttonTextAnimation.start({ opacity: 1, display: "block" });
     } else if (isOpen) {
-      buttonAnimation.start({ width: "30px", top: 0 });
+      buttonAnimation.start({
+        width: "var(--button-default-width)",
+        top: "var(--button-editor-open-top)",
+      });
       buttonTextAnimation.start({ opacity: 0, display: "none" });
     } else {
-      buttonAnimation.start({ width: "30px", top: "50px" });
+      buttonAnimation.start({
+        width: "var(--button-default-width)",
+        top: "var(--button-default-top)",
+      });
       buttonTextAnimation.start({ opacity: 0, display: "none" });
     }
   }, [isOpen, isHovered]);
