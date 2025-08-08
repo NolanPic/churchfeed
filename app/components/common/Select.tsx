@@ -17,7 +17,6 @@ export interface SelectProps {
   onChange?: (value: string) => void;
   error?: string;
   helperText?: string;
-  required?: boolean;
   disabled?: boolean;
   placeholder?: string;
   prependToSelected?: string;
@@ -34,7 +33,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       onChange,
       error,
       helperText,
-      required = false,
       disabled = false,
       placeholder = "Select an option",
       prependToSelected,
@@ -61,9 +59,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const errorId = error ? `${selectId}-error` : undefined;
     const helperTextId = helperText ? `${selectId}-helper` : undefined;
 
-    // Generate ID for the currently focused option
-    const focusedOptionId =
-      focusedIndex >= 0 ? `${selectId}-option-${focusedIndex}` : undefined;
+    // Note: we no longer use aria-activedescendant on the button, so no need to
+    // compute a focused option ID here.
 
     const hasError = Boolean(error);
     const selectedOption = options?.find(
@@ -170,15 +167,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             disabled={disabled}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
-            aria-activedescendant={
-              isOpen && focusedOptionId ? focusedOptionId : undefined
-            }
             aria-label={!label ? placeholder : undefined}
             aria-labelledby={label ? selectId : undefined}
             aria-describedby={
               [errorId, helperTextId].filter(Boolean).join(" ") || undefined
             }
-            aria-invalid={hasError}
             onClick={() => !disabled && setIsOpen(!isOpen)}
             onKeyDown={handleKeyDown}
             className={`${styles.select} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
