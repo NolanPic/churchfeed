@@ -85,7 +85,7 @@ export default function PostEditor({
       });
       setIsPosting(false);
       setIsOpen(false);
-    } catch (error) {
+    } catch {
       setError("Failed to create post");
       setIsPosting(false);
     }

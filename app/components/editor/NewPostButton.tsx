@@ -44,7 +44,7 @@ export default function NewPostButton({ isOpen, onClick }: NewPostButtonProps) {
       });
       buttonTextAnimation.start({ opacity: 0, display: "none" });
     }
-  }, [isOpen, isHovered]);
+  }, [isOpen, isHovered, buttonAnimation, buttonTextAnimation]);
 
   return (
     <motion.button
