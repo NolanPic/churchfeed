@@ -37,7 +37,7 @@ export default function PostModal({
       ariaLabel="Post details and messages"
     >
       {post && (
-        <div className={styles.postModal}>
+        <div>
           <div className={styles.post}>
             <div className={styles.postAuthorAvatar}>
               <UserAvatar user={post.author} size={34} />

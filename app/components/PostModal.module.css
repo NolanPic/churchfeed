@@ -1,7 +1,3 @@
-.postModal {
-    overflow: scroll;
-}
-
 .post {
     display: flex;
     gap: var(--spacing7);
