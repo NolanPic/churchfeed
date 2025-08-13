@@ -1,5 +1,5 @@
 import styles from "./FeedPost.module.css";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
 import { getFormattedTimestamp } from "./ui-utils";
@@ -13,8 +13,13 @@ interface FeedPostProps {
     feed: Doc<"feeds"> | null;
   };
   showSourceFeed: boolean;
+  onOpenPost?: (postId: Id<"posts">) => void;
 }
-export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
+export default function FeedPost({
+  post,
+  showSourceFeed,
+  onOpenPost,
+}: FeedPostProps) {
   const { _id, content } = post;
   const user = useAuthedUser();
 
@@ -64,6 +69,7 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
                 alt="View message thread"
                 width={20}
                 height={20}
+                onClick={() => onOpenPost?.(post._id)}
               />
             )}
           </p>

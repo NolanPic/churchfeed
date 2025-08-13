@@ -14,6 +14,7 @@ import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
+import PostModal from "./PostModal";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -26,6 +27,7 @@ export default function Feed({ feedIdSlug }: FeedProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const { isSignedIn } = useAuthedUser();
+  const [openPostId, setOpenPostId] = useState<Id<"posts"> | null>(null);
 
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
 
@@ -108,13 +110,23 @@ export default function Feed({ feedIdSlug }: FeedProps) {
           ) : (
             results.map((post) => {
               return (
-                <FeedPost key={post._id} post={post} showSourceFeed={!feedId} />
+                <FeedPost
+                  key={post._id}
+                  post={post}
+                  showSourceFeed={!feedId}
+                  onOpenPost={(postId) => setOpenPostId(postId)}
+                />
               );
             })
           )}
         </main>
         <div ref={endOfFeed} />
       </div>
+      <AnimatePresence>
+        {openPostId && (
+          <PostModal postId={openPostId} onClose={() => setOpenPostId(null)} />
+        )}
+      </AnimatePresence>
     </>
   );
 }
