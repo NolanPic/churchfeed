@@ -2,7 +2,7 @@ import styles from "./FeedPost.module.css";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
-import { getFormattedTimestamp } from "./ui-utils";
+import { getTimeAgoLabel } from "./ui-utils";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import UserAvatar from "./UserAvatar";
 
@@ -23,27 +23,20 @@ export default function FeedPost({
   const { _id, content } = post;
   const user = useAuthedUser();
 
-  const getTimestamp = () => {
-    const postedAt = post.postedAt ?? post._creationTime;
-
-    return postedAt > Date.now() - 60000
-      ? "Just now"
-      : getFormattedTimestamp(postedAt) + " ago";
-  };
-
-  const timestamp = getTimestamp();
+  const postedAt = post.postedAt ?? post._creationTime;
+  const timeAgoLabel = getTimeAgoLabel(postedAt);
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed) {
       return (
         <>
-          {timestamp}
+          {timeAgoLabel}
           {" in  "}
           <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
         </>
       );
     }
-    return timestamp;
+    return timeAgoLabel;
   };
 
   return (
@@ -57,7 +50,7 @@ export default function FeedPost({
             <span className={styles.postAuthorName}>{post.author?.name}</span>
             <span
               className={styles.postTimeAndSourceFeed}
-              title={`Posted ${timestamp} in ${post.feed?.name}`}
+              title={`Posted ${timeAgoLabel} in ${post.feed?.name}`}
             >
               {getTimeAndSourceFeed()}
             </span>

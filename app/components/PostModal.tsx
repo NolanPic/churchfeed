@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Modal from "./common/Modal";
 import UserAvatar from "./UserAvatar";
-import { getFormattedTimestamp } from "./ui-utils";
+import { getTimeAgoLabel } from "./ui-utils";
 import styles from "./PostModal.module.css";
 import { useOrganization } from "../context/OrganizationProvider";
 import MessageThread from "./MessageThread";
@@ -24,11 +24,7 @@ export default function PostModal({
   });
 
   const postedAt = post?.postedAt ?? post?._creationTime;
-  const timestamp = postedAt
-    ? postedAt > Date.now() - 60000
-      ? "Just now"
-      : getFormattedTimestamp(postedAt) + " ago"
-    : "";
+  const timeAgoLabel = getTimeAgoLabel(postedAt);
 
   return (
     <Modal
@@ -48,7 +44,7 @@ export default function PostModal({
                   {post.author?.name}
                 </span>
                 <span className={styles.postTimeAndSourceFeed}>
-                  {timestamp}
+                  {timeAgoLabel}
                   {post.feed ? ` in ${post.feed.name}` : ""}
                 </span>
               </p>

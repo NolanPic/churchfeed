@@ -8,7 +8,7 @@ import MessageEditor from "./MessageEditor";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { useOrganization } from "../context/OrganizationProvider";
 import styles from "./MessageThread.module.css";
-import { getFormattedTimestamp } from "./ui-utils";
+import { getTimeAgoLabel } from "./ui-utils";
 import classNames from "classnames";
 
 export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
@@ -22,11 +22,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
       <div className={styles.messages}>
         {messages?.map((m) => {
           const postedAt = m?._creationTime;
-          const timestamp = postedAt
-            ? postedAt > Date.now() - 60000
-              ? "Just now"
-              : getFormattedTimestamp(postedAt) + " ago"
-            : "";
+          const timeAgoLabel = getTimeAgoLabel(postedAt);
           return (
             <ol
               className={classNames(styles.message, {
@@ -45,7 +41,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
                     />
                   </div>
                 </article>
-                <span className={styles.messageTimestamp}>{timestamp}</span>
+                <span className={styles.messageTimestamp}>{timeAgoLabel}</span>
               </li>
             </ol>
           );
