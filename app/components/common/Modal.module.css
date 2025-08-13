@@ -1,0 +1,39 @@
+.modalWrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.modalCard {
+  width: min(800px, 100vw);
+  height: 100vh;
+  background: var(--mid);
+  overflow: hidden;
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing18);
+  padding-top: var(--spacing24);
+  box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+  -21px 16px 64px -36px rgba(0,0,0,0.25);
+}
+
+.closeButton {
+  position: absolute;
+  top: var(--spacing12);
+  right: var(--spacing12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
