@@ -37,3 +37,15 @@
   cursor: pointer;
 }
 
+@media (--sm) {
+  .modalCard {
+    padding: var(--spacing8);
+    padding-top: var(--spacing16);
+  }
+
+  .closeButton {
+    top: var(--spacing6);
+    right: var(--spacing6);
+  }
+}
+

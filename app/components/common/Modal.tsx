@@ -48,7 +48,7 @@ export default function Modal({
                 className={styles.closeButton}
                 onClick={onClose}
               >
-                <Icon name="close" size={18} />
+                <Icon name="close" size={24} />
               </button>
               {children}
             </motion.div>
