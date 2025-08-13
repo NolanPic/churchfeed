@@ -3,6 +3,7 @@
 import styles from "./PostEditorToolbar.module.css";
 import Button from "../common/Button";
 import { ReactNode } from "react";
+import classNames from "classnames";
 
 interface EditorToolbarProps {
   actionButton: {
@@ -13,14 +14,16 @@ interface EditorToolbarProps {
     className?: string;
   };
   leftSlot?: ReactNode;
+  className?: string;
 }
 
 export default function EditorToolbar({
   actionButton,
   leftSlot,
+  className,
 }: EditorToolbarProps) {
   return (
-    <div className={styles.postEditorToolbar}>
+    <div className={classNames(styles.postEditorToolbar, className)}>
       {leftSlot}
       <Button
         icon={actionButton.icon}

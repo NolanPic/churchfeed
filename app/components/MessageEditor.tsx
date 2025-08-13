@@ -43,12 +43,12 @@ export default function MessageEditor({
         ref={editorRef}
         placeholder="Continue the conversation..."
         autofocus
-        className="tiptap-editor"
+        className={styles.tiptapEditor}
         onSubmit={onSend}
       />
       <EditorToolbar
+        className={styles.messageEditorToolbar}
         actionButton={{
-          className: styles.messageEditorSendButton,
           label: disabledHint ? disabledHint : "Send",
           icon: "send",
           onClick: disabledHint ? undefined : onSend,
