@@ -1,7 +1,7 @@
 import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
-import { requireAuth } from "./user";
+import { requireAuth, getAuthenticatedUser } from "./user";
 import { getUserFeedsWithMembershipsHelper } from "./feeds";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
@@ -13,7 +13,19 @@ export const getForPost = query({
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
 
-    await requireAuth(ctx, orgId);
+    const user = await getAuthenticatedUser(ctx, orgId);
+
+    // If unauthenticated, only allow access when the post's feed is public
+    if (!user) {
+      const post = await ctx.db.get(postId);
+      if (!post || post.orgId !== orgId) {
+        return [];
+      }
+      const feed = await ctx.db.get(post.feedId);
+      if (!feed || feed.privacy !== "public") {
+        return [];
+      }
+    }
 
     const rawMessages = await ctx.db
       .query("messages")
