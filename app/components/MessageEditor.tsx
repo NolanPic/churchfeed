@@ -36,7 +36,6 @@ export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
       <Editor
         ref={editorRef}
         placeholder="Continue the conversation..."
-        autofocus
         className={styles.tiptapEditor}
         onSubmit={onSend}
       />
