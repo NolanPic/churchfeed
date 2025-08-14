@@ -9,13 +9,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import styles from "./MessageEditor.module.css";
 
-export default function MessageEditor({
-  postId,
-  disabledHint,
-}: {
-  postId: Id<"posts">;
-  disabledHint?: string;
-}) {
+export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
   const editorRef = useRef<EditorHandle | null>(null);
   const [isSending, setIsSending] = useState(false);
   const org = useOrganization();
@@ -49,10 +43,10 @@ export default function MessageEditor({
       <EditorToolbar
         className={styles.messageEditorToolbar}
         actionButton={{
-          label: disabledHint ? disabledHint : "Send",
+          label: "Send",
           icon: "send",
-          onClick: disabledHint ? undefined : onSend,
-          disabled: isSending || !!disabledHint,
+          onClick: onSend,
+          disabled: isSending,
         }}
       />
     </div>
