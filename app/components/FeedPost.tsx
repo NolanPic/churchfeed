@@ -3,7 +3,6 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
 import { getTimeAgoLabel } from "./ui-utils";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import UserAvatar from "./UserAvatar";
 
 interface FeedPostProps {
@@ -21,7 +20,6 @@ export default function FeedPost({
   onOpenPost,
 }: FeedPostProps) {
   const { _id, content } = post;
-  const user = useAuthedUser();
 
   const postedAt = post.postedAt ?? post._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
@@ -55,16 +53,14 @@ export default function FeedPost({
               {getTimeAndSourceFeed()}
             </span>
 
-            {user?.isSignedIn && (
-              <Image
-                className={styles.postMessageThread}
-                src="/icons/messages.svg"
-                alt="View message thread"
-                width={20}
-                height={20}
-                onClick={() => onOpenPost?.(post._id)}
-              />
-            )}
+            <Image
+              className={styles.postMessageThread}
+              src="/icons/messages.svg"
+              alt="View message thread"
+              width={20}
+              height={20}
+              onClick={() => onOpenPost?.(post._id)}
+            />
           </p>
           <div
             className={styles.postContent}
