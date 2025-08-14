@@ -11,6 +11,7 @@ import styles from "./MessageThread.module.css";
 import { getTimeAgoLabel } from "./ui-utils";
 import classNames from "classnames";
 import Hint from "./common/Hint";
+import Link from "next/link";
 
 export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
@@ -20,13 +21,17 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
     postId,
   });
   const messages = useQuery(api.messages.getForPost, { orgId, postId });
-  const { isSignedIn, user, feeds } = useAuthedUser();
+  const { isSignedIn, isLoaded: isUserLoaded, user, feeds } = useAuthedUser();
   const memberFeed = feeds.find((f) => f._id === post?.feedId);
 
   const canSendMessage =
     isSignedIn &&
     memberFeed &&
     (memberFeed.owner || post?.feed?.memberPermissions?.includes("message"));
+
+  if (messages === undefined) {
+    return <p>Loading messages...</p>;
+  }
 
   return (
     <>
@@ -62,21 +67,27 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
           })}
         </div>
       ) : (
-        canSendMessage && (
+        canSendMessage &&
+        messages !== undefined && (
           <Hint type="info">
             This post has no messages yet. Be the first to send one!
           </Hint>
         )
       )}
-
-      {canSendMessage ? (
+      {!isSignedIn ? (
+        <Hint type="info">
+          <p>
+            You can <Link href="/login">sign in</Link> to send messages.
+          </p>
+        </Hint>
+      ) : !canSendMessage && isUserLoaded ? (
+        <Hint type="warn">
+          <p>You don't have permission to send messages in this feed.</p>
+        </Hint>
+      ) : (
         <div className={styles.messageEditorWrapper}>
           <MessageEditor postId={postId} />
         </div>
-      ) : (
-        <Hint type="warn">
-          You don't have permission to send messages in this feed.
-        </Hint>
       )}
     </>
   );
