@@ -14,7 +14,8 @@ import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
-import PostModal from "./PostModal";
+import PostModalContent from "./PostModalContent";
+import Modal from "./common/Modal";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -122,11 +123,14 @@ export default function Feed({ feedIdSlug }: FeedProps) {
         </main>
         <div ref={endOfFeed} />
       </div>
-      <AnimatePresence>
-        {openPostId && (
-          <PostModal postId={openPostId} onClose={() => setOpenPostId(null)} />
-        )}
-      </AnimatePresence>
+
+      <Modal
+        isOpen={!!openPostId}
+        onClose={() => setOpenPostId(null)}
+        ariaLabel="Post details and messages"
+      >
+        {openPostId && <PostModalContent postId={openPostId} />}
+      </Modal>
     </>
   );
 }
