@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import UserAvatar from "./UserAvatar";
-import MessageEditor from "./MessageEditor";
+import MessageEditor from "./editor/MessageEditor";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { useOrganization } from "../context/OrganizationProvider";
 import styles from "./MessageThread.module.css";

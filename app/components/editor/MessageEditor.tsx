@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
-import { useOrganization } from "../context/OrganizationProvider";
-import Editor, { EditorHandle } from "./editor/Editor";
-import EditorToolbar from "./editor/EditorToolbar";
+import { useOrganization } from "../../context/OrganizationProvider";
+import Editor, { EditorHandle } from "./Editor";
+import EditorToolbar from "./EditorToolbar";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import styles from "./MessageEditor.module.css";
