@@ -3,7 +3,7 @@
   position: relative;
   padding: var(--spacing3) var(--spacing4);
   border-radius: 12px;
-  border: 2px solid var(--dark);
+  border: 1px solid var(--dark);
   border-left-width: 6px;
 
   &::before {
@@ -41,7 +41,7 @@
 .hint.info {
   border-color: var(--accent);
   &::before {
-    background-color: var(--accent);
+    background-color: inherit;
   }
 }
 

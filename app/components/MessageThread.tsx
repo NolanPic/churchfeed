@@ -81,7 +81,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
           </p>
         </Hint>
       ) : !canSendMessage && isUserLoaded ? (
-        <Hint type="warn">
+        <Hint type="info">
           <p>You don't have permission to send messages in this feed.</p>
         </Hint>
       ) : (
