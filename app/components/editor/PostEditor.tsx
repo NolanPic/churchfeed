@@ -10,10 +10,10 @@ import { useOrganization } from "../../context/OrganizationProvider";
 import { Id } from "../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
 import Editor, { EditorHandle } from "./Editor";
-import type { JSONContent } from "@tiptap/core";
 import EditorToolbar from "./EditorToolbar";
 import Select from "../common/Select";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { isEditorEmpty } from "./editor-utils";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -150,16 +150,4 @@ export default function PostEditor({
       <Backdrop onClick={() => setIsOpen(false)} />
     </>
   );
-}
-
-function isEditorEmpty(block: JSONContent): boolean {
-  if (!block || !block.type) {
-    return true;
-  }
-  if ("text" in block) {
-    return !block.text?.trim();
-  }
-  return block.content
-    ? block.content.every((childBlock) => isEditorEmpty(childBlock))
-    : true;
 }

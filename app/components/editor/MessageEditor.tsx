@@ -8,6 +8,7 @@ import EditorToolbar from "./EditorToolbar";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import styles from "./MessageEditor.module.css";
+import { isEditorEmpty } from "./editor-utils";
 
 export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
   const editorRef = useRef<EditorHandle | null>(null);
@@ -17,7 +18,7 @@ export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
 
   const onSend = async () => {
     const json = editorRef.current?.getJSON();
-    if (!json) return;
+    if (!json || isEditorEmpty(json)) return;
     setIsSending(true);
     try {
       await createMessage({
