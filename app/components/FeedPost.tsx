@@ -10,6 +10,7 @@ interface FeedPostProps {
     author: Omit<Doc<"users">, "image"> & { image: string | null };
   } & {
     feed: Doc<"feeds"> | null;
+    messageCount: number;
   };
   showSourceFeed: boolean;
   onOpenPost?: (postId: Id<"posts">) => void;
@@ -37,6 +38,13 @@ export default function FeedPost({
     return timeAgoLabel;
   };
 
+  const messageCount =
+    post.messageCount > 0
+      ? post.messageCount > 99
+        ? "99+"
+        : post.messageCount
+      : null;
+
   return (
     <>
       <article key={_id} className={styles.feedPost}>
@@ -44,7 +52,7 @@ export default function FeedPost({
           <UserAvatar user={post.author} size={34} />
         </div>
         <div className={styles.postRight}>
-          <p className={styles.postInfo}>
+          <div className={styles.postInfo}>
             <span className={styles.postAuthorName}>{post.author?.name}</span>
             <span
               className={styles.postTimeAndSourceFeed}
@@ -52,16 +60,24 @@ export default function FeedPost({
             >
               {getTimeAndSourceFeed()}
             </span>
-
-            <Image
+            <button
               className={styles.postMessageThread}
-              src="/icons/messages.svg"
-              alt="View message thread"
-              width={20}
-              height={20}
               onClick={() => onOpenPost?.(post._id)}
-            />
-          </p>
+            >
+              {messageCount && (
+                <span className={styles.postMessageThreadCount}>
+                  {messageCount}
+                </span>
+              )}
+              <Image
+                className={styles.postMessageThreadIcon}
+                src="/icons/messages.svg"
+                alt="View message thread"
+                width={20}
+                height={20}
+              />
+            </button>
+          </div>
           <div
             className={styles.postContent}
             dangerouslySetInnerHTML={{ __html: content }}

@@ -50,7 +50,15 @@ export const getUserPosts = query({
         
         const image = author.image ? await ctx.storage.getUrl(author.image) : null;
         const feed = feedMap.get(post.feedId) || null;
-        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content) };
+        const messageCount = (
+          await ctx.db
+            .query("messages")
+            .filter((q) =>
+              q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("postId"), post._id))
+            )
+            .collect()
+        ).length;
+        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content), messageCount };
       })
     );
 

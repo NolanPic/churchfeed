@@ -46,6 +46,27 @@
     }
 
     .postMessageThread {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--white);
+
+        &:hover {
+            scale: 1.05;
+        }
+        transition: scale 0.1s ease-in-out;
+    }
+
+    .postMessageThreadCount {
+        position: absolute;
+        bottom: 14px;
+        left: 14px;
+        font-weight: 600;
+        width: 35px;
+    }
+
+    .postMessageThreadIcon {
         margin-left: auto;
         width: 20px;
         height: 20px;
