@@ -11,6 +11,7 @@ import styles from "./MessageThread.module.css";
 import { getTimeAgoLabel } from "./ui-utils";
 import classNames from "classnames";
 import Hint from "./common/Hint";
+import SanitizedUserContent from "./common/SanitizedUserContent";
 import Link from "next/link";
 
 export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
@@ -52,9 +53,9 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
                     <UserAvatar user={m.sender} size={34} />
                     <div className={styles.messageBubble}>
                       <header>{m.sender.name}</header>
-                      <div
+                      <SanitizedUserContent
                         className={styles.messageContent}
-                        dangerouslySetInnerHTML={{ __html: m.content }}
+                        html={m.content}
                       />
                     </div>
                   </article>

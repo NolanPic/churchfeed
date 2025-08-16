@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getTimeAgoLabel } from "./ui-utils";
 import UserAvatar from "./UserAvatar";
+import SanitizedUserContent from "./common/SanitizedUserContent";
 
 interface FeedPostProps {
   post: Doc<"posts"> & {
@@ -78,10 +79,7 @@ export default function FeedPost({
               />
             </button>
           </div>
-          <div
-            className={styles.postContent}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          <SanitizedUserContent className={styles.postContent} html={content} />
         </div>
       </article>
     </>

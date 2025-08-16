@@ -8,6 +8,7 @@ import { getTimeAgoLabel } from "./ui-utils";
 import styles from "./PostModalContent.module.css";
 import { useOrganization } from "../context/OrganizationProvider";
 import MessageThread from "./MessageThread";
+import SanitizedUserContent from "./common/SanitizedUserContent";
 
 export default function PostModal({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
@@ -37,9 +38,9 @@ export default function PostModal({ postId }: { postId: Id<"posts"> }) {
               {post.feed ? ` in ${post.feed.name}` : ""}
             </span>
           </p>
-          <div
+          <SanitizedUserContent
             className={styles.postContent}
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            html={post.content}
           />
         </div>
       </div>
