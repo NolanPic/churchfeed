@@ -16,6 +16,7 @@ import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
 import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
+import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -30,6 +31,15 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const orgId = org?._id as Id<"organizations">;
   const { isSignedIn } = useAuthedUser();
   const [openPostId, setOpenPostId] = useState<Id<"posts"> | null>(null);
+
+  const historyRouter = useHistoryRouter((path) => {
+    const segments = path.split("/").filter(Boolean);
+    if (segments[0] === "post" && segments[1]) {
+      setOpenPostId(segments[1] as Id<"posts">);
+    } else {
+      setOpenPostId(null);
+    }
+  });
 
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
 
@@ -97,13 +107,12 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
 
   const handleOpenPost = (postId: Id<"posts">) => {
     setOpenPostId(postId);
-    window.history.pushState(null, "", `/post/${postId}`);
+    historyRouter.push(`/post/${postId}`);
   };
 
   const handleClosePost = () => {
     setOpenPostId(null);
-    const nextUrl = feedId ? `/feed/${feedId}` : `/`;
-    window.history.pushState(null, "", nextUrl);
+    historyRouter.push(feedId ? `/feed/${feedId}` : `/`);
   };
 
   return (
