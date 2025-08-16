@@ -19,9 +19,10 @@ import Modal from "./common/Modal";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
+  postIdSlug?: Id<"posts"> | null;
 }
 
-export default function Feed({ feedIdSlug }: FeedProps) {
+export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const itemsPerPage = 10;
   const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
@@ -31,6 +32,27 @@ export default function Feed({ feedIdSlug }: FeedProps) {
   const [openPostId, setOpenPostId] = useState<Id<"posts"> | null>(null);
 
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
+
+  useEffect(() => {
+    if (postIdSlug) {
+      setOpenPostId(postIdSlug);
+    }
+  }, [postIdSlug]);
+
+  // Keep modal state in sync with browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const path = window.location.pathname;
+      const segments = path.split("/").filter(Boolean);
+      if (segments[0] === "post" && segments[1]) {
+        setOpenPostId(segments[1] as Id<"posts">);
+      } else {
+        setOpenPostId(null);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getUserPosts,
@@ -72,6 +94,17 @@ export default function Feed({ feedIdSlug }: FeedProps) {
     }
     return () => observer.disconnect();
   }, [vh]);
+
+  const handleOpenPost = (postId: Id<"posts">) => {
+    setOpenPostId(postId);
+    window.history.pushState(null, "", `/post/${postId}`);
+  };
+
+  const handleClosePost = () => {
+    setOpenPostId(null);
+    const nextUrl = feedId ? `/feed/${feedId}` : `/`;
+    window.history.pushState(null, "", nextUrl);
+  };
 
   return (
     <>
@@ -115,7 +148,7 @@ export default function Feed({ feedIdSlug }: FeedProps) {
                   key={post._id}
                   post={post}
                   showSourceFeed={!feedId}
-                  onOpenPost={(postId) => setOpenPostId(postId)}
+                  onOpenPost={handleOpenPost}
                 />
               );
             })
@@ -126,7 +159,7 @@ export default function Feed({ feedIdSlug }: FeedProps) {
 
       <Modal
         isOpen={!!openPostId}
-        onClose={() => setOpenPostId(null)}
+        onClose={handleClosePost}
         ariaLabel="Post details and messages"
       >
         {openPostId && <PostModalContent postId={openPostId} />}
