@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/app/components/common/Button";
+import Button from "@/app/components/common/Button";
 import { Input } from "@/app/components/common/Input";
 import styles from "./page.module.css";
 import { useQuery } from "convex/react";
