@@ -37,36 +37,32 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   return (
     <>
       {messages?.length ? (
-        <div className={styles.messages}>
+        <ol className={styles.messages}>
           {messages?.map((m) => {
             const postedAt = m?._creationTime;
             const timeAgoLabel = getTimeAgoLabel(postedAt);
             return (
-              <ol
+              <li
                 className={classNames(styles.message, {
                   [styles.messageSelf]: m.sender._id === user?._id,
                 })}
                 key={m._id}
               >
-                <li>
-                  <article>
-                    <UserAvatar user={m.sender} size={34} />
-                    <div className={styles.messageBubble}>
-                      <header>{m.sender.name}</header>
-                      <SanitizedUserContent
-                        className={styles.messageContent}
-                        html={m.content}
-                      />
-                    </div>
-                  </article>
-                  <span className={styles.messageTimestamp}>
-                    {timeAgoLabel}
-                  </span>
-                </li>
-              </ol>
+                <article>
+                  <UserAvatar user={m.sender} size={34} />
+                  <div className={styles.messageBubble}>
+                    <header>{m.sender.name}</header>
+                    <SanitizedUserContent
+                      className={styles.messageContent}
+                      html={m.content}
+                    />
+                  </div>
+                </article>
+                <span className={styles.messageTimestamp}>{timeAgoLabel}</span>
+              </li>
             );
           })}
-        </div>
+        </ol>
       ) : (
         canSendMessage &&
         messages !== undefined && (

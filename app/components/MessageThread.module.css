@@ -3,17 +3,14 @@
     flex-direction: column;
     gap: var(--spacing11);
     margin-bottom: var(--spacing16);
+    padding: 0;
+    list-style: none;
 }
 
 .message {
-    padding: 0;
-    list-style: none;
-
-    li {
-        display: flex;
-        justify-content: space-between;
-        gap: var(--spacing5);
-    }
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing5);
 
     article {
         display: flex;
@@ -41,9 +38,7 @@
 }
 
 .messageSelf {
-    li {
-        flex-direction: row-reverse;
-    }
+    flex-direction: row-reverse;
 
     article {
         flex-direction: row-reverse;
