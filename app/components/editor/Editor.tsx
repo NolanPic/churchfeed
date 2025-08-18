@@ -1,11 +1,7 @@
 "use client";
 
 import { forwardRef, useEffect, useImperativeHandle } from "react";
-import {
-  useEditor,
-  EditorContent,
-  type Editor as TiptapEditor,
-} from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent } from "@tiptap/core";

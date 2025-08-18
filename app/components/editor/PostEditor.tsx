@@ -63,6 +63,7 @@ export default function PostEditor({
       setIsOpen(false);
       editorRef.current?.clear();
     } catch (error) {
+      console.error(error);
       setError("Failed to create post");
       setIsPosting(false);
     }

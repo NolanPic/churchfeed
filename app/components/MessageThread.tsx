@@ -79,7 +79,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
         </Hint>
       ) : !canSendMessage && isUserLoaded ? (
         <Hint type="info">
-          <p>You don't have permission to send messages in this feed.</p>
+          <p>You don&apos;t have permission to send messages in this feed.</p>
         </Hint>
       ) : (
         <div className={styles.messageEditorWrapper}>

@@ -8,7 +8,7 @@ export default function useHistoryRouter(onHistoryChange: (path: string) => void
       };
       window.addEventListener("popstate", onPopState);
       return () => window.removeEventListener("popstate", onPopState);
-    }, []);
+    }, [onHistoryChange]);
 
     return {
       push: (path: string) => {

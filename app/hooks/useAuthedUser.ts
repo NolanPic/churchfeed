@@ -28,7 +28,7 @@ export const useAuthedUser = () => {
   // build feeds with memberships
   const { feeds, userFeeds } = feedsUserIsMemberOf || { feeds: [], userFeeds: [] };
 
-  let userFeedMap = new Map<Id<"feeds">, Doc<"userFeeds">>();
+  const userFeedMap = new Map<Id<"feeds">, Doc<"userFeeds">>();
   const feedsWithMemberships: FeedWithMembership[] = [];
 
   for(const userFeed of userFeeds) {
