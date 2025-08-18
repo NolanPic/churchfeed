@@ -12,10 +12,10 @@ import SanitizedUserContent from "./common/SanitizedUserContent";
 
 export default function PostModal({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
-  const post = useQuery(api.posts.getById, {
-    orgId: org?._id as Id<"organizations">,
-    postId,
-  });
+  const post = useQuery(
+    api.posts.getById,
+    org?._id ? { orgId: org._id, postId } : "skip"
+  );
 
   const postedAt = post?.postedAt ?? post?._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
