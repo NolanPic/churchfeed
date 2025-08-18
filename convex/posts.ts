@@ -53,8 +53,8 @@ export const getUserPosts = query({
         const messageCount = (
           await ctx.db
             .query("messages")
-            .filter((q) =>
-              q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("postId"), post._id))
+            .withIndex("by_orgId_postId", (q) =>
+              q.eq("orgId", orgId).eq("postId", post._id)
             )
             .collect()
         ).length;
