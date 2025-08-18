@@ -55,7 +55,7 @@ export default defineSchema({
     postId: v.id("posts"),
     senderId: v.id("users"),
     content: v.string(),
-  }),
+  }).index("by_orgId_postId", ["orgId", "postId"]),
   invites: defineTable({
     orgId: v.id("organizations"),
     email: v.string(),

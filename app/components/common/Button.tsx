@@ -25,7 +25,7 @@ interface ButtonAsLink extends BaseButtonProps {
 
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-export const Button: React.FC<ButtonProps> = ({
+const Button: React.FC<ButtonProps> = ({
   children,
   icon,
   className = "",

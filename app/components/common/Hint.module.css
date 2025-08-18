@@ -1,0 +1,54 @@
+.hint {
+  isolation: isolate;
+  position: relative;
+  padding: var(--spacing3) var(--spacing4);
+  border-radius: 12px;
+  border: 1px solid var(--dark);
+  border-left-width: 6px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    z-index: 0;
+  }
+
+  .hintContent {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing3);
+
+    a {
+      color: var(--white);
+      font-weight: 600;
+    }
+  }
+}
+
+.hint.error {
+  border-color: var(--error);
+  &::before {
+    background-color: var(--error);
+  }
+}
+
+.hint.info {
+  border-color: var(--accent);
+  &::before {
+    background-color: inherit;
+  }
+}
+
+.hint.warn {
+  border-color: var(--warning);
+  &::before {
+    background-color: var(--warning);
+  }
+}
+

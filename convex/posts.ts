@@ -50,7 +50,15 @@ export const getUserPosts = query({
         
         const image = author.image ? await ctx.storage.getUrl(author.image) : null;
         const feed = feedMap.get(post.feedId) || null;
-        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content) };
+        const messageCount = (
+          await ctx.db
+            .query("messages")
+            .withIndex("by_orgId_postId", (q) =>
+              q.eq("orgId", orgId).eq("postId", post._id)
+            )
+            .collect()
+        ).length;
+        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content), messageCount };
       })
     );
 
@@ -106,3 +114,44 @@ const canUserCreatePostHelper = async (ctx: MutationCtx, user: Doc<"users">, fee
 
   return feed.memberPermissions?.includes("post") || userFeed.owner;
 }
+
+export const getById = query({
+  args: {
+    orgId: v.id("organizations"),
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, postId } = args;
+
+    const post = await ctx.db.get(postId);
+    if (!post || post.orgId !== orgId) return null;
+
+    // Determine visibility: public + user's member feeds
+    const user = await getAuthenticatedUser(ctx, orgId);
+    const publicFeeds = await getPublicFeeds(ctx, orgId);
+    let allowedFeedIds = new Set<Id<"feeds">>(publicFeeds.map((f) => f._id));
+    if (user) {
+      const { feeds: memberFeeds } = await getUserFeedsWithMembershipsHelper(
+        ctx,
+        user._id
+      );
+      for (const f of memberFeeds) allowedFeedIds.add(f._id);
+    }
+
+    if (!allowedFeedIds.has(post.feedId)) {
+      return null;
+    }
+
+    const author = await ctx.db.get(post.posterId);
+    if (!author) return null;
+    const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+    const feed = await ctx.db.get(post.feedId);
+
+    return {
+      ...post,
+      author: { ...author, image },
+      feed: feed ?? null,
+      content: fromJSONToHTML(post.content),
+    };
+  },
+});

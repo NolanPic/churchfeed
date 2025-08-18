@@ -12,3 +12,9 @@ export const getFormattedTimestamp = (timestamp: number) => {
         return ms(diff);
       }
 };
+
+export const getTimeAgoLabel = (timestamp?: number | null) => {
+    if (!timestamp) return "";
+    if (timestamp > Date.now() - 60000) return "Just now";
+    return getFormattedTimestamp(timestamp) + " ago";
+};

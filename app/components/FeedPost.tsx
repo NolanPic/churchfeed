@@ -1,45 +1,50 @@
 import styles from "./FeedPost.module.css";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
-import { getFormattedTimestamp } from "./ui-utils";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { getTimeAgoLabel } from "./ui-utils";
 import UserAvatar from "./UserAvatar";
+import SanitizedUserContent from "./common/SanitizedUserContent";
 
 interface FeedPostProps {
   post: Doc<"posts"> & {
     author: Omit<Doc<"users">, "image"> & { image: string | null };
   } & {
     feed: Doc<"feeds"> | null;
+    messageCount: number;
   };
   showSourceFeed: boolean;
+  onOpenPost?: (postId: Id<"posts">) => void;
 }
-export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
+export default function FeedPost({
+  post,
+  showSourceFeed,
+  onOpenPost,
+}: FeedPostProps) {
   const { _id, content } = post;
-  const user = useAuthedUser();
 
-  const getTimestamp = () => {
-    const postedAt = post.postedAt ?? post._creationTime;
-
-    return postedAt > Date.now() - 60000
-      ? "Just now"
-      : getFormattedTimestamp(postedAt) + " ago";
-  };
-
-  const timestamp = getTimestamp();
+  const postedAt = post.postedAt ?? post._creationTime;
+  const timeAgoLabel = getTimeAgoLabel(postedAt);
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed) {
       return (
         <>
-          {timestamp}
+          {timeAgoLabel}
           {" in  "}
           <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
         </>
       );
     }
-    return timestamp;
+    return timeAgoLabel;
   };
+
+  const messageCount =
+    post.messageCount > 0
+      ? post.messageCount > 99
+        ? "99+"
+        : post.messageCount
+      : null;
 
   return (
     <>
@@ -48,29 +53,33 @@ export default function FeedPost({ post, showSourceFeed }: FeedPostProps) {
           <UserAvatar user={post.author} size={34} />
         </div>
         <div className={styles.postRight}>
-          <p className={styles.postInfo}>
+          <div className={styles.postInfo}>
             <span className={styles.postAuthorName}>{post.author?.name}</span>
             <span
               className={styles.postTimeAndSourceFeed}
-              title={`Posted ${timestamp} in ${post.feed?.name}`}
+              title={`Posted ${timeAgoLabel} in ${post.feed?.name}`}
             >
               {getTimeAndSourceFeed()}
             </span>
-
-            {user?.isSignedIn && (
+            <button
+              className={styles.postMessageThread}
+              onClick={() => onOpenPost?.(post._id)}
+            >
+              {messageCount && (
+                <span className={styles.postMessageThreadCount}>
+                  {messageCount}
+                </span>
+              )}
               <Image
-                className={styles.postMessageThread}
+                className={styles.postMessageThreadIcon}
                 src="/icons/messages.svg"
                 alt="View message thread"
                 width={20}
                 height={20}
               />
-            )}
-          </p>
-          <div
-            className={styles.postContent}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+            </button>
+          </div>
+          <SanitizedUserContent className={styles.postContent} html={content} />
         </div>
       </article>
     </>

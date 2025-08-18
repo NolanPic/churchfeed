@@ -1,4 +1,4 @@
-import { Doc } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import styles from "./UserAvatar.module.css";
 import classNames from "classnames";
@@ -11,8 +11,12 @@ const getAuthorInitialsAvatar = (authorName?: string) => {
   return initials;
 };
 
+type AvatarUser =
+  | { _id: Id<"users">; name: string; image: string | null }
+  | (Omit<Doc<"users">, "image"> & { image: string | null });
+
 interface UserAvatarProps {
-  user: Omit<Doc<"users">, "image"> & { image: string | null };
+  user: AvatarUser;
   size: number;
   highlight?: boolean;
 }

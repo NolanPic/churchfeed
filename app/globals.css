@@ -17,6 +17,7 @@
   --white: #E0E0E0;
   --gray: #d1d0d0;
   --warning: #F67878;
+  --error: #fa4444;
 
   /* Font sizes */
   --text-sm: 0.75rem; /* 12px */

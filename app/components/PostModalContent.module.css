@@ -1,12 +1,7 @@
-.feedPost {
+.post {
     display: flex;
-    gap: var(--spacing4);
-    padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
+    gap: var(--spacing7);
     font-size: var(--text-base);
-
-    &:not(:last-child) {
-        border-bottom: 0.75px solid var(--light);
-    }
 
     .postAuthorAvatar {
         flex-shrink: 0;
@@ -45,34 +40,6 @@
 
     }
 
-    .postMessageThread {
-        position: relative;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--white);
-
-        &:hover {
-            scale: 1.05;
-        }
-        transition: scale 0.1s ease-in-out;
-    }
-
-    .postMessageThreadCount {
-        position: absolute;
-        bottom: 14px;
-        left: 14px;
-        font-weight: 600;
-        width: 35px;
-    }
-
-    .postMessageThreadIcon {
-        margin-left: auto;
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-    }
-
     .postContent {
         margin-top: var(--spacing2);
 
@@ -88,14 +55,28 @@
     }
 }
 
+.postSeparator {
+    margin: auto;
+    background: var(--light);
+    height: 1px;
+    border: none;
+    margin-top: var(--spacing16);
+    margin-bottom: var(--spacing16);
+}
+
 @media (--sm) {
-    .feedPost {
-        padding: 0 var(--spacing3) var(--spacing8) var(--spacing3);
+    .post {
+        gap: var(--spacing3);
 
         .postAuthorAvatar {
             width: 32px;
             height: 32px;
             font-size: var(--text-sm);
         }
+    }
+
+    .postSeparator {
+        margin-top: var(--spacing8);
+        margin-bottom: var(--spacing8);
     }
 }

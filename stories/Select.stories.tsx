@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
-import { Select, SelectOption } from "../app/components/common/Select";
+import Select, { SelectOption } from "../app/components/common/Select";
 
 const sampleOptions: SelectOption[] = [
   { value: "option1", label: "Option 1" },
@@ -72,10 +71,6 @@ const meta: Meta<typeof Select> = {
       control: "text",
       description: "Helper text to display below the select",
     },
-    required: {
-      control: "boolean",
-      description: "Whether the field is required",
-    },
     disabled: {
       control: "boolean",
       description: "Whether the field is disabled",
@@ -129,7 +124,6 @@ export const WithError: Story = {
     options: sampleOptions,
     placeholder: "Select a category",
     error: "Please select a valid category",
-    required: true,
   },
 };
 
@@ -203,7 +197,6 @@ export const AllStates: Story = {
         label="Required Field"
         options={sampleOptions}
         placeholder="This field is required"
-        required
       />
 
       <Select
@@ -218,7 +211,6 @@ export const AllStates: Story = {
         options={sampleOptions}
         placeholder="Invalid selection"
         error="Please select a valid option"
-        required
       />
 
       <Select

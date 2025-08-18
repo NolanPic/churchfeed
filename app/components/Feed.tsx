@@ -14,20 +14,55 @@ import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
+import PostModalContent from "./PostModalContent";
+import Modal from "./common/Modal";
+import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
+  postIdSlug?: Id<"posts"> | null;
 }
 
-export default function Feed({ feedIdSlug }: FeedProps) {
+export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const itemsPerPage = 10;
   const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const { isSignedIn } = useAuthedUser();
+  const [openPostId, setOpenPostId] = useState<Id<"posts"> | null>(null);
+
+  const historyRouter = useHistoryRouter((path) => {
+    const segments = path.split("/").filter(Boolean);
+    if (segments[0] === "post" && segments[1]) {
+      setOpenPostId(segments[1] as Id<"posts">);
+    } else {
+      setOpenPostId(null);
+    }
+  });
 
   useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
+
+  useEffect(() => {
+    if (postIdSlug) {
+      setOpenPostId(postIdSlug);
+    }
+  }, [postIdSlug]);
+
+  // Keep modal state in sync with browser back/forward
+  useEffect(() => {
+    const onPopState = () => {
+      const path = window.location.pathname;
+      const segments = path.split("/").filter(Boolean);
+      if (segments[0] === "post" && segments[1]) {
+        setOpenPostId(segments[1] as Id<"posts">);
+      } else {
+        setOpenPostId(null);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getUserPosts,
@@ -70,6 +105,16 @@ export default function Feed({ feedIdSlug }: FeedProps) {
     return () => observer.disconnect();
   }, [vh]);
 
+  const handleOpenPost = (postId: Id<"posts">) => {
+    setOpenPostId(postId);
+    historyRouter.push(`/post/${postId}`);
+  };
+
+  const handleClosePost = () => {
+    setOpenPostId(null);
+    historyRouter.push(feedId ? `/feed/${feedId}` : `/`);
+  };
+
   return (
     <>
       <div className={styles.feedSelectorWrapper}>
@@ -108,13 +153,26 @@ export default function Feed({ feedIdSlug }: FeedProps) {
           ) : (
             results.map((post) => {
               return (
-                <FeedPost key={post._id} post={post} showSourceFeed={!feedId} />
+                <FeedPost
+                  key={post._id}
+                  post={post}
+                  showSourceFeed={!feedId}
+                  onOpenPost={handleOpenPost}
+                />
               );
             })
           )}
         </main>
         <div ref={endOfFeed} />
       </div>
+
+      <Modal
+        isOpen={!!openPostId}
+        onClose={handleClosePost}
+        ariaLabel="Post details and messages"
+      >
+        {openPostId && <PostModalContent postId={openPostId} />}
+      </Modal>
     </>
   );
 }

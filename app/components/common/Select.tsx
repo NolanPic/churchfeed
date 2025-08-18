@@ -17,7 +17,6 @@ export interface SelectProps {
   onChange?: (value: string) => void;
   error?: string;
   helperText?: string;
-  required?: boolean;
   disabled?: boolean;
   placeholder?: string;
   prependToSelected?: string;
@@ -34,7 +33,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       onChange,
       error,
       helperText,
-      required = false,
       disabled = false,
       placeholder = "Select an option",
       prependToSelected,
