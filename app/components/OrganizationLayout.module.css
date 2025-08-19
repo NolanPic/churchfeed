@@ -44,7 +44,7 @@
 
 @media (--sm) {
     .mainTitle {
-        margin-top: var(--spacing6);
+        margin-top: var(--spacing24);
     }
 
     .lightPointer {

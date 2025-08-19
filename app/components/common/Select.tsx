@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, forwardRef, useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import styles from "./Select.module.css";
 import Icon from "./Icon";
 
@@ -47,6 +48,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const selectRef = useRef<HTMLButtonElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
+    const [menuPosition, setMenuPosition] = useState<{
+      top: number;
+      left: number;
+      width: number;
+    } | null>(null);
 
     // Support both controlled and uncontrolled modes
     const isControlled = value !== undefined;
@@ -79,10 +85,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     // Close dropdown when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
-        ) {
+        const target = event.target as Node;
+        const clickedInsideTrigger =
+          !!containerRef.current && containerRef.current.contains(target);
+        const clickedInsideMenu =
+          !!listRef.current && listRef.current.contains(target);
+
+        if (!clickedInsideTrigger && !clickedInsideMenu) {
           setIsOpen(false);
           setFocusedIndex(-1);
         }
@@ -93,6 +102,32 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         return () =>
           document.removeEventListener("mousedown", handleClickOutside);
       }
+    }, [isOpen]);
+
+    // Position the dropdown using a portal to avoid clipping by overflow
+    useEffect(() => {
+      if (!isOpen) return;
+
+      const updatePosition = () => {
+        const trigger = containerRef.current;
+        if (!trigger) return;
+        const rect = trigger.getBoundingClientRect();
+        setMenuPosition({
+          top: rect.bottom,
+          left: rect.left,
+          width: rect.width,
+        });
+      };
+
+      updatePosition();
+
+      // Recompute on resize and on any scroll (capture phase to catch scrolling containers)
+      window.addEventListener("resize", updatePosition);
+      document.addEventListener("scroll", updatePosition, true);
+      return () => {
+        window.removeEventListener("resize", updatePosition);
+        document.removeEventListener("scroll", updatePosition, true);
+      };
     }, [isOpen]);
 
     // Handle keyboard navigation
@@ -190,32 +225,43 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             </span>
           </button>
 
-          {isOpen && !disabled && (
-            <ul
-              ref={listRef}
-              id={listboxId}
-              role="listbox"
-              aria-labelledby={selectId}
-              className={styles.optionsList}
-            >
-              {options?.map((option, index) => (
-                <li
-                  key={option?.value}
-                  id={`${selectId}-option-${index}`}
-                  role="option"
-                  aria-selected={option.value === currentValue}
-                  title={option.label}
-                  className={`${styles.option} ${
-                    option.value === currentValue ? styles.selected : ""
-                  } ${index === focusedIndex ? styles.focused : ""}`}
-                  onClick={() => handleOptionClick(option)}
-                  onMouseEnter={() => setFocusedIndex(index)}
-                >
-                  <span className={styles.optionText}>{option.label}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          {isOpen &&
+            !disabled &&
+            typeof document !== "undefined" &&
+            menuPosition &&
+            createPortal(
+              <ul
+                ref={listRef}
+                id={listboxId}
+                role="listbox"
+                aria-labelledby={selectId}
+                className={styles.optionsList}
+                style={{
+                  position: "fixed",
+                  top: menuPosition.top,
+                  left: menuPosition.left,
+                  width: menuPosition.width,
+                }}
+              >
+                {options?.map((option, index) => (
+                  <li
+                    key={option?.value}
+                    id={`${selectId}-option-${index}`}
+                    role="option"
+                    aria-selected={option.value === currentValue}
+                    title={option.label}
+                    className={`${styles.option} ${
+                      option.value === currentValue ? styles.selected : ""
+                    } ${index === focusedIndex ? styles.focused : ""}`}
+                    onClick={() => handleOptionClick(option)}
+                    onMouseEnter={() => setFocusedIndex(index)}
+                  >
+                    <span className={styles.optionText}>{option.label}</span>
+                  </li>
+                ))}
+              </ul>,
+              document.body
+            )}
         </div>
 
         {helperText && !error && (
