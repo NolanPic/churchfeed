@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import ImageDrop from "./ImageDrop";
+import ImageDrop from "../ImageDrop";
 import { Plugin } from "prosemirror-state";
 import type { EditorView } from "prosemirror-view";
 import { TextSelection } from "prosemirror-state";
