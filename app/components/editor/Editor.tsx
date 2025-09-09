@@ -5,6 +5,8 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent } from "@tiptap/core";
+import { Image } from "@tiptap/extension-image";
+import { ImageDropNode } from "./ImageDropNode";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -18,6 +20,10 @@ interface EditorProps {
   onSubmit?: () => void;
   className?: string;
 }
+
+const handleImageUpload = async (file: File): Promise<string> => {
+  return URL.createObjectURL(file);
+};
 
 const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   { placeholder, autofocus = false, onSubmit, className },
@@ -35,6 +41,14 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
         underline: false,
       }),
       Placeholder.configure({ placeholder }),
+      Image,
+      ImageDropNode.configure({
+        accept: "image/*",
+        upload: handleImageUpload,
+        onError: (error: Error) => {
+          console.error(error);
+        },
+      }),
     ],
     autofocus,
     immediatelyRender: false,
@@ -51,6 +65,8 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   );
 
   useEffect(() => {
+    editor?.chain().focus().setImageDrop().run();
+
     return () => {
       editor?.destroy();
     };
