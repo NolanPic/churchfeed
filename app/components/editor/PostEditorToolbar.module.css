@@ -6,10 +6,13 @@
     width: 100%;
 }
 
-.postButton {
-    align-self: flex-end;
-}
-
 .feedSelect {
     max-width: 250px;
+}
+
+.actions {
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing3);
 }

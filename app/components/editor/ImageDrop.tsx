@@ -3,6 +3,8 @@
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import styles from "./ImageDrop.module.css";
+import Icon from "../common/Icon";
 
 const ImageDrop = (props: NodeViewProps) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -39,17 +41,26 @@ const ImageDrop = (props: NodeViewProps) => {
     accept: opts.accept ? { [opts.accept]: [] } : undefined,
   });
 
+  const getText = () => {
+    if (isUploading) return "Uploading...";
+    if (hasError) return "Upload failed";
+    if (isDragActive) return "Drop the file here...";
+    return (
+      <>
+        <p className={styles.withMouse}>
+          Drop an image here, or click to choose
+        </p>
+        <p className={styles.withTouch}>Drop an image here, or tap to choose</p>
+      </>
+    );
+  };
+
   return (
-    <NodeViewWrapper as="div" {...getRootProps()}>
+    <NodeViewWrapper as="div" {...getRootProps()} className={styles.imageDrop}>
       <input {...getInputProps()} />
-      <div>
-        {isUploading
-          ? "Uploading..."
-          : hasError
-            ? "Upload failed"
-            : isDragActive
-              ? "Drop the file here..."
-              : "Drop an image here, or click to choose"}
+      <div className={styles.imageDropInner}>
+        <Icon name="image" size={20} />
+        {getText()}
       </div>
     </NodeViewWrapper>
   );
