@@ -11,6 +11,7 @@ import { Id } from "../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
 import Editor, { EditorHandle } from "./Editor";
 import EditorToolbar from "./EditorToolbar";
+import { EditorCommandsProvider } from "../../context/EditorCommands";
 import Select from "../common/Select";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { isEditorEmpty } from "./editor-utils";
@@ -119,34 +120,38 @@ export default function PostEditor({
         }}
       >
         {error && <div className={styles.error}>{error}</div>}
-        <Editor
-          ref={editorRef}
-          placeholder="What's happening?"
-          autofocus
-          className="tiptap-editor"
-        />
-        <EditorToolbar
-          leftSlot={
-            <Select
-              options={feedOptions}
-              defaultValue={feedIdToPostTo ?? undefined}
-              prependToSelected="Post in: "
-              placeholder={
-                isPostingDisabled ? "No feed memberships" : "Choose a feed"
-              }
-              className={toolbarStyles.feedSelect}
-              disabled={isPostingDisabled}
-              onChange={(value) => setFeedIdToPostTo(value as Id<"feeds">)}
-            />
-          }
-          actionButton={{
-            label: "Post",
-            icon: "send",
-            onClick: feedIdToPostTo ? () => onPost(feedIdToPostTo) : undefined,
-            disabled: isPosting || isPostingDisabled,
-            className: toolbarStyles.postButton,
-          }}
-        />
+        <EditorCommandsProvider>
+          <Editor
+            ref={editorRef}
+            placeholder="What's happening?"
+            autofocus
+            className="tiptap-editor"
+          />
+          <EditorToolbar
+            leftSlot={
+              <Select
+                options={feedOptions}
+                defaultValue={feedIdToPostTo ?? undefined}
+                prependToSelected="Post in: "
+                placeholder={
+                  isPostingDisabled ? "No feed memberships" : "Choose a feed"
+                }
+                className={toolbarStyles.feedSelect}
+                disabled={isPostingDisabled}
+                onChange={(value) => setFeedIdToPostTo(value as Id<"feeds">)}
+              />
+            }
+            actionButton={{
+              label: "Post",
+              icon: "send",
+              onClick: feedIdToPostTo
+                ? () => onPost(feedIdToPostTo)
+                : undefined,
+              disabled: isPosting || isPostingDisabled,
+              className: toolbarStyles.postButton,
+            }}
+          />
+        </EditorCommandsProvider>
       </motion.div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>

@@ -6,7 +6,8 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent } from "@tiptap/core";
 import { Image } from "@tiptap/extension-image";
-import { ImageDropNode } from "./ImageDropNode";
+import { ImageDropNode } from "./tiptap/ImageDropNode";
+import { useRegisterEditorCommands } from "../../context/EditorCommands";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -54,6 +55,8 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     immediatelyRender: false,
   });
 
+  const registerCommands = useRegisterEditorCommands();
+
   useImperativeHandle(
     ref,
     () => ({
@@ -65,12 +68,24 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   );
 
   useEffect(() => {
-    editor?.chain().focus().setImageDrop().run();
+    if (!editor) {
+      registerCommands(null);
+      return;
+    }
+
+    registerCommands({
+      focus: () => {
+        editor.chain().focus().run();
+      },
+      addImageDrop: () => {
+        editor.chain().focus().setImageDrop().run();
+      },
+    });
 
     return () => {
-      editor?.destroy();
+      registerCommands(null);
     };
-  }, [editor]);
+  }, [editor, registerCommands]);
 
   return (
     <EditorContent
