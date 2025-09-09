@@ -4,6 +4,7 @@ import styles from "./PostEditorToolbar.module.css";
 import Button from "../common/Button";
 import { ReactNode } from "react";
 import classNames from "classnames";
+import { useEditorCommands } from "@/app/context/EditorCommands";
 
 interface EditorToolbarProps {
   actionButton: {
@@ -22,17 +23,27 @@ export default function EditorToolbar({
   leftSlot,
   className,
 }: EditorToolbarProps) {
+  const { addImageDrop } = useEditorCommands();
+
   return (
     <div className={classNames(styles.postEditorToolbar, className)}>
       {leftSlot}
-      <Button
-        icon={actionButton.icon}
-        onClick={actionButton.onClick}
-        disabled={actionButton.disabled}
-        className={actionButton.className ?? styles.postButton}
-      >
-        {actionButton.label}
-      </Button>
+      <div className={styles.actions}>
+        <Button
+          icon="image"
+          color="none"
+          onClick={addImageDrop}
+          iconSize={20}
+        />
+        <Button
+          icon={actionButton.icon}
+          onClick={actionButton.onClick}
+          disabled={actionButton.disabled}
+          className={actionButton.className ?? styles.postButton}
+        >
+          {actionButton.label}
+        </Button>
+      </div>
     </div>
   );
 }

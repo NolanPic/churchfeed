@@ -3,10 +3,12 @@ import styles from "./Button.module.css";
 import Icon from "./Icon";
 
 interface BaseButtonProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   icon?: React.ReactNode | string;
   className?: string;
   disabled?: boolean;
+  color?: "primary" | "none";
+  iconSize?: number;
 }
 
 interface ButtonAsButton extends BaseButtonProps {
@@ -30,17 +32,27 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   className = "",
   disabled = false,
+  color = "primary",
+  iconSize,
   ...props
 }) => {
-  const baseClassName = `${styles.button} ${className}`;
+  const hasChildren = !!children;
+  const colorClassName = color === "none" ? styles.colorNone : "";
+  const iconOnlyClassName = !hasChildren ? styles.iconOnly : "";
+  const baseClassName =
+    `${styles.button} ${colorClassName} ${iconOnlyClassName} ${className}`.trim();
 
   const ButtonContent = () => (
     <>
-      <span>{children}</span>
+      {hasChildren && <span>{children}</span>}
       {icon && (
-        <span className={styles.icon} aria-hidden="true">
-          {typeof icon === "string" ? <Icon name={icon} /> : icon}
-        </span>
+        <>
+          {typeof icon === "string" ? (
+            <Icon className={styles.icon} name={icon} size={iconSize} />
+          ) : (
+            icon
+          )}
+        </>
       )}
     </>
   );

@@ -38,6 +38,17 @@ const meta: Meta<ButtonProps> = {
       control: false,
       description: "Optional icon element to display alongside the text",
     },
+    color: {
+      control: "radio",
+      options: ["primary", "none"],
+      description:
+        'Visual style of the button background ("primary" or "none")',
+    },
+    iconSize: {
+      control: { type: "number", min: 12, max: 48, step: 1 },
+      description:
+        "Width/height (px) applied to the icon without changing hit area",
+    },
     onClick: {
       action: "clicked",
       description: "Click handler for button variant",
@@ -202,6 +213,65 @@ export const AllVariants: Story = {
     docs: {
       description: {
         story: "Overview of all button variants side by side.",
+      },
+    },
+  },
+};
+
+// Icon-only stories
+export const IconOnlyPrimary: Story = {
+  args: {
+    icon: <PlayIcon />,
+    color: "primary",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Icon-only button using the primary background. Hit area remains at least 44x44px.",
+      },
+    },
+  },
+};
+
+export const IconOnlyNone: Story = {
+  args: {
+    icon: <PlayIcon />,
+    color: "none",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Icon-only button with no background (color="none"). Focus ring still applies when focused.',
+      },
+    },
+  },
+};
+
+export const IconOnlySizes: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "flex",
+        gap: 12,
+        alignItems: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      <Button icon={<PlayIcon />} color="none" iconSize={16} />
+      <Button icon={<PlayIcon />} color="none" iconSize={20} />
+      <Button icon={<PlayIcon />} color="none" iconSize={24} />
+      <Button icon={<PlayIcon />} color="none" iconSize={28} />
+      <Button icon={<PlayIcon />} color="none" iconSize={32} />
+      <span style={{ marginLeft: 8, color: "#666" }}>(iconSize 16 → 32)</span>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates controlling the icon size without changing the touch target.",
       },
     },
   },

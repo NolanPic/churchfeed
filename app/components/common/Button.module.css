@@ -52,16 +52,32 @@
   }
 }
 
+.colorNone {
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.colorNone:hover,
+.colorNone:active {
+  background-color: transparent;
+  transform: none;
+}
+
+.colorNone:disabled:hover,
+.colorNone[aria-disabled="true"]:hover {
+  background-color: transparent;
+  transform: none;
+}
+
+.iconOnly {
+  padding: 0;
+}
+
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
   flex-shrink: 0;
-
-  svg {
-    width: 100%;
-    height: 100%;
-  }
 }
