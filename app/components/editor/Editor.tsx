@@ -8,6 +8,7 @@ import type { JSONContent } from "@tiptap/core";
 import { Image } from "@tiptap/extension-image";
 import { ImageDropNode } from "./tiptap/ImageDropNode";
 import { useRegisterEditorCommands } from "../../context/EditorCommands";
+import { Focus } from "@tiptap/extensions";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -50,6 +51,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
           console.error(error);
         },
       }),
+      Focus,
     ],
     autofocus,
     immediatelyRender: false,

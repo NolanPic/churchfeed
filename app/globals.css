@@ -155,3 +155,9 @@ h1, h2, h3, h4, h5, h6 {
   -21px 16px 64px -36px rgba(0,0,0,0.25);
   justify-self: center;
 }
+
+.tiptap img.has-focus,
+.tiptap .node-imageDrop.has-focus {
+  border: 1px solid var(--white);
+  border-radius: 12px;
+}
