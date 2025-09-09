@@ -23,14 +23,26 @@ interface EditorProps {
   className?: string;
 }
 
-const handleImageUpload = async (file: File): Promise<string> => {
-  return URL.createObjectURL(file);
-};
+const createdBlobUrls = new Set<string>();
 
 const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   { placeholder, autofocus = false, onSubmit, className },
   ref
 ) {
+  const handleImageUpload = async (file: File): Promise<string> => {
+    const url = URL.createObjectURL(file);
+    createdBlobUrls.add(url);
+    return url;
+  };
+
+  useEffect(() => {
+    return () => {
+      // Revoke all object URLs on unmount
+      createdBlobUrls.forEach((url) => URL.revokeObjectURL(url));
+      createdBlobUrls.clear();
+    };
+  }, []);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({

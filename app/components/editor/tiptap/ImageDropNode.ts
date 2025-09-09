@@ -108,10 +108,13 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
                   tr = tr.replaceSelectionWith(node, false);
                   view.dispatch(tr);
                 })
-                .catch(() => {
+                .catch((error) => {
                   const { state } = view;
                   const tr = state.tr.insertText("Upload failed", start, end);
                   view.dispatch(tr);
+                  if (this.options.onError) {
+                    this.options.onError(error);
+                  }
                 });
 
               return true;

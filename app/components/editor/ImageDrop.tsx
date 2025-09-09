@@ -24,6 +24,7 @@ const ImageDrop = (props: NodeViewProps) => {
       try {
         const url = await opts.upload(file);
         editor.chain().focus().setImage({ src: url }).run();
+        // TODO: after file is uploaded, clean up the blob URL
         deleteNode();
       } catch (error) {
         const err = error as Error;
