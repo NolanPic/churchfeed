@@ -53,6 +53,15 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
         horizontalRule: false,
         strike: false,
         underline: false,
+        link: {
+          protocols: ["https", "http", "mailto"],
+          defaultProtocol: "https",
+          shouldAutoLink: (url) =>
+            url.startsWith("https://") || url.startsWith("mailto:"),
+          HTMLAttributes: {
+            target: "_blank",
+          },
+        },
       }),
       Placeholder.configure({ placeholder }),
       Image,
