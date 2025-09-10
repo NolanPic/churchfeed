@@ -15,7 +15,7 @@ const ImageDrop = (props: NodeViewProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [hasError, setHasError] = useState<string | null>(null);
 
-  const generateUploadUrlForPost = useMutation(
+  const generateUploadUrlForUserContent = useMutation(
     api.uploads.generateUploadUrlForUserContent
   );
 
@@ -43,7 +43,7 @@ const ImageDrop = (props: NodeViewProps) => {
         // TODO: after file is uploaded, clean up the blob URL
         deleteNode();
 
-        const postUrl = await generateUploadUrlForPost({
+        const postUrl = await generateUploadUrlForUserContent({
           orgId: user.organization?._id as Id<"organizations">,
           feedId: feedId as Id<"feeds">,
         });
