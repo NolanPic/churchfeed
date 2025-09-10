@@ -40,17 +40,6 @@
 
     }
 
-    .postContent {
-        margin-top: var(--spacing2);
-
-        p:not(:last-child) {
-            margin-bottom: var(--spacing3);
-        }
-
-        img {
-            border-radius: 12px;
-        }
-    }
 }
 
 .postSeparator {

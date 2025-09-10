@@ -6,9 +6,11 @@ import { Id } from "@/convex/_generated/dataModel";
 import UserAvatar from "./UserAvatar";
 import { getTimeAgoLabel } from "./ui-utils";
 import styles from "./PostModalContent.module.css";
+import userContentStyles from "./shared-styles/user-content.module.css";
 import { useOrganization } from "../context/OrganizationProvider";
 import MessageThread from "./MessageThread";
 import SanitizedUserContent from "./common/SanitizedUserContent";
+import classNames from "classnames";
 
 export default function PostModal({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
@@ -39,7 +41,10 @@ export default function PostModal({ postId }: { postId: Id<"posts"> }) {
             </span>
           </p>
           <SanitizedUserContent
-            className={styles.postContent}
+            className={classNames(
+              styles.postContent,
+              userContentStyles.userContent
+            )}
             html={post.content}
           />
         </div>

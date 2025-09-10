@@ -1,10 +1,12 @@
 import styles from "./FeedPost.module.css";
+import userContentStyles from "./shared-styles/user-content.module.css";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
 import { getTimeAgoLabel } from "./ui-utils";
 import UserAvatar from "./UserAvatar";
 import SanitizedUserContent from "./common/SanitizedUserContent";
+import classNames from "classnames";
 
 interface FeedPostProps {
   post: Doc<"posts"> & {
@@ -79,7 +81,13 @@ export default function FeedPost({
               />
             </button>
           </div>
-          <SanitizedUserContent className={styles.postContent} html={content} />
+          <SanitizedUserContent
+            className={classNames(
+              styles.postContent,
+              userContentStyles.userContent
+            )}
+            html={content}
+          />
         </div>
       </article>
     </>

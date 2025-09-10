@@ -62,7 +62,6 @@
 
 .messageContent {
     img {
-        border-radius: 12px;
         max-width: calc(12vw + 3rem);
         min-width: 100%;
         margin: var(--spacing3) 0;

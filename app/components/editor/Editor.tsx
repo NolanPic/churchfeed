@@ -1,5 +1,7 @@
 "use client";
 
+import userContentStyles from "../shared-styles/user-content.module.css";
+import classNames from "classnames";
 import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -113,7 +115,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   return (
     <EditorContent
       editor={editor}
-      className={className}
+      className={classNames(className, userContentStyles.userContent)}
       onKeyDown={(e) => {
         if (!onSubmit) return;
         const isSubmit = e.key === "Enter" && (e.metaKey || e.ctrlKey);
