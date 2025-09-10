@@ -21,21 +21,21 @@ export function fromJSONToHTML(content: string) {
     let html = '';
 
     try {
-    html = renderToHTMLString({
-        extensions: [
-            StarterKit.configure({
-                bulletList: false,
-                code: false,
-                codeBlock: false,
-                heading: false,
-                horizontalRule: false,
-                strike: false,
-                underline: false,
-            }),
-            Image,
-        ],
-        content: parsedContent,
-    });
+        html = renderToHTMLString({
+            extensions: [
+                StarterKit.configure({
+                    bulletList: false,
+                    code: false,
+                    codeBlock: false,
+                    heading: false,
+                    horizontalRule: false,
+                    strike: false,
+                    underline: false,
+                }),
+                Image,
+            ],
+            content: parsedContent,
+        });
     } catch(error) {
         console.error("Failed to render post content to HTML", error);
     }
