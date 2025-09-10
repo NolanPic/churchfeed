@@ -18,6 +18,7 @@ import type * as messages from "../messages.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
 import type * as seed from "../seed.js";
+import type * as uploads from "../uploads.js";
 import type * as user from "../user.js";
 import type * as utils_postContentConverter from "../utils/postContentConverter.js";
 
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   organizations: typeof organizations;
   posts: typeof posts;
   seed: typeof seed;
+  uploads: typeof uploads;
   user: typeof user;
   "utils/postContentConverter": typeof utils_postContentConverter;
 }>;

@@ -1,5 +1,6 @@
 import { renderToHTMLString } from '@tiptap/static-renderer'
 import StarterKit from "@tiptap/starter-kit";
+import { Image } from "@tiptap/extension-image";
 
 export function fromJSONToHTML(content: string) {
 
@@ -31,6 +32,7 @@ export function fromJSONToHTML(content: string) {
                 strike: false,
                 underline: false,
             }),
+            Image,
         ],
         content: parsedContent,
     });
