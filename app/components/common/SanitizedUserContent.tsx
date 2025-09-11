@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import DOMPurify, { type Config } from "dompurify";
+import { getDOMPurify } from "@/app/utils/dompurify";
+import { type Config } from "dompurify";
 
 export interface SanitizedUserContentProps {
   html: string;
@@ -14,6 +15,8 @@ const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
   className,
   sanitizeOptions,
 }) => {
+  const DOMPurify = getDOMPurify();
+
   const sanitizedHtml = useMemo(() => {
     let options = sanitizeOptions;
     if (!options) {
@@ -22,15 +25,7 @@ const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
       };
     }
 
-    DOMPurify.addHook("afterSanitizeAttributes", function (node) {
-      if ("href" in node) {
-        node.setAttribute("target", "_blank");
-        node.setAttribute("rel", "noopener noreferrer");
-      }
-    });
-
-    if (!html) return "";
-    return DOMPurify.sanitize(html, options);
+    return html ? DOMPurify.sanitize(html, options) : "";
   }, [html, sanitizeOptions]);
 
   return (
