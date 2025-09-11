@@ -34,6 +34,7 @@ export default function EditorToolbar({
           color="none"
           onClick={addImageDrop}
           iconSize={20}
+          ariaLabel="Add image"
         />
         <Button
           icon={actionButton.icon}

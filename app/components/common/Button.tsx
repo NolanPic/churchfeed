@@ -9,6 +9,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   color?: "primary" | "none";
   iconSize?: number;
+  ariaLabel?: string;
 }
 
 interface ButtonAsButton extends BaseButtonProps {
@@ -34,6 +35,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
   color = "primary",
   iconSize,
+  ariaLabel,
   ...props
 }) => {
   const hasChildren = !!children;
@@ -63,6 +65,7 @@ const Button: React.FC<ButtonProps> = ({
         href={props.href}
         className={baseClassName}
         aria-disabled={disabled}
+        aria-label={ariaLabel}
       >
         <ButtonContent />
       </Link>
@@ -75,6 +78,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={props.onClick}
       disabled={disabled}
       className={baseClassName}
+      aria-label={ariaLabel}
     >
       <ButtonContent />
     </button>
