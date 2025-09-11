@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import UserAvatar from "./UserAvatar";
-import { getTimeAgoLabel } from "./ui-utils";
+import { getTimeAgoLabel } from "../utils/ui-utils";
 import styles from "./PostModalContent.module.css";
 import userContentStyles from "./shared-styles/user-content.module.css";
 import { useOrganization } from "../context/OrganizationProvider";

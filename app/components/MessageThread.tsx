@@ -9,7 +9,7 @@ import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { useOrganization } from "../context/OrganizationProvider";
 import styles from "./MessageThread.module.css";
 import userContentStyles from "./shared-styles/user-content.module.css";
-import { getTimeAgoLabel } from "./ui-utils";
+import { getTimeAgoLabel } from "../utils/ui-utils";
 import classNames from "classnames";
 import Hint from "./common/Hint";
 import SanitizedUserContent from "./common/SanitizedUserContent";

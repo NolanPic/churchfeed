@@ -3,7 +3,7 @@ import userContentStyles from "./shared-styles/user-content.module.css";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import Link from "next/link";
-import { getTimeAgoLabel } from "./ui-utils";
+import { getTimeAgoLabel } from "../utils/ui-utils";
 import UserAvatar from "./UserAvatar";
 import SanitizedUserContent from "./common/SanitizedUserContent";
 import classNames from "classnames";
