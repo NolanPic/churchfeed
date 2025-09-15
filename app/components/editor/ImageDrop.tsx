@@ -72,8 +72,13 @@ const ImageDrop = (props: NodeViewProps) => {
 
         deleteNode();
 
+        const orgId = user.organization?._id as Id<"organizations"> | undefined;
+        if (!orgId || !feedId) {
+          throw new Error("No organization or feed found");
+        }
+
         const postUrl = await generateUploadUrlForUserContent({
-          orgId: user.organization?._id as Id<"organizations">,
+          orgId,
           feedId: feedId as Id<"feeds">,
         });
 
