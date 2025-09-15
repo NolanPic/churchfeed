@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState } from "react";
+import { createContext, useState, ReactNode } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
 export const CurrentFeedAndPostContext = createContext<{
@@ -18,7 +18,7 @@ export const CurrentFeedAndPostContext = createContext<{
 export function CurrentFeedAndPostProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [feedId, setFeedId] = useState<Id<"feeds"> | null>(null);
   const [postId, setPostId] = useState<Id<"posts"> | null>(null);
