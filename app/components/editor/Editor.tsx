@@ -46,6 +46,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
             url.startsWith("https://") || url.startsWith("mailto:"),
           HTMLAttributes: {
             target: "_blank",
+            rel: "noopener noreferrer",
           },
         },
       }),
