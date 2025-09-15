@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
-import { useCallback, useEffect, useRef, useState, useContext } from "react";
+import { useCallback, useEffect, useState, useContext } from "react";
 import { useDropzone } from "react-dropzone";
 import styles from "./ImageDrop.module.css";
 import Icon from "../common/Icon";
@@ -35,23 +35,12 @@ const ImageDrop = (props: NodeViewProps) => {
     api.uploads.getStorageUrlForUserContent
   );
 
-  const { editor, deleteNode } = props;
+  const { editor } = props;
   const opts = props.extension.options as ImageDropOptions;
+  const placeholderId: string | null = (props.node?.attrs as any)?.id ?? null;
 
   const user = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
-  const createdBlobUrlsRef = useRef<Set<string>>(new Set());
-
-  const createPreviewUrl = (file: File): string => {
-    const url = URL.createObjectURL(file);
-    createdBlobUrlsRef.current.add(url);
-    return url;
-  };
-
-  const revokeAllPreviews = () => {
-    createdBlobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    createdBlobUrlsRef.current.clear();
-  };
 
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -67,11 +56,6 @@ const ImageDrop = (props: NodeViewProps) => {
       setHasError(null);
 
       try {
-        const previewUrl = createPreviewUrl(file);
-        editor.chain().focus().setImage({ src: previewUrl }).run();
-
-        deleteNode();
-
         const orgId = user.organization?._id as Id<"organizations"> | undefined;
         if (!orgId || !feedId) {
           throw new Error("No organization or feed found");
@@ -100,7 +84,35 @@ const ImageDrop = (props: NodeViewProps) => {
         });
 
         if (storageUrl) {
-          editor.chain().focus().setImage({ src: storageUrl }).run();
+          // Find the placeholder node by id and replace it atomically
+          const { state } = editor;
+          const imageType = state.schema.nodes.image;
+          if (!imageType) throw new Error("Image node type not found");
+
+          let targetPos: number | null = null;
+          let targetNodeSize: number | null = null;
+
+          state.doc.descendants((node, pos) => {
+            if (
+              node.type.name === "imageDrop" &&
+              (node.attrs as any)?.id &&
+              (node.attrs as any).id === placeholderId
+            ) {
+              targetPos = pos;
+              targetNodeSize = node.nodeSize;
+              return false;
+            }
+            return true;
+          });
+
+          if (targetPos != null && targetNodeSize != null) {
+            const tr = state.tr.replaceWith(
+              targetPos,
+              targetPos + targetNodeSize,
+              imageType.create({ src: storageUrl })
+            );
+            editor.view.dispatch(tr);
+          }
         }
       } catch (error) {
         const err = error as Error;
@@ -108,17 +120,16 @@ const ImageDrop = (props: NodeViewProps) => {
         if (opts.onError) opts.onError(err);
       } finally {
         setIsUploading(false);
-        revokeAllPreviews();
       }
     },
     [
       editor,
-      deleteNode,
       opts,
       generateUploadUrlForUserContent,
       getStorageUrlForUserContent,
       feedId,
       user,
+      placeholderId,
     ]
   );
 

@@ -13,6 +13,16 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
   selectable: true,
   draggable: true,
 
+  addAttributes() {
+    return {
+      id: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("data-id"),
+        renderHTML: (attributes) => ({ "data-id": attributes.id }),
+      },
+    };
+  },
+
   addOptions() {
     return {
       accept: "image/*",
@@ -43,8 +53,10 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
     return {
       setImageDrop:
         () =>
-        ({ commands }) =>
-          commands.insertContent({ type: this.name }),
+        ({ commands }) => {
+          const id = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
+          return commands.insertContent({ type: this.name, attrs: { id } });
+        },
     } as const;
   },
 
@@ -99,8 +111,9 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
               if (!imageDropType) return false;
 
               let tr = state.tr;
+              const id = (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`);
               tr = tr.setSelection(TextSelection.create(tr.doc, insertAt));
-              tr = tr.replaceSelectionWith(imageDropType.create(), false);
+              tr = tr.replaceSelectionWith(imageDropType.create({ id }), false);
               view.dispatch(tr);
 
               return true;
