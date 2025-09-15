@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
-import { useCallback, useState, useContext } from "react";
+import { useCallback, useEffect, useRef, useState, useContext } from "react";
 import { useDropzone } from "react-dropzone";
 import styles from "./ImageDrop.module.css";
 import Icon from "../common/Icon";
@@ -10,6 +10,7 @@ import { api } from "../../../convex/_generated/api";
 import { useAuthedUser } from "../../hooks/useAuthedUser";
 import { CurrentFeedAndPostContext } from "../../context/CurrentFeedAndPostProvider";
 import { Id } from "@/convex/_generated/dataModel";
+import { dequeueDroppedFile } from "./uploadQueue";
 
 const ImageDrop = (props: NodeViewProps) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -18,6 +19,17 @@ const ImageDrop = (props: NodeViewProps) => {
   const generateUploadUrlForUserContent = useMutation(
     api.uploads.generateUploadUrlForUserContent
   );
+
+  // If the node was inserted by a global drop, there will be a queued file.
+  // Start processing it automatically on mount.
+  useEffect(() => {
+    const queued = dequeueDroppedFile();
+    if (queued) {
+      handleDrop([queued]);
+    }
+    // Only run on mount; handleDrop is stable due to useCallback deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getStorageUrlForUserContent = useMutation(
     api.uploads.getStorageUrlForUserContent
@@ -28,19 +40,36 @@ const ImageDrop = (props: NodeViewProps) => {
 
   const user = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
+  const createdBlobUrlsRef = useRef<Set<string>>(new Set());
+
+  const createPreviewUrl = (file: File): string => {
+    const url = URL.createObjectURL(file);
+    createdBlobUrlsRef.current.add(url);
+    return url;
+  };
+
+  const revokeAllPreviews = () => {
+    createdBlobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    createdBlobUrlsRef.current.clear();
+  };
+
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
+      const fromQueue = dequeueDroppedFile();
+      if (!fromQueue && acceptedFiles.length > 1) {
+        setHasError("Only one image can be uploaded at a time");
+        return;
+      }
+      const file = fromQueue ?? acceptedFiles[0];
       if (!file) return;
 
       setIsUploading(true);
       setHasError(null);
 
       try {
-        const url = await opts.upload(file);
+        const previewUrl = createPreviewUrl(file);
+        editor.chain().focus().setImage({ src: previewUrl }).run();
 
-        editor.chain().focus().setImage({ src: url }).run();
-        // TODO: after file is uploaded, clean up the blob URL
         deleteNode();
 
         const postUrl = await generateUploadUrlForUserContent({
@@ -72,15 +101,26 @@ const ImageDrop = (props: NodeViewProps) => {
         const err = error as Error;
         setHasError(err.message || "Upload failed");
         if (opts.onError) opts.onError(err);
+      } finally {
         setIsUploading(false);
+        revokeAllPreviews();
       }
     },
-    [editor, deleteNode, opts]
+    [
+      editor,
+      deleteNode,
+      opts,
+      generateUploadUrlForUserContent,
+      getStorageUrlForUserContent,
+      feedId,
+      user,
+    ]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
     multiple: false,
+    maxFiles: 1,
     accept: opts.accept ? { [opts.accept]: [] } : undefined,
   });
 

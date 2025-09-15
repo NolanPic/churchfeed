@@ -4,6 +4,7 @@ import ImageDrop from "../ImageDrop";
 import { Plugin } from "prosemirror-state";
 import type { EditorView } from "prosemirror-view";
 import { TextSelection } from "prosemirror-state";
+import { enqueueDroppedFile } from "../uploadQueue";
 
 export const ImageDropNode = Node.create<ImageDropOptions>({
   name: "imageDrop",
@@ -15,9 +16,6 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
   addOptions() {
     return {
       accept: "image/*",
-      upload: async () => {
-        throw new Error("No upload handler provided");
-      },
       onError: undefined,
     };
   },
@@ -51,7 +49,6 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
   },
 
   addProseMirrorPlugins() {
-    const upload = this.options.upload;
     const accept = this.options.accept;
 
     const isAccepted = (mimeType: string, acceptList?: string): boolean => {
@@ -77,6 +74,11 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
               const e = event as DragEvent;
               const files = e.dataTransfer?.files;
               if (!files || files.length === 0) return false;
+              if (files.length > 1) {
+                // ignore multi-file drops for now
+                e.preventDefault();
+                return true;
+              }
               const file = files[0];
               if (!file || !isAccepted(file.type, accept)) return false;
 
@@ -88,34 +90,18 @@ export const ImageDropNode = Node.create<ImageDropOptions>({
               };
               const posAt = view.posAtCoords(coords);
               const insertAt = posAt ? posAt.pos : view.state.selection.from;
-              const placeholder = "Uploading image...";
 
-              view.dispatch(view.state.tr.insertText(placeholder, insertAt));
+              // enqueue the file so the node view can pick it up
+              enqueueDroppedFile(file);
 
-              const start = insertAt;
-              const end = insertAt + placeholder.length;
+              const { state } = view;
+              const imageDropType = state.schema.nodes.imageDrop;
+              if (!imageDropType) return false;
 
-              upload(file)
-                .then((url) => {
-                  const { state } = view;
-                  let tr = state.tr.delete(start, end);
-                  
-                  tr = tr.setSelection(TextSelection.create(tr.doc, start));
-                  
-                  const imageType = state.schema.nodes.image;
-                  const node = imageType.create({ src: url });
-                  
-                  tr = tr.replaceSelectionWith(node, false);
-                  view.dispatch(tr);
-                })
-                .catch((error) => {
-                  const { state } = view;
-                  const tr = state.tr.insertText("Upload failed", start, end);
-                  view.dispatch(tr);
-                  if (this.options.onError) {
-                    this.options.onError(error);
-                  }
-                });
+              let tr = state.tr;
+              tr = tr.setSelection(TextSelection.create(tr.doc, insertAt));
+              tr = tr.replaceSelectionWith(imageDropType.create(), false);
+              view.dispatch(tr);
 
               return true;
             },
