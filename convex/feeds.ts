@@ -62,7 +62,7 @@ export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) 
   return publicFeeds;
 };
 
-export const userPermissionsHelper = async (ctx: MutationCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
+export const userPermissionsHelper = async (ctx: QueryCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
   const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
 
   const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
@@ -76,7 +76,7 @@ export const userPermissionsHelper = async (ctx: MutationCtx, user: Doc<"users">
   }
 
   return {
-    memberPermissions: feed.memberPermissions,
+    memberPermissions: feed.memberPermissions ?? [],
     isOwner: userFeed.owner,
   }
 }
