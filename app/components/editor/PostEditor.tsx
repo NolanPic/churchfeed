@@ -148,7 +148,6 @@ export default function PostEditor({
                 ? () => onPost(feedIdToPostTo)
                 : undefined,
               disabled: isPosting || isPostingDisabled,
-              className: toolbarStyles.postButton,
             }}
           />
         </EditorCommandsProvider>

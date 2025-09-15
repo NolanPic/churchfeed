@@ -12,7 +12,6 @@ interface EditorToolbarProps {
     icon?: string;
     onClick?: () => void;
     disabled?: boolean;
-    className?: string;
   };
   leftSlot?: ReactNode;
   className?: string;
@@ -40,7 +39,6 @@ export default function EditorToolbar({
           icon={actionButton.icon}
           onClick={actionButton.onClick}
           disabled={actionButton.disabled}
-          className={actionButton.className ?? styles.postButton}
         >
           {actionButton.label}
         </Button>
