@@ -2,34 +2,48 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAuth } from "./user";
 import { userPermissionsHelper } from "./feeds";
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrlForUserContent = mutation({   
     args: {
       orgId: v.id("organizations"),
-      feedId: v.id("feeds"),
       postId: v.optional(v.id("posts")),
+      feedId: v.optional(v.id("feeds")),
     },
     handler: async (ctx, args) => {
-      const { orgId, feedId, postId } = args;
+      const { orgId, postId, feedId } = args;
 
-      const authResult = await requireAuth(ctx, orgId);
-      const { user } = authResult;
-  
-      const feedToPostIn = feedId ? await ctx.db.get(feedId) : null;
-      const postToMessageIn = postId ? await ctx.db.get(postId) : null;
+      const { user } = await requireAuth(ctx, orgId);
 
-      if((!feedToPostIn && !postToMessageIn) || feedToPostIn?.orgId !== orgId) {
-        throw new Error("Feed or post not found");
+      const userAction = postId ? "messageInPost" : "postInFeed";
+
+      if(feedId) {
+        const feed = await ctx.db.get(feedId);
+
+        if(!feed || feed.orgId !== orgId) {
+          throw new Error("Feed not found");
+        }
+      }
+      else {
+        throw new Error("Feed id not found");
+      }
+
+      if(postId) {
+        const post = await ctx.db.get(postId);
+        
+        if(!post || post.orgId !== orgId || post.feedId !== feedId) {
+          throw new Error("Post not found");
+        }
       }
   
       const { memberPermissions, isOwner } = await userPermissionsHelper(ctx, user, feedId);
 
-      if(postToMessageIn) {
-        if(!memberPermissions?.includes("message") && !isOwner) {
+      if(userAction === "messageInPost") {
+        if(!canUserMessageInPost(memberPermissions, isOwner)) {
           throw new Error("User does not have permission to message in this post");
         }
-      } else { // user is posting in a feed
-        if(!memberPermissions?.includes("post") && !isOwner) {
+      } else if(userAction === "postInFeed") {
+        if(!canUserPostInFeed(memberPermissions, isOwner)) {
           throw new Error("User does not have permission to post in this feed");
         }
       }
@@ -53,3 +67,11 @@ export const generateUploadUrlForUserContent = mutation({
       return storageUrl;
     }
   });
+
+  const canUserPostInFeed = (memberPermissions: string[], isOwner: boolean) => {
+    return memberPermissions?.includes("post") || isOwner;
+  };
+
+  const canUserMessageInPost = (memberPermissions: string[], isOwner: boolean) => {
+    return memberPermissions?.includes("message") || isOwner;
+  };

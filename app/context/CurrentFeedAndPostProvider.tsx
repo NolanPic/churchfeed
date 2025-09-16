@@ -4,13 +4,13 @@ import { createContext, useState, ReactNode } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
 export const CurrentFeedAndPostContext = createContext<{
-  feedId: Id<"feeds"> | null;
-  postId: Id<"posts"> | null;
-  setFeedId: (feedId: Id<"feeds"> | null) => void;
-  setPostId: (postId: Id<"posts"> | null) => void;
+  feedId?: Id<"feeds">;
+  postId?: Id<"posts">;
+  setFeedId: (feedId?: Id<"feeds">) => void;
+  setPostId: (postId?: Id<"posts">) => void;
 }>({
-  feedId: null as Id<"feeds"> | null,
-  postId: null as Id<"posts"> | null,
+  feedId: undefined as Id<"feeds"> | undefined,
+  postId: undefined as Id<"posts"> | undefined,
   setFeedId: () => {},
   setPostId: () => {},
 });
@@ -20,8 +20,8 @@ export function CurrentFeedAndPostProvider({
 }: {
   children: ReactNode;
 }) {
-  const [feedId, setFeedId] = useState<Id<"feeds"> | null>(null);
-  const [postId, setPostId] = useState<Id<"posts"> | null>(null);
+  const [feedId, setFeedId] = useState<Id<"feeds">>();
+  const [postId, setPostId] = useState<Id<"posts">>();
 
   return (
     <CurrentFeedAndPostContext.Provider

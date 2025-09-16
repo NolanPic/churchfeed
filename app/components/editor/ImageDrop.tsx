@@ -40,7 +40,7 @@ const ImageDrop = (props: NodeViewProps) => {
   const placeholderId: string | null = (props.node?.attrs as any)?.id ?? null;
 
   const user = useAuthedUser();
-  const { feedId } = useContext(CurrentFeedAndPostContext);
+  const { feedId, postId } = useContext(CurrentFeedAndPostContext);
 
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -63,7 +63,8 @@ const ImageDrop = (props: NodeViewProps) => {
 
         const postUrl = await generateUploadUrlForUserContent({
           orgId,
-          feedId: feedId as Id<"feeds">,
+          feedId,
+          postId,
         });
 
         const result = await fetch(postUrl, {
