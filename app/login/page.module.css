@@ -1,9 +1,9 @@
 .signinCard {
     background-color: var(--mid);
     border-radius: 12px;
-    width: 400px;
-    height: 368px;
-    margin: 0 auto;
+    max-width: calc(100% - var(--spacing8));
+    margin: 0 var(--spacing4);
+    height: auto;
     padding: var(--spacing9) var(--spacing14);
 
     form {
@@ -37,11 +37,12 @@
     }
 }
 
-@media (--sm) {
+@media (--tablet) {
     .signinCard {
-        max-width: calc(100% - var(--spacing8));
-        margin: 0 var(--spacing4);
-        height: auto;
+        width: 400px;
+        height: 368px;
+        max-width: initial;
+        margin: 0 auto;
     }
 }
 

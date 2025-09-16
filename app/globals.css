@@ -1,11 +1,9 @@
-:root {
-
   /* Breakpoints */
-  @custom-media --xs (width <= 22.5rem); /* 360px */
-  @custom-media --sm (width <= 30rem); /* 480px */
-  @custom-media --md (width <= 48rem); /* 768px */
-  @custom-media --lg (width <= 64rem); /* 1024px */
-  @custom-media --xl (width <= 90rem); /* 1440 */
+  @custom-media --tablet (min-width: 34.375rem); /* 550px */
+  @custom-media --laptop (min-width: 68.75rem); /* 1100px */
+  @custom-media --desktop (min-width: 93.75rem); /* 1500px */
+
+:root {
 
   /* Colors */
   --dark: #2D3250;
@@ -52,10 +50,6 @@
   --spacing22: 5.5rem;   /* 88px */
   --spacing23: 5.75rem;  /* 92px */
   --spacing24: 6rem;     /* 96px */
-
-  @media (--sm) {
-    --text-xl: 2.5rem;
-  }
 }
 
 html,

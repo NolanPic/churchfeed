@@ -7,6 +7,9 @@
     color: var(--dark);
     font-weight: 600;
     flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-sm);
 
     &.highlight {
         border: 1px solid var(--accent);
@@ -20,10 +23,10 @@
     }
 }
 
-@media (--sm) {
+@media (--tablet) {
     .userAvatar {
-        width: 32px;
-        height: 32px;
-        font-size: var(--text-sm);
+        width: initial;
+        height: initial;
+        font-size: initial;
     }
 }

@@ -1,10 +1,13 @@
 .post {
     display: flex;
-    gap: var(--spacing7);
+    gap: var(--spacing3);
     font-size: var(--text-base);
 
     .postAuthorAvatar {
         flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        font-size: var(--text-sm);
     }
 
     .postRight {
@@ -47,23 +50,23 @@
     background: var(--light);
     height: 1px;
     border: none;
-    margin-top: var(--spacing16);
-    margin-bottom: var(--spacing16);
+    margin-top: var(--spacing8);
+    margin-bottom: var(--spacing8);
 }
 
-@media (--sm) {
+@media (--tablet) {
     .post {
-        gap: var(--spacing3);
+        gap: var(--spacing7);
 
         .postAuthorAvatar {
-            width: 32px;
-            height: 32px;
-            font-size: var(--text-sm);
+            width: initial;
+            height: initial;
+            font-size: initial;
         }
     }
 
     .postSeparator {
-        margin-top: var(--spacing8);
-        margin-bottom: var(--spacing8);
+        margin-top: var(--spacing16);
+        margin-bottom: var(--spacing16);
     }
 }
