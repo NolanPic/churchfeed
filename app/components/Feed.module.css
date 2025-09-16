@@ -13,13 +13,13 @@
         font-family: var(--font-gentium-plus);
         font-style: italic;
         font-weight: 400;
-        font-size: var(--text-lg);
-        padding: var(--spacing11) 0;
+        font-size: var(--text-md);
+        padding: var(--spacing5) 0 var(--spacing4) 0;
         text-align: center;
     }
 
     .feedIntroRule {
-        --intro-rule-width: 210px;
+        --intro-rule-width: 68px;
         width: var(--intro-rule-width);
         margin: auto;
         border-bottom: 0.75px solid var(--light);
@@ -35,15 +35,15 @@
 
 
 
-@media (--sm) {
+@media (--tablet) {
     .feedWrapper {
         .feedIntro {
-            font-size: var(--text-md);
-            padding: var(--spacing5) 0 var(--spacing4) 0;
+            font-size: var(--text-lg);
+            padding: var(--spacing11) 0;
         }
 
         .feedIntroRule {
-            --intro-rule-width: 68px;
+            --intro-rule-width: 210px;
         }
     }
 }

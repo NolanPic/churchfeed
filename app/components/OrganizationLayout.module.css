@@ -17,20 +17,20 @@
 }
 
 .mainTitle {
-    margin-top: 142px;
+    margin-top: var(--spacing24);
     font-size: var(--text-xxl);
 }
 
 .location {
-    font-size: var(--text-md);
+    font-size: var(--text-base);
 }
 
 .lightPointer {
-    --pointer-height: 52px;
+    --pointer-height: 30px;
     height: var(--pointer-height);
     width: 3px;
     background-color: var(--accent);
-    margin: var(--spacing11) auto;
+    margin: var(--spacing7) auto;
 }
 
 .notFound {
@@ -42,17 +42,17 @@
     margin: 0 var(--spacing6)
 }
 
-@media (--sm) {
+@media (--tablet) {
     .mainTitle {
-        margin-top: var(--spacing24);
+        margin-top: 142px;
     }
 
     .lightPointer {
-        --pointer-height: 30px;
-        margin: var(--spacing7) auto;
+        --pointer-height: 52px;
+        margin: var(--spacing11) auto;
     }
 
     .location {
-        font-size: var(--text-base);
+        font-size: var(--text-md);
     }
 }

@@ -1,7 +1,7 @@
 .feedPost {
     display: flex;
     gap: var(--spacing4);
-    padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
+    padding: 0 var(--spacing3) var(--spacing8) var(--spacing3);
     font-size: var(--text-base);
 
     &:not(:last-child) {
@@ -10,6 +10,9 @@
 
     .postAuthorAvatar {
         flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        font-size: var(--text-sm);
     }
 
     .postRight {
@@ -75,14 +78,14 @@
 
 }
 
-@media (--sm) {
+@media (--tablet) {
     .feedPost {
-        padding: 0 var(--spacing3) var(--spacing8) var(--spacing3);
+        padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
 
         .postAuthorAvatar {
-            width: 32px;
-            height: 32px;
-            font-size: var(--text-sm);
+            width: initial;
+            height: initial;
+            font-size: initial;
         }
     }
 }
