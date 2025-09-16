@@ -8,7 +8,8 @@ import MessageEditor from "./editor/MessageEditor";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { useOrganization } from "../context/OrganizationProvider";
 import styles from "./MessageThread.module.css";
-import { getTimeAgoLabel } from "./ui-utils";
+import userContentStyles from "./shared-styles/user-content.module.css";
+import { getTimeAgoLabel } from "../utils/ui-utils";
 import classNames from "classnames";
 import Hint from "./common/Hint";
 import SanitizedUserContent from "./common/SanitizedUserContent";
@@ -53,7 +54,10 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
                   <div className={styles.messageBubble}>
                     <header>{m.sender.name}</header>
                     <SanitizedUserContent
-                      className={styles.messageContent}
+                      className={classNames(
+                        styles.messageContent,
+                        userContentStyles.userContent
+                      )}
                       html={m.content}
                     />
                   </div>

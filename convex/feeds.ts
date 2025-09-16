@@ -1,6 +1,6 @@
-import { query, QueryCtx } from "./_generated/server";
+import { MutationCtx, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
 import { getAuthenticatedUser } from "./user";
 
@@ -61,3 +61,22 @@ export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) 
 
   return publicFeeds;
 };
+
+export const userPermissionsHelper = async (ctx: QueryCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
+  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+
+  const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
+  const userFeed = userFeedsWithMemberships.userFeeds.find(userFeed => userFeed.feedId === feedId);
+
+  if(!feed || !userFeed) {
+    return {
+      memberPermissions: [],
+      isOwner: false,
+    };
+  }
+
+  return {
+    memberPermissions: feed.memberPermissions ?? [],
+    isOwner: userFeed.owner,
+  }
+}

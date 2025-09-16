@@ -3,7 +3,7 @@
 import styles from "./Feed.module.css";
 import FeedSelector from "./FeedSelector";
 import { usePaginatedQuery } from "convex/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import FeedPost from "./FeedPost";
@@ -17,6 +17,7 @@ import { useAuthedUser } from "../hooks/useAuthedUser";
 import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
+import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -25,12 +26,16 @@ interface FeedProps {
 
 export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const itemsPerPage = 10;
-  const [feedId, setFeedId] = useState<Id<"feeds"> | null>(feedIdSlug);
+  const {
+    feedId,
+    postId: openPostId,
+    setFeedId,
+    setPostId: setOpenPostId,
+  } = useContext(CurrentFeedAndPostContext);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const { isSignedIn } = useAuthedUser();
-  const [openPostId, setOpenPostId] = useState<Id<"posts"> | null>(null);
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
