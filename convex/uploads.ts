@@ -2,7 +2,6 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAuth } from "./user";
 import { userPermissionsHelper } from "./feeds";
-import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrlForUserContent = mutation({   
     args: {
@@ -48,8 +47,7 @@ export const generateUploadUrlForUserContent = mutation({
         }
       }
   
-      const uploadUrl = await ctx.storage.generateUploadUrl();
-      return uploadUrl;
+      return await ctx.storage.generateUploadUrl();
     }
   });
 
@@ -64,6 +62,11 @@ export const generateUploadUrlForUserContent = mutation({
       await requireAuth(ctx, orgId);
 
       const storageUrl = await ctx.storage.getUrl(storageId);
+
+      if(!storageUrl) {
+        throw new Error("Storage url not found");
+      }
+
       return storageUrl;
     }
   });
