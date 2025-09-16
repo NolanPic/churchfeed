@@ -37,7 +37,8 @@ const ImageDrop = (props: NodeViewProps) => {
 
   const { editor } = props;
   const opts = props.extension.options as ImageDropOptions;
-  const placeholderId: string | null = (props.node?.attrs as any)?.id ?? null;
+  const placeholderId: string | null =
+    (props.node?.attrs as { id?: string } | undefined)?.id ?? null;
 
   const user = useAuthedUser();
   const { feedId, postId } = useContext(CurrentFeedAndPostContext);
@@ -96,8 +97,8 @@ const ImageDrop = (props: NodeViewProps) => {
           state.doc.descendants((node, pos) => {
             if (
               node.type.name === "imageDrop" &&
-              (node.attrs as any)?.id &&
-              (node.attrs as any).id === placeholderId
+              (node.attrs as { id?: string }).id &&
+              (node.attrs as { id?: string }).id === placeholderId
             ) {
               targetPos = pos;
               targetNodeSize = node.nodeSize;
@@ -131,6 +132,7 @@ const ImageDrop = (props: NodeViewProps) => {
       feedId,
       user,
       placeholderId,
+      postId,
     ]
   );
 

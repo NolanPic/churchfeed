@@ -64,11 +64,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const listboxId = `${selectId}-listbox`;
     const errorId = error ? `${selectId}-error` : undefined;
     const helperTextId = helperText ? `${selectId}-helper` : undefined;
-
-    // Generate ID for the currently focused option
-    const focusedOptionId =
-      focusedIndex >= 0 ? `${selectId}-option-${focusedIndex}` : undefined;
-
     const hasError = Boolean(error);
     const selectedOption = options?.find(
       (option) => option.value === currentValue
@@ -203,15 +198,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             disabled={disabled}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
-            aria-activedescendant={
-              isOpen && focusedOptionId ? focusedOptionId : undefined
-            }
             aria-label={!label ? placeholder : undefined}
             aria-labelledby={label ? selectId : undefined}
             aria-describedby={
               [errorId, helperTextId].filter(Boolean).join(" ") || undefined
             }
-            aria-invalid={hasError}
             onClick={() => !disabled && setIsOpen(!isOpen)}
             onKeyDown={handleKeyDown}
             className={`${styles.select} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
@@ -224,7 +215,6 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               <Icon name="dropdown-arrow" size={10} />
             </span>
           </button>
-
           {isOpen &&
             !disabled &&
             typeof document !== "undefined" &&

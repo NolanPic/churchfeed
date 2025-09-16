@@ -42,17 +42,21 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     if (segments[0] === "post" && segments[1]) {
       setOpenPostId(segments[1] as Id<"posts">);
     } else {
-      setOpenPostId(null);
+      setOpenPostId(undefined);
     }
   });
 
-  useEffect(() => setFeedId(feedIdSlug), [org, feedIdSlug]);
+  // Fix TS type mismatch: context setter expects undefined to clear, not null
+  useEffect(
+    () => setFeedId(feedIdSlug ?? undefined),
+    [org, feedIdSlug, setFeedId]
+  );
 
   useEffect(() => {
     if (postIdSlug) {
       setOpenPostId(postIdSlug);
     }
-  }, [postIdSlug]);
+  }, [postIdSlug, setOpenPostId]);
 
   // Keep modal state in sync with browser back/forward
   useEffect(() => {
@@ -62,12 +66,12 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
       if (segments[0] === "post" && segments[1]) {
         setOpenPostId(segments[1] as Id<"posts">);
       } else {
-        setOpenPostId(null);
+        setOpenPostId(undefined);
       }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, []);
+  }, [setOpenPostId]);
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.posts.getUserPosts,
@@ -116,7 +120,7 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   };
 
   const handleClosePost = () => {
-    setOpenPostId(null);
+    setOpenPostId(undefined);
     historyRouter.push(feedId ? `/feed/${feedId}` : `/`);
   };
 
@@ -125,8 +129,8 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
       <div className={styles.feedSelectorWrapper}>
         <FeedSelector
           orgId={orgId}
-          selectedFeedId={feedId}
-          setSelectedFeedId={setFeedId}
+          selectedFeedId={feedId ?? null}
+          setSelectedFeedId={(id) => setFeedId(id ?? undefined)}
         />
       </div>
       <div className={styles.feedWrapper}>
@@ -141,7 +145,7 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
             <PostEditor
               isOpen={isNewPostOpen}
               setIsOpen={setIsNewPostOpen}
-              feedId={feedId}
+              feedId={feedId ?? null}
             />
           )}
         </AnimatePresence>

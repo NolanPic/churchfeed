@@ -26,7 +26,7 @@ const SanitizedUserContent: React.FC<SanitizedUserContentProps> = ({
     }
 
     return html ? DOMPurify.sanitize(html, options) : "";
-  }, [html, sanitizeOptions]);
+  }, [html, sanitizeOptions, DOMPurify]);
 
   return (
     <div
