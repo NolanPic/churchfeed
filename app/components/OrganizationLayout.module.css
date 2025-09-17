@@ -7,9 +7,7 @@
 }
 
 .userAvatarMenu {
-    position: absolute;
-    top: var(--spacing9);
-    right: var(--spacing9);
+    display: none;
 }
 
 .mainTitle,
@@ -48,5 +46,12 @@
 
     .location {
         font-size: var(--text-md);
+    }
+
+    .userAvatarMenu {
+        display: block;
+        position: absolute;
+        top: var(--spacing9);
+        right: var(--spacing9);
     }
 }
