@@ -60,9 +60,20 @@ body {
 }
 
 body {
-  background-color: var(--dark);
+  position: relative;
   color: var(--white);
   font-family: var(--font-lato);
+
+  &::before {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    content: "";
+    width: 100dvw;
+    height: 100dvh;
+    background: linear-gradient(to top, var(--dark), #5B628B);
+  }
 }
 
 /* 1. Use a more-intuitive box-sizing model */
