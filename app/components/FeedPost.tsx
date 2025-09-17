@@ -27,14 +27,19 @@ export default function FeedPost({
 
   const postedAt = post.postedAt ?? post._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
+  const postedInLink = (
+    <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
+  );
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed) {
       return (
         <>
           {timeAgoLabel}
-          {" in  "}
-          <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
+          <span className={styles.postedIn_tabletUp}>
+            {" in  "}
+            {postedInLink}
+          </span>
         </>
       );
     }
@@ -49,47 +54,42 @@ export default function FeedPost({
       : null;
 
   return (
-    <>
-      <article key={_id} className={styles.feedPost}>
-        <div className={styles.postAuthorAvatar}>
-          <UserAvatar user={post.author} size={34} />
+    <article key={_id} className={styles.postWrapper}>
+      <div className={styles.post}>
+        <div className={styles.authorAvatar}>
+          <UserAvatar user={post.author} size={24} />
         </div>
-        <div className={styles.postRight}>
-          <div className={styles.postInfo}>
-            <span className={styles.postAuthorName}>{post.author?.name}</span>
-            <span
-              className={styles.postTimeAndSourceFeed}
-              title={`Posted ${timeAgoLabel} in ${post.feed?.name}`}
-            >
-              {getTimeAndSourceFeed()}
-            </span>
-            <button
-              className={styles.postMessageThread}
-              onClick={() => onOpenPost?.(post._id)}
-            >
-              {messageCount && (
-                <span className={styles.postMessageThreadCount}>
-                  {messageCount}
-                </span>
-              )}
-              <Image
-                className={styles.postMessageThreadIcon}
-                src="/icons/messages.svg"
-                alt="View message thread"
-                width={20}
-                height={20}
-              />
-            </button>
-          </div>
-          <SanitizedUserContent
-            className={classNames(
-              styles.postContent,
-              userContentStyles.userContent
-            )}
-            html={content}
+        <p className={styles.authorName}>{post.author?.name}</p>
+        <p
+          className={styles.metadata}
+          title={`Posted ${timeAgoLabel} in ${post.feed?.name}`}
+        >
+          {getTimeAndSourceFeed()}
+        </p>
+        <button
+          className={styles.messageThreadButton}
+          onClick={() => onOpenPost?.(post._id)}
+        >
+          {messageCount && (
+            <span className={styles.messageThreadCount}>{messageCount}</span>
+          )}
+          <Image
+            className={styles.messageThreadIcon}
+            src="/icons/messages.svg"
+            alt="View message thread"
+            width={20}
+            height={20}
           />
-        </div>
-      </article>
-    </>
+        </button>
+        <SanitizedUserContent
+          className={classNames(styles.content, userContentStyles.userContent)}
+          html={content}
+        />
+      </div>
+
+      {showSourceFeed && (
+        <p className={styles.postedIn}>Posted in {postedInLink}</p>
+      )}
+    </article>
   );
 }

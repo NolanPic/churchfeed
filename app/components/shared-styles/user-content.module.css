@@ -1,6 +1,4 @@
 .userContent {
-    margin-top: var(--spacing2);
-
     & a {
         color: var(--white);
         text-decoration: underline;
@@ -14,6 +12,7 @@
 
     & img {
         border-radius: 12px;
+        margin-bottom: var(--spacing3);
     }
 
     p:not(:last-child) {

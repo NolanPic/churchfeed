@@ -65,30 +65,20 @@ body {
   position: relative;
   color: var(--white);
   font-family: var(--font-lato);
-
-  &::before {
-    position: fixed;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    content: "";
-    width: 100dvw;
-    height: 100dvh;
-    background: linear-gradient(to top, var(--dark), #5B628B);
-  }
+  background-color: var(--mid);
 }
 
-/* 1. Use a more-intuitive box-sizing model */
+/* Use a more-intuitive box-sizing model */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* 2. Remove default margin */
+/* Remove default margin */
 * {
   margin: 0;
 }
 
-/* 3. Enable keyword animations */
+/* Enable keyword animations */
 @media (prefers-reduced-motion: no-preference) {
   html {
     interpolate-size: allow-keywords;
@@ -96,29 +86,29 @@ body {
 }
 
 body {
-  /* 4. Add accessible line-height */
+  /* Add accessible line-height */
   line-height: 1.5;
-  /* 5. Improve text rendering */
+  /* Improve text rendering */
   -webkit-font-smoothing: antialiased;
 }
 
-/* 6. Improve media defaults */
+/* Improve media defaults */
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
 
-/* 7. Inherit fonts for form controls */
+/* Inherit fonts for form controls */
 input, button, textarea, select {
   font: inherit;
 }
 
-/* 8. Avoid text overflows */
+/* Avoid text overflows */
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-/* 9. Improve line wrapping */
+/* Improve line wrapping */
 p {
   text-wrap: pretty;
 }
@@ -126,11 +116,31 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+/* Improve links */
+a {
+  color: var(--white);
+}
+
 /*
-  10. Create a root stacking context
+  Create a root stacking context
 */
 #root, #__next {
   isolation: isolate;
+}
+
+@media (--tablet) {
+  body {
+    &::before {
+      position: fixed;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      content: "";
+      width: 100dvw;
+      height: 100dvh;
+      background: linear-gradient(to top, var(--dark), #5B628B);
+    }
+  }
 }
 
 /* Tiptap */

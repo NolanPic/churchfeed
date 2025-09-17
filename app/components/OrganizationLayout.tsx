@@ -24,31 +24,34 @@ export default function OrganizationLayout({
   }
 
   return (
-    <div className={styles.feedWrapper}>
+    <>
       {pathname !== "/login" && (
         <div className={styles.userAvatarMenu}>
           <UserAvatarMenu />
         </div>
       )}
-      <h1 className={styles.mainTitle}>{org?.name}</h1>
-      <h2 className={styles.location}>{org?.location}</h2>
-      <Image
-        src="icons/chevron-down.svg"
-        role="presentation"
-        alt=""
-        width={22}
-        height={22}
-        className={styles.lightPointer}
-      />
+      <section className={styles.header}>
+        <h1 className={styles.mainTitle}>{org?.name}</h1>
+        <h2 className={styles.location}>{org?.location}</h2>
+        <Image
+          src="icons/chevron-down.svg"
+          role="presentation"
+          alt=""
+          width={22}
+          height={22}
+          className={styles.lightPointer}
+        />
+      </section>
       {org?._id && (
-        <motion.div
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
+          className={styles.feedWrapper}
         >
           {children}
-        </motion.div>
+        </motion.section>
       )}
-    </div>
+    </>
   );
 }

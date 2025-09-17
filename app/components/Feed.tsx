@@ -127,12 +127,12 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   return (
     <>
       <div className={styles.feedWrapper}>
-        {isSignedIn && (
+        {/* {isSignedIn && (
           <NewPostButton
             isOpen={isNewPostOpen}
             onClick={() => setIsNewPostOpen(!isNewPostOpen)}
           />
-        )}
+        )} */}
         <AnimatePresence>
           {isNewPostOpen && (
             <PostEditor

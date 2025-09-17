@@ -1,91 +1,76 @@
-.feedPost {
-    display: flex;
-    gap: var(--spacing4);
-    padding: 0 var(--spacing3) var(--spacing8) var(--spacing3);
-    font-size: var(--text-base);
-
-    &:not(:last-child) {
-        border-bottom: 0.75px solid var(--light);
-    }
-
-    .postAuthorAvatar {
-        flex-shrink: 0;
-        width: 32px;
-        height: 32px;
-        font-size: var(--text-sm);
-    }
-
-    .postRight {
-        width: 100%;
-    }
-
-    .postInfo {
-        display: flex;
-    }
-
-    .postAuthorName {
-        font-weight: 600;
-    }
-
-    .postTimeAndSourceFeed, 
-    .postTimeAndSourceFeed a {
-        color: var(--light);
-        font-weight: 600;
-        min-width: 0;
-    }
-    
-    .postTimeAndSourceFeed {
-        margin-left: var(--spacing3);
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        flex: 1;
-
-        a:hover {
-            text-decoration: underline;
-            color: var(--white);
-        }
-
-    }
-
-    .postMessageThread {
-        position: relative;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--white);
-
-        &:hover {
-            scale: 1.05;
-        }
-        transition: scale 0.1s ease-in-out;
-    }
-
-    .postMessageThreadCount {
-        position: absolute;
-        bottom: 14px;
-        left: 14px;
-        font-weight: 600;
-        width: 35px;
-    }
-
-    .postMessageThreadIcon {
-        margin-left: auto;
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-    }
-
+.postWrapper {
+    padding: var(--spacing7);
+    border-bottom: 1px solid #494E6C;
 }
 
-@media (--tablet) {
-    .feedPost {
-        padding: 0 var(--spacing17) var(--spacing8) var(--spacing17);
+.post {
+    display: grid;
+    grid-template-columns: repeat(3, fit-content(14ch)) 1fr;
+    grid-template-rows: repeat(2, fit-content);
+    grid-template-areas: "authorAvatar authorName metadata messageThread"
+                         "content content content content";
+    gap: var(--spacing3);
+}
 
-        .postAuthorAvatar {
-            width: initial;
-            height: initial;
-            font-size: initial;
-        }
+.authorAvatar {
+    grid-area: authorAvatar;
+}
+
+.authorName,
+.metadata,
+.postedIn {
+    font-weight: 700;
+}
+
+.authorName {
+    grid-area: authorName;
+    text-wrap: nowrap;
+}
+
+.metadata {
+    grid-area: metadata;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: var(--light2);
+}
+
+.messageThreadButton {
+    position: relative;
+    grid-area: messageThread;
+    background-color: inherit;
+    border: none;
+    width: 32px;
+    justify-self: end;
+}
+
+.messageThreadCount {
+    position: absolute;
+    top: calc(-1.5 * var(--spacing1));
+    right: calc(-1 * var(--spacing1));
+    color: var(--white);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.content {
+    margin-top: 0;
+    grid-area: content;
+}
+
+.postedIn {
+    grid-area: postedIn;
+    text-wrap: nowrap;
+    justify-self: end;
+    font-size: 0.875rem;
+    color: var(--light2);
+    padding-top: var(--spacing4);
+
+    a {
+        color: var(--light2);
     }
+}
+
+.postedIn_tabletUp {
+    display: none;
 }
