@@ -25,14 +25,6 @@
     font-size: var(--text-base);
 }
 
-.lightPointer {
-    --pointer-height: 30px;
-    height: var(--pointer-height);
-    width: 3px;
-    background-color: var(--accent);
-    margin: var(--spacing7) auto;
-}
-
 .notFound {
     display: grid;
     place-items: center;
@@ -45,11 +37,6 @@
 @media (--tablet) {
     .mainTitle {
         margin-top: 142px;
-    }
-
-    .lightPointer {
-        --pointer-height: 52px;
-        margin: var(--spacing11) auto;
     }
 
     .location {

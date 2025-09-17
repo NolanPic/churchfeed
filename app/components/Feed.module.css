@@ -2,21 +2,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background-color: var(--mid);
-    border-radius: 12px;
-    box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
-    -21px 16px 64px -36px rgba(0,0,0,0.25);
     margin-bottom: var(--spacing20);
-
-
-    .feedIntro {
-        font-family: var(--font-gentium-plus);
-        font-style: italic;
-        font-weight: 400;
-        font-size: var(--text-md);
-        padding: var(--spacing5) 0 var(--spacing4) 0;
-        text-align: center;
-    }
 
     .feedIntroRule {
         --intro-rule-width: 68px;
@@ -30,20 +16,5 @@
         display: flex;
         flex-direction: column;
         gap: var(--spacing10);
-    }
-}
-
-
-
-@media (--tablet) {
-    .feedWrapper {
-        .feedIntro {
-            font-size: var(--text-lg);
-            padding: var(--spacing11) 0;
-        }
-
-        .feedIntroRule {
-            --intro-rule-width: 210px;
-        }
     }
 }

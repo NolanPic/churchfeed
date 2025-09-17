@@ -31,12 +31,6 @@ export default function OrganizationLayout({
       )}
       <h1 className={styles.mainTitle}>{org?.name}</h1>
       <h2 className={styles.location}>{org?.location}</h2>
-      <motion.div
-        initial={{ height: 0 }}
-        animate={{ height: "var(--pointer-height)" }}
-        transition={{ duration: 0.25 }}
-        className={styles.lightPointer}
-      ></motion.div>
       {org?._id && (
         <motion.div
           initial={{ opacity: 0 }}

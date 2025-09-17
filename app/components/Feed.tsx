@@ -126,13 +126,6 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
 
   return (
     <>
-      <div className={styles.feedSelectorWrapper}>
-        <FeedSelector
-          orgId={orgId}
-          selectedFeedId={feedId ?? null}
-          setSelectedFeedId={(id) => setFeedId(id ?? undefined)}
-        />
-      </div>
       <div className={styles.feedWrapper}>
         {isSignedIn && (
           <NewPostButton
@@ -149,13 +142,6 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
             />
           )}
         </AnimatePresence>
-        <h2 className={styles.feedIntro}>What&apos;s happening?</h2>
-        <motion.hr
-          initial={{ width: 0 }}
-          animate={{ width: "var(--intro-rule-width)" }}
-          transition={{ duration: 0.25 }}
-          className={styles.feedIntroRule}
-        />
         <main className={styles.feedPosts} data-testid="feed-posts">
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
