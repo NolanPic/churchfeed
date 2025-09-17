@@ -21,11 +21,11 @@
 .mainTitle {
     margin-top: var(--spacing24);
     text-align: center;
-    font-size: var(--text-xxl);
+    font-size: var(--text-xl);
 }
 
 .location {
-    font-size: var(--text-base);
+    font-size: var(--text-lg);
 }
 
 .lightPointer {
