@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
 import styles from "./OrganizationLayout.module.css";
+import Image from "next/image";
 
 export default function OrganizationLayout({
   children,
@@ -31,6 +32,14 @@ export default function OrganizationLayout({
       )}
       <h1 className={styles.mainTitle}>{org?.name}</h1>
       <h2 className={styles.location}>{org?.location}</h2>
+      <Image
+        src="icons/chevron-down.svg"
+        role="presentation"
+        alt=""
+        width={22}
+        height={22}
+        className={styles.lightPointer}
+      />
       {org?._id && (
         <motion.div
           initial={{ opacity: 0 }}

@@ -1,6 +1,9 @@
 .feedWrapper {
     margin: 0 auto;
     max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .userAvatarMenu {
@@ -13,16 +16,20 @@
 .location {
     font-family: var(--font-gentium-plus);
     font-weight: 400;
-    text-align: center;
 }
 
 .mainTitle {
     margin-top: var(--spacing24);
+    text-align: center;
     font-size: var(--text-xxl);
 }
 
 .location {
     font-size: var(--text-base);
+}
+
+.lightPointer {
+    margin: var(--spacing7) 0 var(--spacing13) 0;
 }
 
 .notFound {
