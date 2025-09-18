@@ -1,11 +1,12 @@
 .postWrapper {
+    --messageThreadButtonWidth: 32px;
     padding: var(--spacing7);
     border-bottom: 1px solid #494E6C;
 }
 
 .post {
     display: grid;
-    grid-template-columns: repeat(3, fit-content(14ch)) 1fr;
+    grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--messageThreadButtonWidth));
     grid-template-rows: repeat(2, fit-content);
     grid-template-areas: "authorAvatar authorName metadata messageThread"
                          "content content content content";
@@ -14,6 +15,9 @@
 
 .authorAvatar {
     grid-area: authorAvatar;
+    position: relative;
+    width: 24px;
+    height: 24px;
 }
 
 .authorName,
@@ -29,6 +33,9 @@
 
 .metadata {
     grid-area: metadata;
+}
+
+.metadata {
     text-wrap: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -40,7 +47,7 @@
     grid-area: messageThread;
     background-color: inherit;
     border: none;
-    width: 32px;
+    width: var(--messageThreadButtonWidth);
     justify-self: end;
 }
 
@@ -73,4 +80,45 @@
 
 .postedIn_tabletUp {
     display: none;
+}
+
+
+@media (--tablet) {
+
+    .postWrapper {
+        padding: var(--spacing11) var(--spacing17);
+    }
+
+    .post {
+        grid-template-areas: "authorAvatar authorName metadata messageThread"
+                         ". content content content";
+        gap: var(--spacing4);
+    }
+
+    .authorAvatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .authorName,
+    .metadata,
+    .messageThreadButton {
+        align-self: center;
+    }
+
+    .postedIn {
+        display: none;
+    }
+
+    .postedIn_tabletUp {
+        display: inline;
+
+        & a {
+            color: var(--light2);
+        }
+    }
+
+    .postWrapper:last-child {
+        border-bottom: none;
+    }
 }

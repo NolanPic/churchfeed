@@ -20,6 +20,7 @@
 
 @media (--tablet) {
     .feedWrapper {
+        width: 640px;
         padding-top: var(--spacing20);
         margin-left: var(--spacing5);
         margin-right: var(--spacing5);

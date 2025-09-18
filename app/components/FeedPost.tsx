@@ -57,7 +57,7 @@ export default function FeedPost({
     <article key={_id} className={styles.postWrapper}>
       <div className={styles.post}>
         <div className={styles.authorAvatar}>
-          <UserAvatar user={post.author} size={24} />
+          <UserAvatar user={post.author} />
         </div>
         <p className={styles.authorName}>{post.author?.name}</p>
         <p
