@@ -21,6 +21,7 @@ export default function IconButton({
   const classes = classNames(
     styles.iconButton,
     variant === "default" ? styles.defaultVariant : styles.primaryVariant,
+    label && styles.hasLabel,
     className
   );
 
