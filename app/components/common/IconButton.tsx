@@ -28,18 +28,21 @@ export default function IconButton({
   const buttonVariant: ButtonProps["variant"] =
     variant === "primary" ? "primary" : "none";
 
+  type IconButtonStyle = React.CSSProperties &
+    Record<"--iconButtonSize", string>;
+  const iconButtonStyle: IconButtonStyle = { "--iconButtonSize": `${size}px` };
+
   return (
-    <span style={{ ["--iconButtonSize" as unknown as string]: `${size}px` }}>
-      <Button
-        {...(props as ButtonProps)}
-        icon={icon}
-        iconSize={iconSize}
-        variant={buttonVariant}
-        ariaLabel={ariaLabel || label}
-        className={classes}
-      >
-        {label}
-      </Button>
-    </span>
+    <Button
+      {...(props as ButtonProps)}
+      icon={icon}
+      iconSize={iconSize}
+      variant={buttonVariant}
+      ariaLabel={ariaLabel || label}
+      className={classes}
+      style={iconButtonStyle}
+    >
+      {label}
+    </Button>
   );
 }
