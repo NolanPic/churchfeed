@@ -30,10 +30,10 @@ export default function EditorToolbar({
       <div className={styles.actions}>
         <Button
           icon="image"
-          color="none"
           onClick={addImageDrop}
           iconSize={20}
           ariaLabel="Add image"
+          noBackground
         />
         <Button
           icon={actionButton.icon}
