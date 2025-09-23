@@ -7,9 +7,10 @@ interface BaseButtonProps {
   icon?: React.ReactNode | string;
   className?: string;
   disabled?: boolean;
-  color?: "primary" | "none";
+  variant?: "primary" | "none";
   iconSize?: number;
   ariaLabel?: string;
+  noBackground?: boolean;
 }
 
 interface ButtonAsButton extends BaseButtonProps {
@@ -26,23 +27,25 @@ interface ButtonAsLink extends BaseButtonProps {
   type?: never;
 }
 
-type ButtonProps = ButtonAsButton | ButtonAsLink;
+export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const Button: React.FC<ButtonProps> = ({
   children,
   icon,
   className = "",
   disabled = false,
-  color = "primary",
+  variant = "primary",
   iconSize,
   ariaLabel,
+  noBackground = false,
   ...props
 }) => {
   const hasChildren = !!children;
-  const colorClassName = color === "none" ? styles.colorNone : "";
+  const variantClassName =
+    variant === "primary" ? styles.variantPrimary : styles.variantDefault;
   const iconOnlyClassName = !hasChildren ? styles.iconOnly : "";
   const baseClassName =
-    `${styles.button} ${colorClassName} ${iconOnlyClassName} ${className}`.trim();
+    `${styles.button} ${variantClassName} ${iconOnlyClassName} ${className} ${noBackground ? styles.noBackground : ""}`.trim();
 
   const ButtonContent = () => (
     <>
@@ -59,10 +62,10 @@ const Button: React.FC<ButtonProps> = ({
     </>
   );
 
-  if (props.as === "link") {
+  if ((props as ButtonAsLink).as === "link") {
     return (
       <Link
-        href={props.href}
+        href={(props as ButtonAsLink).href}
         className={baseClassName}
         aria-disabled={disabled}
         aria-label={ariaLabel}
@@ -72,10 +75,12 @@ const Button: React.FC<ButtonProps> = ({
     );
   }
 
+  const { onClick, type } = props as ButtonAsButton;
+
   return (
     <button
-      type={props.type || "button"}
-      onClick={props.onClick}
+      type={type || "button"}
+      onClick={onClick}
       disabled={disabled}
       className={baseClassName}
       aria-label={ariaLabel}

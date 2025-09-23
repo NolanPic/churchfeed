@@ -9,9 +9,10 @@
   font-weight: 600;
   text-decoration: none;
   
-  background-color: var(--accent);
+  background-color: transparent;
   color: var(--mid);
-  border: none;
+  /* border: 1px solid rgb(from var(--accent) r g b / 0.65); */
+  border: 1px solid var(--accent);
   border-radius: 12px;
   
   height: 30px;
@@ -24,7 +25,6 @@
   appearance: none;
   
   &:hover {
-    background-color: color-mix(in srgb, var(--accent) 60%, #ff9f50);
     transform: translateY(-1px);
   }
 
@@ -35,7 +35,7 @@
 
   &:active {
     transform: translateY(0);
-    background-color: #ff9f50;
+    border-color: #ff9f50;
   }
 
   &:disabled,
@@ -44,31 +44,20 @@
     cursor: not-allowed;
     transform: none;
   }
+}
 
-  &:disabled:hover,
-  &[aria-disabled="true"]:hover {
-    background-color: var(--accent);
-    transform: none;
+
+.variantPrimary {
+  background-color: var(--accent);
+  border: none;
+  
+  &:hover {
+    background-color: color-mix(in srgb, var(--accent) 60%, #ff9f50);
   }
-}
 
-.colorNone {
-  background-color: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-}
-
-.colorNone:hover,
-.colorNone:active {
-  background-color: transparent;
-  transform: none;
-}
-
-.colorNone:disabled:hover,
-.colorNone[aria-disabled="true"]:hover {
-  background-color: transparent;
-  transform: none;
+  &:active {
+    background-color: #ff9f50;
+  }
 }
 
 .iconOnly {
@@ -80,4 +69,14 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.noBackground {
+  background-color: transparent;
+  border: none;
+
+  &:hover,
+  &:active {
+    background-color: transparent;
+  }
 }
