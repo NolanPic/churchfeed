@@ -9,6 +9,7 @@ import { api } from "../convex/_generated/api";
 import { preloadQuery } from "convex/nextjs";
 import { headers } from "next/headers";
 import OrganizationLayout from "./components/OrganizationLayout";
+import Script from "next/script";
 
 const lato = Lato({
   variable: "--font-lato",
@@ -44,6 +45,17 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <Script id="anchor-positioning-polyfill" strategy="beforeInteractive">{`
+        if (!('anchorName' in document.documentElement.style)) {
+          window.ANCHOR_POSITIONING_POLYFILL_OPTIONS = {
+            excludeInlineStyles: false,
+            useAnimationFrame: false,
+          };
+          import('https://unpkg.com/@oddbird/css-anchor-positioning');
+        }
+      `}</Script>
+      </head>
       <body className={`${lato.variable} ${gentiumPlus.variable}`}>
         <ClerkProvider>
           <ConvexClientProvider>
