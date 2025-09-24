@@ -6,6 +6,7 @@ type IconButtonProps = Omit<ButtonProps, "variant"> & {
   variant?: "primary" | "default";
   label?: string;
   size?: number;
+  popoverTarget?: string;
 };
 
 export default function IconButton({
@@ -16,6 +17,7 @@ export default function IconButton({
   iconSize = 24,
   className = "",
   ariaLabel,
+  popoverTarget,
   ...props
 }: IconButtonProps) {
   const classes = classNames(
@@ -41,6 +43,7 @@ export default function IconButton({
       ariaLabel={ariaLabel || label}
       className={classes}
       style={iconButtonStyle}
+      popoverTarget={popoverTarget}
     >
       {label}
     </Button>

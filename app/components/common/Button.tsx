@@ -12,6 +12,7 @@ interface BaseButtonProps {
   ariaLabel?: string;
   noBackground?: boolean;
   style?: React.CSSProperties;
+  popoverTarget?: string;
 }
 
 interface ButtonAsButton extends BaseButtonProps {
@@ -40,6 +41,7 @@ const Button: React.FC<ButtonProps> = ({
   ariaLabel,
   noBackground = false,
   style,
+  popoverTarget,
   ...props
 }) => {
   const hasChildren = !!children;
@@ -88,6 +90,7 @@ const Button: React.FC<ButtonProps> = ({
       className={baseClassName}
       style={style}
       aria-label={ariaLabel}
+      popoverTarget={popoverTarget}
     >
       <ButtonContent />
     </button>
