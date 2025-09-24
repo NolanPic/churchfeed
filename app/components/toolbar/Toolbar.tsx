@@ -1,6 +1,7 @@
 import styles from "./Toolbar.module.css";
 import IconButton from "../common/IconButton";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import OverflowMenu from "./OverflowMenu";
 
 export default function Toolbar() {
   const { isSignedIn } = useAuthedUser();
@@ -11,8 +12,9 @@ export default function Toolbar() {
         <>
           <IconButton
             icon="ellipsis"
-            label="More!"
+            ariaLabel="More options"
             className={styles.overflowMenuButton}
+            popoverTarget="overflow-menu"
           />
           <IconButton
             icon="pen"
@@ -31,6 +33,7 @@ export default function Toolbar() {
             className={styles.adminSettingsButton}
             iconSize={32}
           />
+          <OverflowMenu />
         </>
       )}
     </div>

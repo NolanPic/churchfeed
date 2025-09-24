@@ -22,11 +22,9 @@
 
 }
 .overflowMenuButton {
-    margin-left: auto;
-}
-
-.overflowMenuButton {
     display: var(--displayOnMobile);
+    margin-left: auto;
+    anchor-name: --overflow-button;
 }
 
 .feedSettingsButton {
