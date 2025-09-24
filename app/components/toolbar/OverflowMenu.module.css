@@ -33,6 +33,12 @@
     gap: var(--spacing2);
 }
 
+@supports not (anchor-name: --foo) {
+    .overflowMenu {
+        bottom: var(--spacing19);
+    }
+}
+
 @media (--laptop) {
     .overflowMenu:popover-open {
         display: none;
