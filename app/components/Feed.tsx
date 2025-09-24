@@ -18,6 +18,7 @@ import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
+import Toolbar from "./toolbar/Toolbar";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -127,6 +128,7 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   return (
     <>
       <div className={styles.feedWrapper}>
+        <Toolbar></Toolbar>
         {/* {isSignedIn && (
           <NewPostButton
             isOpen={isNewPostOpen}
