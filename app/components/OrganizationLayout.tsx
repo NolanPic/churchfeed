@@ -34,7 +34,7 @@ export default function OrganizationLayout({
         <h1 className={styles.mainTitle}>{org?.name}</h1>
         <h2 className={styles.location}>{org?.location}</h2>
         <Image
-          src="icons/chevron-down.svg"
+          src="/icons/chevron-down.svg"
           role="presentation"
           alt=""
           width={22}
