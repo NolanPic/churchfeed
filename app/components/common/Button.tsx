@@ -36,7 +36,7 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   className = "",
   disabled = false,
-  variant = "primary",
+  variant,
   iconSize,
   ariaLabel,
   noBackground = false,

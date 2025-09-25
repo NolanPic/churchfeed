@@ -39,6 +39,7 @@ export default function EditorToolbar({
           icon={actionButton.icon}
           onClick={actionButton.onClick}
           disabled={actionButton.disabled}
+          variant="primary"
         >
           {actionButton.label}
         </Button>
