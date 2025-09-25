@@ -2,9 +2,16 @@ import styles from "./Toolbar.module.css";
 import IconButton from "../common/IconButton";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import OverflowMenu from "./OverflowMenu";
+import { useContext } from "react";
+import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 
 export default function Toolbar() {
-  const { isSignedIn } = useAuthedUser();
+  const { isSignedIn, user, feeds: userFeeds } = useAuthedUser();
+  const { feedId } = useContext(CurrentFeedAndPostContext);
+  const isFeedOwner = !!(
+    feedId && userFeeds.find((f) => f._id === feedId && f.owner)
+  );
+  const isAdmin = user?.type === "admin";
 
   return (
     <div className={styles.toolbar}>
@@ -22,18 +29,25 @@ export default function Toolbar() {
             label="New post"
             className={styles.newPostButton}
           />
-          <IconButton
-            icon="toggles"
-            label="Feed settings"
-            className={styles.feedSettingsButton}
+          {isFeedOwner && (
+            <IconButton
+              icon="toggles"
+              label="Feed settings"
+              className={styles.feedSettingsButton}
+            />
+          )}
+          {isAdmin && (
+            <IconButton
+              icon="gear"
+              label="Admin"
+              className={styles.adminSettingsButton}
+              iconSize={32}
+            />
+          )}
+          <OverflowMenu
+            showAdminSettings={isAdmin}
+            showFeedSettings={isFeedOwner}
           />
-          <IconButton
-            icon="gear"
-            label="Admin"
-            className={styles.adminSettingsButton}
-            iconSize={32}
-          />
-          <OverflowMenu />
         </>
       )}
     </div>

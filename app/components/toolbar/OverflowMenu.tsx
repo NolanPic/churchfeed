@@ -3,8 +3,8 @@ import Link from "next/link";
 import styles from "./OverflowMenu.module.css";
 import UserAvatar from "../UserAvatar";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
-import { useContext } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { useContext } from "react";
 
 interface MenuItem {
   label: string;
@@ -23,26 +23,28 @@ const OverflowMenuItem = ({ label, icon, href }: MenuItem) => {
   );
 };
 
-export default function OverflowMenu() {
-  const { user, feeds: userFeeds } = useAuthedUser();
+interface OverflowMenuProps {
+  showAdminSettings: boolean;
+  showFeedSettings: boolean;
+}
+
+export default function OverflowMenu({
+  showAdminSettings,
+  showFeedSettings,
+}: OverflowMenuProps) {
   const ICON_SIZE = 24;
-
+  const { user } = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
-
-  const isAdmin = user?.type === "admin";
-  const isFeedOwner =
-    feedId && userFeeds.find((f) => f._id === feedId && f.owner);
-
   return (
     <ul popover="auto" id="overflow-menu" className={styles.overflowMenu}>
-      {isFeedOwner && (
+      {showFeedSettings && (
         <OverflowMenuItem
           label="Feed settings"
           icon={<Icon name="toggles" size={ICON_SIZE} />}
           href={`/feed/${feedId}/settings`}
         />
       )}
-      {isAdmin && (
+      {showAdminSettings && (
         <OverflowMenuItem
           label="Admin"
           icon={<Icon name="gear" size={ICON_SIZE} />}
