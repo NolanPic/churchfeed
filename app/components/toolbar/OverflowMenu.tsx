@@ -61,7 +61,7 @@ export default function OverflowMenu({
       <OverflowMenuItem
         label="Sign out"
         icon={<Icon name="logout" size={ICON_SIZE} />}
-        href="/sign-out"
+        href="/logout"
       />
     </ul>
   );
