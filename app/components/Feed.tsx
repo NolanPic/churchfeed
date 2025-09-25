@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "./Feed.module.css";
-import FeedSelector from "./FeedSelector";
 import { usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
