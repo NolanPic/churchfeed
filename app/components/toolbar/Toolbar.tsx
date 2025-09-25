@@ -2,6 +2,7 @@ import styles from "./Toolbar.module.css";
 import IconButton from "../common/IconButton";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import OverflowMenu from "./OverflowMenu";
+import FeedSelector from "../FeedSelector";
 import { useContext } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 
@@ -17,6 +18,9 @@ export default function Toolbar() {
     <div className={styles.toolbar}>
       {isSignedIn && (
         <>
+          <div className={styles.feedSelectorContainer}>
+            <FeedSelector />
+          </div>
           <IconButton
             icon="ellipsis"
             ariaLabel="More options"

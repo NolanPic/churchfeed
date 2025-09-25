@@ -1,0 +1,45 @@
+.feedSelector {
+    font-size: 1.125rem;
+    font-family: var(--font-gentium-plus);
+    font-weight: 400;
+    height: 56px;
+    border-radius: var(--border-radius-lg);
+    background: rgb(from var(--mid) r g b / 0.35);
+    backdrop-filter: blur(8px);
+}
+
+.feedList {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100dvw;
+    height: 100dvh;
+    display: grid;
+    place-items: center;
+    z-index: 2;
+}
+
+.feedList ol {
+    list-style: none;
+    padding: 0;
+    z-index: 2;
+    font-family: var(--font-gentium-plus);
+    font-style: italic;
+    font-size: 2rem;
+    text-align: center;
+    
+    & input[type="radio"] {
+        visibility: hidden;
+    }
+
+    & li:not(:last-child) {
+        padding-bottom: var(--spacing4);
+    }
+}
+
+.selected {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}

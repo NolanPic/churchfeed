@@ -21,6 +21,10 @@
     );
 
 }
+
+.feedSelectorContainer {
+    display: var(--displayOnMobile);
+}
 .overflowMenuButton {
     display: var(--displayOnMobile);
     margin-left: auto;
