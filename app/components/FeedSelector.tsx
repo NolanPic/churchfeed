@@ -11,6 +11,7 @@ import { Id } from "../../convex/_generated/dataModel";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToTop } from "@/app/hooks/useScrollToTop";
 import classNames from "classnames";
+import { useRouter } from "next/navigation";
 
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
@@ -24,6 +25,7 @@ export default function FeedSelector({ variant }: FeedSelectorProps) {
   const org = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const scrollToTop = useScrollToTop();
+  const router = useRouter();
   if (!org) return null;
 
   const feeds =
@@ -35,9 +37,14 @@ export default function FeedSelector({ variant }: FeedSelectorProps) {
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
 
   const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
-    setFeedId(feedId);
     setIsOpen(false);
+    setFeedId(feedId);
     scrollToTop();
+    if (feedId) {
+      router.push(`/feed/${feedId}`);
+    } else {
+      router.push(`/`);
+    }
   };
 
   return (

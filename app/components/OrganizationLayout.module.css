@@ -60,7 +60,9 @@
     .location {
         font-size: var(--text-md);
     }
+}
 
+@media (--laptop) {
     .userAvatarMenu {
         display: block;
         position: absolute;

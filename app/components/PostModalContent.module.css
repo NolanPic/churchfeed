@@ -19,13 +19,13 @@
     }
 
     .postAuthorName {
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .postTimeAndSourceFeed, 
     .postTimeAndSourceFeed a {
         color: var(--light);
-        font-weight: 600;
+        font-weight: 700;
         min-width: 0;
     }
     

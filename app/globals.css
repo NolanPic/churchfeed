@@ -3,7 +3,7 @@
   @custom-media --laptop (min-width: 68.75rem); /* 1100px */
   @custom-media --desktop (min-width: 93.75rem); /* 1500px */
 
-:root {
+ :root {
 
   /* Colors */
   --dark: #2D3250;

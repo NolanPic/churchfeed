@@ -14,12 +14,13 @@ import Script from "next/script";
 const lato = Lato({
   variable: "--font-lato",
   weight: ["400", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
 const gentiumPlus = Gentium_Plus({
   variable: "--font-gentium-plus",
-  weight: ["400", "700"],
+  weight: ["400"],
   style: ["normal", "italic"],
   subsets: ["latin"],
 });
