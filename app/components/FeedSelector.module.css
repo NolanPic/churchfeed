@@ -40,6 +40,15 @@
         visibility: hidden;
     }
 
+    & label {
+        cursor: pointer;
+        transition: color 0.2s ease-in-out;
+    }
+
+    & label:hover {
+        color: var(--accent);
+    }
+
     & li:not(:last-child) {
         padding-bottom: var(--spacing4);
     }
