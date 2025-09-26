@@ -10,8 +10,14 @@ import Backdrop from "./common/Backdrop";
 import { Id } from "../../convex/_generated/dataModel";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToTop } from "@/app/hooks/useScrollToTop";
+import classNames from "classnames";
 
-export default function FeedSelector() {
+type FeedSelectorVariant = "topOfFeed" | "inToolbar";
+interface FeedSelectorProps {
+  variant: FeedSelectorVariant;
+}
+
+export default function FeedSelector({ variant }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
     CurrentFeedAndPostContext
   );
@@ -36,14 +42,19 @@ export default function FeedSelector() {
 
   return (
     <>
-      <Button
-        icon="dropdown-arrow"
-        iconSize={10}
-        className={styles.feedSelector}
-        onClick={() => setIsOpen(true)}
-      >
-        {selectedFeed}
-      </Button>
+      <div className={classNames(styles.selectedFeed, styles[variant])}>
+        <h2 className={styles.feedSelectorTitle}>What's happening in</h2>
+        <Button
+          icon="dropdown-arrow"
+          iconSize={10}
+          className={styles.feedSelector}
+          onClick={() => setIsOpen(true)}
+        >
+          {selectedFeed}
+        </Button>
+      </div>
+
+      <hr className={classNames(styles.feedSelectorRule, styles[variant])} />
       <AnimatePresence>
         {isOpen && (
           <motion.div

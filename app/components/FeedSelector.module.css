@@ -1,3 +1,11 @@
+.feedSelectorTitle {
+    display: none;
+}
+
+.feedSelectorRule {
+    display: none;
+}
+
 .feedSelector {
     font-size: 1.125rem;
     font-family: var(--font-gentium-plus);
@@ -42,4 +50,63 @@
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
+}
+
+@media (--tablet) {
+
+    .selectedFeed {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: var(--spacing13) 0;
+    }
+
+    .selectedFeed.inToolbar,
+    .feedSelectorRule.inToolbar {
+        display: none;
+    }
+    
+
+    .feedSelectorTitle,
+    .feedSelector {
+        font-family: var(--font-gentium-plus);
+        font-style: italic;
+        font-weight: 400;
+        font-size: var(--text-lg);
+    }
+    
+    .feedSelectorTitle {
+        display: inline;
+    }
+
+    .feedSelectorRule {
+        display: block;
+        width: 210px;
+        height: 1px;
+        background-color: var(--light);
+        border: none;
+        margin: 0 auto var(--spacing5);
+    }
+
+    .feedSelector {
+        position: relative;
+        border: none;
+        background: none;
+        backdrop-filter: none;
+        padding: 0;
+        padding-left: var(--spacing2);
+        color: var(--accent);
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+    }
+
+    .feedSelector img {
+        position: relative;
+        top: 3px;
+
+        /* Tint external SVG image to match var(--accent) */
+        /* TODO: clean this up after https://github.com/NolanPic/churchfeed/issues/70 */
+        filter: brightness(0) saturate(100%) invert(84%) sepia(22%) saturate(779%) hue-rotate(321deg) brightness(103%) contrast(94%);
+    }
 }

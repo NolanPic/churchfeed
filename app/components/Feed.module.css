@@ -13,7 +13,11 @@
         margin-bottom: var(--spacing7);
     }
 
-    .feedPosts {
+    & .feedSelectorTabletUp {
+        display: none;
+    }
+
+    & .feedPosts {
         display: flex;
         flex-direction: column;
     }
@@ -21,13 +25,22 @@
 
 @media (--tablet) {
     .feedWrapper {
-        padding-top: var(--spacing20);
         margin-left: var(--spacing5);
         margin-right: var(--spacing5);
         background-color: var(--mid);
         border-radius: var(--border-radius-lg);
         box-shadow: 21px 16px 63px -36px rgba(0, 0, 0, 0.25),
            -21px 16px 63px -36px rgba(0, 0, 0, 0.25);
+    }
+}
+
+@media (--tablet) {
+    .feedWrapper {
+        width: 600px;
+
+        .feedSelectorTabletUp {
+            display: block;
+        }
     }
 }
 

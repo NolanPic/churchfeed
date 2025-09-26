@@ -17,6 +17,7 @@ import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
+import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
 
 interface FeedProps {
@@ -128,6 +129,9 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     <>
       <div className={styles.feedWrapper}>
         <Toolbar></Toolbar>
+        <div className={styles.feedSelectorTabletUp}>
+          <FeedSelector variant="topOfFeed" />
+        </div>
         {/* {isSignedIn && (
           <NewPostButton
             isOpen={isNewPostOpen}

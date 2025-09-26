@@ -19,7 +19,7 @@ export default function Toolbar() {
       {isSignedIn && (
         <>
           <div className={styles.feedSelectorContainer}>
-            <FeedSelector />
+            <FeedSelector variant="inToolbar" />
           </div>
           <IconButton
             icon="ellipsis"
