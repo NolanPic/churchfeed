@@ -21,6 +21,7 @@
 .location {
     font-family: var(--font-gentium-plus);
     font-weight: 400;
+    margin: 0 var(--spacing7);
 }
 
 .mainTitle {
