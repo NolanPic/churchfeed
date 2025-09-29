@@ -25,6 +25,7 @@
     display: grid;
     place-items: center;
     z-index: 2;
+    overflow-y: auto;
 }
 
 .feedList ol {
