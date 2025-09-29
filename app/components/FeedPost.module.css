@@ -49,6 +49,12 @@
     border: none;
     width: var(--messageThreadButtonWidth);
     justify-self: end;
+    cursor: pointer;
+    transition: scale 0.2s ease-in-out;
+}
+
+.messageThreadButton:hover {
+    scale: 1.2;
 }
 
 .messageThreadCount {
