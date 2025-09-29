@@ -6,7 +6,10 @@ import Link from "next/link";
 import Backdrop from "./common/Backdrop";
 import { motion, AnimatePresence } from "framer-motion";
 
-const UserAvatarMenu = () => {
+interface UserAvatarMenuProps {
+  openProfileModal: () => void;
+}
+const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
   const { user, isSignedIn, signOut } = useAuthedUser();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,6 +40,16 @@ const UserAvatarMenu = () => {
               <li className={styles.userAvatarMenuItem}>
                 <button
                   onClick={() => {
+                    openProfileModal(); 
+                    setIsOpen(false);   
+                  }}
+                >
+                  Profile
+                </button>
+              </li>
+              <li className={styles.userAvatarMenuItem}>
+                <button
+                  onClick={() => {
                     signOut({
                       redirectUrl: "/",
                     });
@@ -55,3 +68,8 @@ const UserAvatarMenu = () => {
 };
 
 export default UserAvatarMenu;
+
+
+
+
+
