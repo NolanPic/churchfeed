@@ -4,7 +4,8 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  pointer-events: none;
+  /* Stop scroll chaining outside the modal */
+  overscroll-behavior: none;
 }
 
 .modal {
@@ -19,6 +20,8 @@
   box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
   -21px 16px 64px -36px rgba(0,0,0,0.25);
   overflow: scroll;
+  /* Keep scrolling contained within the modal */
+  overscroll-behavior: contain;
 }
 
 .handleBar_PhoneOnly {

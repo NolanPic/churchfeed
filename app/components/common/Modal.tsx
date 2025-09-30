@@ -11,6 +11,7 @@ import {
 import styles from "./Modal.module.css";
 import Icon from "./Icon";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
+import { useLockBodyScroll } from "@/app/hooks/useLockBodyScroll";
 
 interface ModalProps {
   isOpen: boolean;
@@ -33,6 +34,8 @@ export default function Modal({
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
   const doAnimateDragToCloseOnPhone =
     !isTabletOrUp && closeMethodOnPhone === "handle";
+
+  useLockBodyScroll(isOpen);
 
   const handleClose = async () => {
     if (doAnimateDragToCloseOnPhone) {
