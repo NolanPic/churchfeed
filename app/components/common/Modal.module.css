@@ -25,6 +25,7 @@
 }
 
 .handleBar_PhoneOnly {
+  position: relative;
   display: block;
   margin: 0 auto;
   width: 60px;
@@ -37,6 +38,14 @@
   cursor: grab;
   touch-action: none;
   margin-bottom: var(--spacing19);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -25px -75px -60px;
+    pointer-events: auto;
+    z-index: 1;
+  }
 }
 
 .handleBar_PhoneOnly:active {
