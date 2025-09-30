@@ -11,7 +11,10 @@
 .modal {
   width: min(800px, 100vw);
   height: 100vh;
-  background: var(--mid);
+  background: rgb(from var(--mid) r g b / 0.6);;
+  backdrop-filter: blur(27px);
+
+  
   pointer-events: auto;
   position: relative;
   display: flex;
@@ -60,6 +63,8 @@
   .modal {
     padding: var(--spacing18);
     padding-top: var(--spacing24);
+    margin-top: var(--spacing13);
+    border-radius: var(--border-radius-lg);
   }
 
   .handleBar_PhoneOnly {
