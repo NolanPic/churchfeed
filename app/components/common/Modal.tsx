@@ -87,9 +87,9 @@ export default function Modal({
         dragControls={dragControls}
         dragListener={false}
         dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={{ top: 0, bottom: 0.5 }}
+        dragElastic={{ top: 0, bottom: 0.8 }}
         onDragEnd={() => {
-          if (y.get() >= 100) {
+          if (y.get() >= 175) {
             handleClose();
           } else {
             animate("#modal", { y: [y.get(), 0] });
