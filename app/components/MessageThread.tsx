@@ -7,6 +7,7 @@ import UserAvatar from "./UserAvatar";
 import MessageEditor from "./editor/MessageEditor";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import { useOrganization } from "../context/OrganizationProvider";
+import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import styles from "./MessageThread.module.css";
 import userContentStyles from "./shared-styles/user-content.module.css";
 import { getTimeAgoLabel } from "../utils/ui-utils";
@@ -14,6 +15,7 @@ import classNames from "classnames";
 import Hint from "./common/Hint";
 import SanitizedUserContent from "./common/SanitizedUserContent";
 import Link from "next/link";
+import { motion, useMotionValue, animate } from "motion/react";
 
 export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
@@ -31,6 +33,10 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
     memberFeed &&
     (memberFeed.owner || post?.feed?.memberPermissions?.includes("message"));
 
+  const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
+  const doAnimateTimeStampRevealOnPhone = !isTabletOrUp;
+  const x = useMotionValue(0);
+
   if (messages === undefined) {
     return <p>Loading messages...</p>;
   }
@@ -38,35 +44,55 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   return (
     <>
       {messages?.length ? (
-        <ol className={styles.messages}>
-          {messages?.map((m) => {
-            const postedAt = m?._creationTime;
-            const timeAgoLabel = getTimeAgoLabel(postedAt);
-            return (
-              <li
-                className={classNames(styles.message, {
-                  [styles.messageSelf]: m.sender._id === user?._id,
-                })}
-                key={m._id}
-              >
-                <article>
-                  <UserAvatar user={m.sender} size={34} />
-                  <div className={styles.messageBubble}>
-                    <header>{m.sender.name}</header>
-                    <SanitizedUserContent
-                      className={classNames(
-                        styles.messageContent,
-                        userContentStyles.userContent
-                      )}
-                      html={m.content}
-                    />
-                  </div>
-                </article>
-                <span className={styles.messageTimestamp}>{timeAgoLabel}</span>
-              </li>
-            );
-          })}
-        </ol>
+        <div className={styles.messagesContainer}>
+          <motion.ol
+            className={styles.messages}
+            drag={doAnimateTimeStampRevealOnPhone ? "x" : false}
+            dragConstraints={{ left: -80, right: 0 }}
+            dragElastic={0.01}
+            dragMomentum={false}
+            style={{ x }}
+            onDragEnd={() => {
+              animate(x, 0, {
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              });
+            }}
+          >
+            {messages?.map((m) => {
+              const postedAt = m?._creationTime;
+              const timeAgoLabel = getTimeAgoLabel(postedAt);
+              return (
+                <li
+                  className={classNames(styles.message, {
+                    [styles.messageSelf]: m.sender._id === user?._id,
+                  })}
+                  key={m._id}
+                >
+                  <article>
+                    <div className={styles.messageAvatar}>
+                      <UserAvatar user={m.sender} size={34} />
+                    </div>
+                    <div className={styles.messageBubble}>
+                      <header>{m.sender.name}</header>
+                      <SanitizedUserContent
+                        className={classNames(
+                          styles.messageContent,
+                          userContentStyles.userContent
+                        )}
+                        html={m.content}
+                      />
+                    </div>
+                  </article>
+                  <span className={styles.messageTimestamp}>
+                    {timeAgoLabel}
+                  </span>
+                </li>
+              );
+            })}
+          </motion.ol>
+        </div>
       ) : (
         canSendMessage &&
         messages !== undefined && (
