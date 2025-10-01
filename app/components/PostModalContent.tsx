@@ -21,7 +21,9 @@ export default function PostModal({ postId }: { postId: Id<"posts"> }) {
 
   return (
     <div>
-      <Post post={post} variant="postDetails" showSourceFeed />
+      <div className={styles.postWrapper}>
+        <Post post={post} variant="postDetails" showSourceFeed />
+      </div>
       <hr className={styles.postSeparator} />
       <MessageThread postId={post._id} />
     </div>

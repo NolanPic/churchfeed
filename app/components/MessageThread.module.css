@@ -19,6 +19,8 @@
     align-items: center;
     gap: var(--spacing5);
     position: relative;
+    margin-left: var(--modal-gutter);
+    margin-right: var(--modal-gutter);
 
     article {
         display: flex;
@@ -73,6 +75,8 @@
 .messageEditorWrapper {
     height: 142px;
     margin-top: var(--spacing10);
+    margin-left: var(--modal-gutter);
+    margin-right: var(--modal-gutter);
     border: 1px solid var(--accent);
     background: var(--mid2);
     padding: var(--spacing3);

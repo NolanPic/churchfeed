@@ -6,6 +6,7 @@
   place-items: center;
   /* Stop scroll chaining outside the modal */
   overscroll-behavior: none;
+  --modal-gutter: var(--spacing7);
 }
 
 .modal {
@@ -17,7 +18,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing7);
+  padding: var(--spacing7) 0;
   box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
   -21px 16px 64px -36px rgba(0,0,0,0.25);
   overflow: scroll;
