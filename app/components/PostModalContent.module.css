@@ -1,10 +1,9 @@
 .postSeparator {
-    margin: auto;
+    margin: var(--spacing9) auto;
     background: var(--light);
+    width: 210px;
     height: 1px;
     border: none;
-    margin-top: var(--spacing8);
-    margin-bottom: var(--spacing8);
 }
 
 @media (--tablet) {
