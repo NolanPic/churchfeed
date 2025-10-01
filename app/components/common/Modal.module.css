@@ -64,7 +64,7 @@
   .modal {
     padding: var(--spacing18);
     padding-top: var(--spacing24);
-    margin-top: var(--spacing13);
+    margin-top: var(--spacing8);
     border-radius: var(--border-radius-lg);
   }
 
