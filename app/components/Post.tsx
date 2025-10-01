@@ -1,4 +1,4 @@
-import styles from "./FeedPost.module.css";
+import styles from "./Post.module.css";
 import userContentStyles from "./shared-styles/user-content.module.css";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
@@ -8,36 +8,39 @@ import UserAvatar from "./UserAvatar";
 import SanitizedUserContent from "./common/SanitizedUserContent";
 import classNames from "classnames";
 
-interface FeedPostProps {
+interface PostProps {
   post: Doc<"posts"> & {
     author: Omit<Doc<"users">, "image"> & { image: string | null };
   } & {
     feed: Doc<"feeds"> | null;
-    messageCount: number;
+    messageCount?: number;
   };
+  variant: "feed" | "postDetails";
   showSourceFeed: boolean;
   onOpenPost?: (postId: Id<"posts">) => void;
 }
-export default function FeedPost({
+
+export default function Post({
   post,
+  variant,
   showSourceFeed,
   onOpenPost,
-}: FeedPostProps) {
+}: PostProps) {
   const { _id, content } = post;
 
   const postedAt = post.postedAt ?? post._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
-  const postedInLink = (
-    <Link href={`/feed/${post.feed?._id}`}>{post.feed?.name}</Link>
-  );
+  const postedInLink = post.feed ? (
+    <Link href={`/feed/${post.feed._id}`}>{post.feed.name}</Link>
+  ) : null;
 
   const getTimeAndSourceFeed = () => {
-    if (showSourceFeed) {
+    if (showSourceFeed && post.feed) {
       return (
         <>
           {timeAgoLabel}
           <span className={styles.postedIn_tabletUp}>
-            {" in  "}
+            {" in "}
             {postedInLink}
           </span>
         </>
@@ -47,7 +50,7 @@ export default function FeedPost({
   };
 
   const messageCount =
-    post.messageCount > 0
+    variant === "feed" && post.messageCount && post.messageCount > 0
       ? post.messageCount > 99
         ? "99+"
         : post.messageCount
@@ -62,32 +65,34 @@ export default function FeedPost({
         <p className={styles.authorName}>{post.author?.name}</p>
         <p
           className={styles.metadata}
-          title={`Posted ${timeAgoLabel} in ${post.feed?.name}`}
+          title={`Posted ${timeAgoLabel}${post.feed ? ` in ${post.feed.name}` : ""}`}
         >
           {getTimeAndSourceFeed()}
         </p>
-        <button
-          className={styles.messageThreadButton}
-          onClick={() => onOpenPost?.(post._id)}
-        >
-          {messageCount && (
-            <span className={styles.messageThreadCount}>{messageCount}</span>
-          )}
-          <Image
-            className={styles.messageThreadIcon}
-            src="/icons/messages.svg"
-            alt="View message thread"
-            width={20}
-            height={20}
-          />
-        </button>
+        {variant === "feed" && (
+          <button
+            className={styles.messageThreadButton}
+            onClick={() => onOpenPost?.(post._id)}
+          >
+            {messageCount && (
+              <span className={styles.messageThreadCount}>{messageCount}</span>
+            )}
+            <Image
+              className={styles.messageThreadIcon}
+              src="/icons/messages.svg"
+              alt="View message thread"
+              width={20}
+              height={20}
+            />
+          </button>
+        )}
         <SanitizedUserContent
           className={classNames(styles.content, userContentStyles.userContent)}
           html={content}
         />
       </div>
 
-      {showSourceFeed && (
+      {showSourceFeed && post.feed && (
         <p className={styles.postedIn}>Posted in {postedInLink}</p>
       )}
     </article>

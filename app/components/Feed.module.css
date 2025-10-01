@@ -21,6 +21,11 @@
         display: flex;
         flex-direction: column;
     }
+
+    & .feedPost {
+        padding: var(--spacing7);
+        border-bottom: 1px solid #494E6C;
+    }
 }
 
 @media (--tablet) {
@@ -40,6 +45,14 @@
 
         .feedSelectorTabletUp {
             display: block;
+        }
+
+        .feedPost {
+            padding: var(--spacing11) var(--spacing17);
+        }
+
+        .feedPost:last-child {
+            border-bottom: none;
         }
     }
 }

@@ -1,50 +1,3 @@
-.post {
-    display: flex;
-    gap: var(--spacing3);
-    font-size: var(--text-base);
-
-    .postAuthorAvatar {
-        flex-shrink: 0;
-        width: 32px;
-        height: 32px;
-        font-size: var(--text-sm);
-    }
-
-    .postRight {
-        width: 100%;
-    }
-
-    .postInfo {
-        display: flex;
-    }
-
-    .postAuthorName {
-        font-weight: 700;
-    }
-
-    .postTimeAndSourceFeed, 
-    .postTimeAndSourceFeed a {
-        color: var(--light);
-        font-weight: 700;
-        min-width: 0;
-    }
-    
-    .postTimeAndSourceFeed {
-        margin-left: var(--spacing3);
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        flex: 1;
-
-        a:hover {
-            text-decoration: underline;
-            color: var(--white);
-        }
-
-    }
-
-}
-
 .postSeparator {
     margin: auto;
     background: var(--light);
@@ -55,16 +8,6 @@
 }
 
 @media (--tablet) {
-    .post {
-        gap: var(--spacing7);
-
-        .postAuthorAvatar {
-            width: initial;
-            height: initial;
-            font-size: initial;
-        }
-    }
-
     .postSeparator {
         margin-top: var(--spacing16);
         margin-bottom: var(--spacing16);

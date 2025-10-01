@@ -1,7 +1,5 @@
 .postWrapper {
     --messageThreadButtonWidth: 32px;
-    padding: var(--spacing7);
-    border-bottom: 1px solid #494E6C;
 }
 
 .post {
@@ -33,9 +31,6 @@
 
 .metadata {
     grid-area: metadata;
-}
-
-.metadata {
     text-wrap: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -91,10 +86,6 @@
 
 @media (--tablet) {
 
-    .postWrapper {
-        padding: var(--spacing11) var(--spacing17);
-    }
-
     .post {
         grid-template-areas: "authorAvatar authorName metadata messageThread"
                          ". content content content";
@@ -123,8 +114,5 @@
             color: var(--light2);
         }
     }
-
-    .postWrapper:last-child {
-        border-bottom: none;
-    }
 }
+

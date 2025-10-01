@@ -5,7 +5,7 @@ import { usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import FeedPost from "./FeedPost";
+import Post from "./Post";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { motion, AnimatePresence } from "framer-motion";
@@ -153,12 +153,14 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
           ) : (
             results.map((post) => {
               return (
-                <FeedPost
-                  key={post._id}
-                  post={post}
-                  showSourceFeed={!feedId}
-                  onOpenPost={handleOpenPost}
-                />
+                <div key={post._id} className={styles.feedPost}>
+                  <Post
+                    post={post}
+                    variant="feed"
+                    showSourceFeed={!feedId}
+                    onOpenPost={handleOpenPost}
+                  />
+                </div>
               );
             })
           )}
