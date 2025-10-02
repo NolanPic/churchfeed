@@ -43,7 +43,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
 
   return (
     <>
-      {messages?.length ? (
+      {messages?.length > 0 && (
         <div className={styles.messagesContainer}>
           <motion.ol
             className={styles.messages}
@@ -72,7 +72,10 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
                 >
                   <article>
                     <div className={styles.messageAvatar}>
-                      <UserAvatar user={m.sender} size={34} />
+                      <UserAvatar
+                        user={m.sender}
+                        size={isTabletOrUp ? 34 : 24}
+                      />
                     </div>
                     <div className={styles.messageBubble}>
                       <header>{m.sender.name}</header>
@@ -93,22 +96,15 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
             })}
           </motion.ol>
         </div>
-      ) : (
-        canSendMessage &&
-        messages !== undefined && (
-          <Hint type="info">
-            This post has no messages yet. Be the first to send one!
-          </Hint>
-        )
       )}
       {!isSignedIn ? (
-        <Hint type="info">
+        <Hint type="info" className={styles.hint}>
           <p>
             You can <Link href="/login">sign in</Link> to send messages.
           </p>
         </Hint>
       ) : !canSendMessage && isUserLoaded ? (
-        <Hint type="info">
+        <Hint type="info" className={styles.hint}>
           <p>You don&apos;t have permission to send messages in this feed.</p>
         </Hint>
       ) : (

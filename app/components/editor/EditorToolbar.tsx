@@ -8,7 +8,8 @@ import { useEditorCommands } from "@/app/context/EditorCommands";
 
 interface EditorToolbarProps {
   actionButton: {
-    label: string;
+    label?: string;
+    ariaLabel?: string;
     icon?: string;
     onClick?: () => void;
     disabled?: boolean;
@@ -37,6 +38,7 @@ export default function EditorToolbar({
         />
         <Button
           icon={actionButton.icon}
+          ariaLabel={actionButton.ariaLabel}
           onClick={actionButton.onClick}
           disabled={actionButton.disabled}
           variant="primary"

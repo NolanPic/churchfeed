@@ -1,7 +1,6 @@
 .messagesContainer {
     position: relative;
     overflow: hidden;
-    margin-bottom: var(--spacing16);
 }
 
 .messages {
@@ -60,7 +59,7 @@
     }
 }
 
-/* .messageSelf {
+.messageSelf {
     flex-direction: row-reverse;
 
     article {
@@ -70,17 +69,19 @@
     .messageBubble {
         border-radius: 24px 16px;
     }
-} */
+}
 
 .messageEditorWrapper {
-    height: 142px;
-    margin-top: var(--spacing10);
+    position: sticky;
+    bottom: calc(var(--spacing4) * -1);
     margin-left: var(--modal-gutter);
     margin-right: var(--modal-gutter);
     border: 1px solid var(--accent);
-    background: var(--mid2);
+    background-color: rgb(from var(--mid2) r g b / 0.6);
+    backdrop-filter: blur(27px);
     padding: var(--spacing3);
-    border-radius: 16px 4px 16px 4px;
+    margin-top: var(--spacing4);
+    border-radius: 16px 24px;
     box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
     -21px 16px 64px -36px rgba(0,0,0,0.25);
 }
@@ -93,13 +94,21 @@
     }
 }
 
+.hint {
+    margin: var(--spacing4) var(--modal-gutter);
+}
+
 
 @media (--tablet) {
     .messages {
-        margin-bottom: var(--spacing16);
+        gap: var(--spacing11);
     }
 
     .message {
+        .messageAvatar {
+            align-self: start;
+        }
+
         .messageTimestamp {
             position: static;
             width: auto;
@@ -108,5 +117,9 @@
             color: var(--light2);
             align-self: flex-start;
         }
+    }
+
+    .messageEditorWrapper {
+        margin-top: var(--spacing11);
     }
 }

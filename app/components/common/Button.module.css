@@ -61,7 +61,7 @@
 }
 
 .iconOnly {
-  padding: 0;
+  padding: var(--spacing2);
 }
 
 .icon {
