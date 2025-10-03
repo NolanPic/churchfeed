@@ -1,3 +1,8 @@
 .editor {
     margin: 0 var(--modal-gutter);
 }
+
+.postEditorPhoneToolbar {
+    display: flex;
+    justify-content: space-between;
+}
