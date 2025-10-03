@@ -6,7 +6,11 @@ import FeedSelector from "../FeedSelector";
 import { useContext } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 
-export default function Toolbar() {
+interface ToolbarProps {
+  onNewPost: () => void;
+}
+
+export default function Toolbar({ onNewPost }: ToolbarProps) {
   const { isSignedIn, user, feeds: userFeeds } = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
   const isFeedOwner = !!(
@@ -32,6 +36,7 @@ export default function Toolbar() {
             variant="primary"
             label="New post"
             className={styles.newPostButton}
+            onClick={onNewPost}
           />
           {isFeedOwner && (
             <IconButton

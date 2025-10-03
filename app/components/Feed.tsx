@@ -8,18 +8,20 @@ import { Id } from "@/convex/_generated/dataModel";
 import Post from "./Post";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
-import NewPostButton from "./editor/NewPostButton";
 import { useAuthedUser } from "../hooks/useAuthedUser";
 import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
+import IconButton from "./common/IconButton";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
 import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
-
+import PostEditorPhone from "./editor/phone/PostEditorPhone";
+import { useMediaQuery } from "@/app/hooks/useMediaQuery";
+import { EditorCommandsProvider } from "../context/EditorCommands";
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
   postIdSlug?: Id<"posts"> | null;
@@ -36,7 +38,6 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const { isSignedIn } = useAuthedUser();
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -115,6 +116,8 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     return () => observer.disconnect();
   }, [vh]);
 
+  const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
+
   const handleOpenPost = (postId: Id<"posts">) => {
     setOpenPostId(postId);
     historyRouter.push(`/post/${postId}`);
@@ -128,18 +131,12 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   return (
     <>
       <div className={styles.feedWrapper}>
-        <Toolbar></Toolbar>
+        <Toolbar onNewPost={() => setIsNewPostOpen(true)} />
         <div className={styles.feedSelectorTabletUp}>
           <FeedSelector variant="topOfFeed" />
         </div>
-        {/* {isSignedIn && (
-          <NewPostButton
-            isOpen={isNewPostOpen}
-            onClick={() => setIsNewPostOpen(!isNewPostOpen)}
-          />
-        )} */}
         <AnimatePresence>
-          {isNewPostOpen && (
+          {isNewPostOpen && isTabletOrUp && (
             <PostEditor
               isOpen={isNewPostOpen}
               setIsOpen={setIsNewPostOpen}
@@ -168,10 +165,29 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
         <div ref={endOfFeed} />
       </div>
 
+      {!isTabletOrUp && (
+        <EditorCommandsProvider>
+          <Modal
+            title="New post"
+            isOpen={isNewPostOpen}
+            onClose={() => setIsNewPostOpen(false)}
+            ariaLabel="Write a new post"
+            toolbar={({ onClose }) => (
+              <div className={styles.postEditorPhoneToolbar}>
+                <IconButton icon="close" onClick={onClose} />
+              </div>
+            )}
+          >
+            <PostEditorPhone />
+          </Modal>
+        </EditorCommandsProvider>
+      )}
+
       <Modal
         isOpen={!!openPostId}
         onClose={handleClosePost}
         ariaLabel="Post details and messages"
+        dragToClose
       >
         {openPostId && <PostModalContent postId={openPostId} />}
       </Modal>
