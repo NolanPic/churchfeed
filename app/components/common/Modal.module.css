@@ -29,6 +29,23 @@
   overscroll-behavior: contain;
 }
 
+.title {
+  position: relative;
+  margin: var(--spacing5) var(--modal-gutter) 0;
+  font-family: var(--font-gentium-plus);
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+}
+
+.titleSeparator {
+  margin: var(--spacing4) auto var(--spacing12);
+  width: 210px;
+  height: 1px;
+  border: none;
+  background-color: var(--light);
+}
+
 .handleBar_PhoneOnly {
   position: relative;
   display: block;
@@ -59,6 +76,14 @@
 
 .closeButton_TabletUp {
   display: none;
+}
+
+.toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: var(--spacing4);
 }
 
 @media (--tablet) {

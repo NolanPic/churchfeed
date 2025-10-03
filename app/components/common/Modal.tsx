@@ -13,27 +13,33 @@ import Icon from "./Icon";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useLockBodyScroll } from "@/app/hooks/useLockBodyScroll";
 
+interface ModalToolbarProps {
+  onClose: () => void;
+}
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
   children: ReactNode;
   ariaLabel?: string;
-  closeMethodOnPhone?: "handle" | "button";
+  dragToClose?: boolean;
+  toolbar?: (props: ModalToolbarProps) => React.ReactNode;
 }
 
 export default function Modal({
   isOpen,
   onClose,
+  title,
   children,
   ariaLabel,
-  closeMethodOnPhone = "handle",
+  dragToClose = false,
+  toolbar,
 }: ModalProps) {
   const [scope, animate] = useAnimate();
   const y = useMotionValue(0);
   const dragControls = useDragControls();
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
-  const doAnimateDragToCloseOnPhone =
-    !isTabletOrUp && closeMethodOnPhone === "handle";
+  const doAnimateDragToCloseOnPhone = !isTabletOrUp && dragToClose;
 
   useLockBodyScroll(isOpen);
 
@@ -96,13 +102,15 @@ export default function Modal({
           }
         }}
       >
-        <button
-          aria-label="Drag to close"
-          className={styles.handleBar_PhoneOnly}
-          onPointerDown={(e) => {
-            dragControls.start(e);
-          }}
-        ></button>
+        {dragToClose && (
+          <button
+            aria-label="Drag to close"
+            className={styles.handleBar_PhoneOnly}
+            onPointerDown={(e) => {
+              dragControls.start(e);
+            }}
+          ></button>
+        )}
         <button
           aria-label="Close"
           className={styles.closeButton_TabletUp}
@@ -110,8 +118,19 @@ export default function Modal({
         >
           <Icon name="close" size={24} />
         </button>
+        {title && (
+          <>
+            <h1 className={styles.title}>{title}</h1>
+            <hr className={styles.titleSeparator} />
+          </>
+        )}
         {children}
       </motion.div>
+      {toolbar && (
+        <div className={styles.toolbar}>
+          {toolbar({ onClose: handleClose })}
+        </div>
+      )}
     </motion.div>
   ) : null;
 
