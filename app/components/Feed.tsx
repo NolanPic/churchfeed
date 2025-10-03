@@ -166,21 +166,10 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
       </div>
 
       {!isTabletOrUp && (
-        <EditorCommandsProvider>
-          <Modal
-            title="New post"
-            isOpen={isNewPostOpen}
-            onClose={() => setIsNewPostOpen(false)}
-            ariaLabel="Write a new post"
-            toolbar={({ onClose }) => (
-              <div className={styles.postEditorPhoneToolbar}>
-                <IconButton icon="close" onClick={onClose} />
-              </div>
-            )}
-          >
-            <PostEditorPhone />
-          </Modal>
-        </EditorCommandsProvider>
+        <PostEditorPhone
+          isOpen={isNewPostOpen}
+          onClose={() => setIsNewPostOpen(false)}
+        />
       )}
 
       <Modal
