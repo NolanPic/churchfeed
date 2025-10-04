@@ -22,6 +22,7 @@ import Toolbar from "./toolbar/Toolbar";
 import PostEditorPhone from "./editor/phone/PostEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { EditorCommandsProvider } from "../context/EditorCommands";
+import { useSearchParams } from "next/navigation";
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
   postIdSlug?: Id<"posts"> | null;
@@ -36,8 +37,10 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     setPostId: setOpenPostId,
   } = useContext(CurrentFeedAndPostContext);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
+  const [isSelectingFeedForPost, setIsSelectingFeedForPost] = useState(false);
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
+  const searchParams = useSearchParams();
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -128,13 +131,47 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     historyRouter.push(feedId ? `/feed/${feedId}` : `/`);
   };
 
+  const handleNewPostClick = () => {
+    if (!feedId) {
+      setIsSelectingFeedForPost(true);
+    } else {
+      setIsNewPostOpen(true);
+    }
+  };
+
+  const handleCloseFeedSelector = () => {
+    setIsSelectingFeedForPost(false);
+  };
+
+  const removeEditorQueryParam = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("openEditor");
+    window.history.replaceState({}, "", url.pathname);
+  };
+
+  // Watch for openEditor query parameter to open editor after navigation
+  useEffect(() => {
+    if (searchParams.get("openEditor") === "true") {
+      setIsSelectingFeedForPost(false);
+      setIsNewPostOpen(true);
+      removeEditorQueryParam();
+    }
+  }, [searchParams]);
+
   return (
     <>
       <div className={styles.feedWrapper}>
-        <Toolbar onNewPost={() => setIsNewPostOpen(true)} />
+        <Toolbar onNewPost={handleNewPostClick} />
         <div className={styles.feedSelectorTabletUp}>
           <FeedSelector variant="topOfFeed" />
         </div>
+        {isSelectingFeedForPost && (
+          <FeedSelector
+            variant="topOfFeed"
+            chooseFeedForNewPost
+            onClose={handleCloseFeedSelector}
+          />
+        )}
         <AnimatePresence>
           {isNewPostOpen && isTabletOrUp && (
             <PostEditor

@@ -16,14 +16,20 @@ import { useRouter } from "next/navigation";
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
   variant: FeedSelectorVariant;
+  chooseFeedForNewPost?: boolean;
+  onClose?: () => void;
 }
 
-export default function FeedSelector({ variant }: FeedSelectorProps) {
+export default function FeedSelector({
+  variant,
+  chooseFeedForNewPost = false,
+  onClose,
+}: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
     CurrentFeedAndPostContext
   );
   const org = useOrganization();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
   if (!org) return null;
@@ -40,28 +46,43 @@ export default function FeedSelector({ variant }: FeedSelectorProps) {
     setIsOpen(false);
     setFeedId(feedId);
     scrollToTop();
-    if (feedId) {
-      router.push(`/feed/${feedId}`);
-    } else {
-      router.push(`/`);
+
+    const targetPath = feedId ? `/feed/${feedId}` : `/`;
+    const pathWithQuery = chooseFeedForNewPost
+      ? `${targetPath}?openEditor=true`
+      : targetPath;
+
+    router.push(pathWithQuery);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    if (onClose) {
+      onClose();
     }
   };
 
   return (
     <>
-      <div className={classNames(styles.selectedFeed, styles[variant])}>
-        <h2 className={styles.feedSelectorTitle}>What's happening in</h2>
-        <Button
-          icon="dropdown-arrow"
-          iconSize={10}
-          className={styles.feedSelector}
-          onClick={() => setIsOpen(true)}
-        >
-          {selectedFeed}
-        </Button>
-      </div>
+      {!chooseFeedForNewPost && (
+        <>
+          <div className={classNames(styles.selectedFeed, styles[variant])}>
+            <h2 className={styles.feedSelectorTitle}>What's happening in</h2>
+            <Button
+              icon="dropdown-arrow"
+              iconSize={10}
+              className={styles.feedSelector}
+              onClick={() => setIsOpen(true)}
+            >
+              {selectedFeed}
+            </Button>
+          </div>
 
-      <hr className={classNames(styles.feedSelectorRule, styles[variant])} />
+          <hr
+            className={classNames(styles.feedSelectorRule, styles[variant])}
+          />
+        </>
+      )}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -72,16 +93,28 @@ export default function FeedSelector({ variant }: FeedSelectorProps) {
             transition={{ duration: 0.1 }}
           >
             <ol>
-              <li key="all" className={!selectedFeedId ? styles.selected : ""}>
-                <label>
-                  <input
-                    type="radio"
-                    checked={!selectedFeedId}
-                    onChange={() => onSelectFeed(undefined)}
-                  />
-                  All feeds
-                </label>
-              </li>
+              {chooseFeedForNewPost && (
+                <li>
+                  <h2 className={styles.chooseFeedHeading}>
+                    Select a feed to post in
+                  </h2>
+                </li>
+              )}
+              {!chooseFeedForNewPost && (
+                <li
+                  key="all"
+                  className={!selectedFeedId ? styles.selected : ""}
+                >
+                  <label>
+                    <input
+                      type="radio"
+                      checked={!selectedFeedId}
+                      onChange={() => onSelectFeed(undefined)}
+                    />
+                    All feeds
+                  </label>
+                </li>
+              )}
               {feeds.map((feed) => (
                 <li
                   key={feed._id}
@@ -98,7 +131,7 @@ export default function FeedSelector({ variant }: FeedSelectorProps) {
                 </li>
               ))}
             </ol>
-            <Backdrop onClick={() => setIsOpen(false)} />
+            <Backdrop onClick={handleClose} />
           </motion.div>
         )}
       </AnimatePresence>
