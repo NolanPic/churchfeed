@@ -169,6 +169,7 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
         <PostEditorPhone
           isOpen={isNewPostOpen}
           onClose={() => setIsNewPostOpen(false)}
+          feedId={feedId ?? null}
         />
       )}
 
