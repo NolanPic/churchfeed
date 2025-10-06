@@ -22,6 +22,7 @@
   "dependencies": {
     "@auth/core": "^0.37.0",
     "@clerk/nextjs": "^6.25.4",
+    "@floating-ui/react-dom": "^2.1.6",
     "@tiptap/extension-image": "^3.3.0",
     "@tiptap/extension-placeholder": "^3.0.9",
     "@tiptap/extensions": "^3.4.2",

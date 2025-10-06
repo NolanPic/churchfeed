@@ -41,6 +41,7 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const searchParams = useSearchParams();
+  const feedWrapperRef = useRef<HTMLDivElement>(null);
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -160,11 +161,12 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
 
   return (
     <>
-      <div className={styles.feedWrapper}>
+      <div className={styles.feedWrapper} ref={feedWrapperRef}>
         <Toolbar
           onNewPost={handleNewPostClick}
           isNewPostOpen={isNewPostOpen}
           setIsNewPostOpen={setIsNewPostOpen}
+          feedWrapperRef={feedWrapperRef}
         />
         <div className={styles.feedSelectorTabletUp}>
           <FeedSelector variant="topOfFeed" />

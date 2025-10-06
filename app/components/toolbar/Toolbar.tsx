@@ -3,21 +3,24 @@ import IconButton from "../common/IconButton";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../FeedSelector";
-import { useContext } from "react";
+import { useContext, RefObject } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFloating, offset } from "@floating-ui/react-dom";
 
 interface ToolbarProps {
   onNewPost: () => void;
   isNewPostOpen: boolean;
   setIsNewPostOpen: (isNewPostOpen: boolean) => void;
+  feedWrapperRef: RefObject<HTMLDivElement | null>;
 }
 
 export default function Toolbar({
   onNewPost,
   isNewPostOpen,
   setIsNewPostOpen,
+  feedWrapperRef,
 }: ToolbarProps) {
   const { isSignedIn, user, feeds: userFeeds } = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
@@ -28,6 +31,15 @@ export default function Toolbar({
 
   const showNewPostButton = !isNewPostOpen;
   const showCloseButton = !showNewPostButton;
+
+  // position the close button relative to the feed
+  const { refs, floatingStyles } = useFloating({
+    elements: {
+      reference: feedWrapperRef.current,
+    },
+    placement: "right-start",
+    middleware: [offset({ mainAxis: 32 })],
+  });
 
   return (
     <>
@@ -82,6 +94,8 @@ export default function Toolbar({
           <AnimatePresence>
             {showCloseButton && (
               <motion.div
+                ref={refs.setFloating}
+                style={floatingStyles}
                 initial={{ opacity: 0, marginTop: `var(--spacing13)` }}
                 animate={{ opacity: 1, marginTop: 0 }}
                 exit={{ opacity: 0, marginTop: `var(--spacing13)` }}
