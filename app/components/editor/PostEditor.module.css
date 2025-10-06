@@ -1,8 +1,6 @@
 .postEditor {
     --editor-open-min-height: 190px;
     --editor-open-width: 100%;
-    --editor-closed-radius: 12px;
-    --editor-open-radius: 0px;
     
     position: absolute;
     right: 0;
@@ -10,7 +8,7 @@
     min-height: var(--editor-open-min-height);
     background-color: var(--mid2);
     border: 1px solid var(--accent);
-    border-radius: 12px;
+    border-radius: var(--border-radius-lg);
     padding: var(--spacing8);
     padding-bottom: var(--spacing6);
     display: flex;

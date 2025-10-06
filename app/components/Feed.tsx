@@ -161,7 +161,11 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   return (
     <>
       <div className={styles.feedWrapper}>
-        <Toolbar onNewPost={handleNewPostClick} />
+        <Toolbar
+          onNewPost={handleNewPostClick}
+          isNewPostOpen={isNewPostOpen}
+          setIsNewPostOpen={setIsNewPostOpen}
+        />
         <div className={styles.feedSelectorTabletUp}>
           <FeedSelector variant="topOfFeed" />
         </div>

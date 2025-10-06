@@ -56,5 +56,16 @@
     .overflowMenuButton {
         display: none;
     }
+
+    .closeNewPostButton {
+        position: fixed;
+        z-index: 3;
+        bottom: var(--spacing4);
+        right: var(--spacing4);
+        position-anchor: --feed;
+        top: anchor(top);
+        left: anchor(right);
+        margin-left: var(--spacing8);
+    }
 }
 

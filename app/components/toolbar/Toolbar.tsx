@@ -5,12 +5,20 @@ import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../FeedSelector";
 import { useContext } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ToolbarProps {
   onNewPost: () => void;
+  isNewPostOpen: boolean;
+  setIsNewPostOpen: (isNewPostOpen: boolean) => void;
 }
 
-export default function Toolbar({ onNewPost }: ToolbarProps) {
+export default function Toolbar({
+  onNewPost,
+  isNewPostOpen,
+  setIsNewPostOpen,
+}: ToolbarProps) {
   const { isSignedIn, user, feeds: userFeeds } = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
   const isFeedOwner = !!(
@@ -18,47 +26,78 @@ export default function Toolbar({ onNewPost }: ToolbarProps) {
   );
   const isAdmin = user?.type === "admin";
 
+  const showNewPostButton = !isNewPostOpen;
+  const showCloseButton = !showNewPostButton;
+
   return (
-    <div className={styles.toolbar}>
-      {isSignedIn && (
-        <>
-          <div className={styles.feedSelectorContainer}>
-            <FeedSelector variant="inToolbar" />
-          </div>
-          <IconButton
-            icon="ellipsis"
-            ariaLabel="More options"
-            className={styles.overflowMenuButton}
-            popoverTarget="overflow-menu"
-          />
-          <IconButton
-            icon="pen"
-            variant="primary"
-            label="New post"
-            className={styles.newPostButton}
-            onClick={onNewPost}
-          />
-          {isFeedOwner && (
+    <>
+      <div className={styles.toolbar}>
+        {isSignedIn && (
+          <>
+            <div className={styles.feedSelectorContainer}>
+              <FeedSelector variant="inToolbar" />
+            </div>
             <IconButton
-              icon="toggles"
-              label="Feed settings"
-              className={styles.feedSettingsButton}
+              icon="ellipsis"
+              ariaLabel="More options"
+              className={styles.overflowMenuButton}
+              popoverTarget="overflow-menu"
             />
-          )}
-          {isAdmin && (
-            <IconButton
-              icon="gear"
-              label="Admin"
-              className={styles.adminSettingsButton}
-              iconSize={32}
+            {showNewPostButton && (
+              <IconButton
+                icon="pen"
+                variant="primary"
+                label="New post"
+                className={styles.newPostButton}
+                onClick={onNewPost}
+              />
+            )}
+
+            {isFeedOwner && (
+              <IconButton
+                icon="toggles"
+                label="Feed settings"
+                className={styles.feedSettingsButton}
+              />
+            )}
+            {isAdmin && (
+              <IconButton
+                icon="gear"
+                label="Admin"
+                className={styles.adminSettingsButton}
+                iconSize={32}
+              />
+            )}
+            <OverflowMenu
+              showAdminSettings={isAdmin}
+              showFeedSettings={isFeedOwner}
             />
-          )}
-          <OverflowMenu
-            showAdminSettings={isAdmin}
-            showFeedSettings={isFeedOwner}
-          />
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+
+      {isSignedIn &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {showCloseButton && (
+              <motion.div
+                initial={{ opacity: 0, marginTop: `var(--spacing13)` }}
+                animate={{ opacity: 1, marginTop: 0 }}
+                exit={{ opacity: 0, marginTop: `var(--spacing13)` }}
+                transition={{ duration: 0.2 }}
+                className={styles.closeNewPostButton}
+              >
+                <IconButton
+                  icon="close"
+                  ariaLabel="Close post editor"
+                  onClick={() => setIsNewPostOpen(false)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
+    </>
   );
 }

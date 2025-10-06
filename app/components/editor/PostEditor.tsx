@@ -35,15 +35,11 @@ export default function PostEditor({
     minHeight: 0,
     width: 0,
     opacity: 0,
-    borderTopRightRadius: "var(--editor-closed-radius)",
   };
   const editorOpen = {
     minHeight: "var(--editor-open-min-height)",
     width: "var(--editor-open-width)",
     opacity: 1,
-    borderTopRightRadius: isOpen
-      ? "var(--editor-open-radius)"
-      : "var(--editor-closed-radius)",
   };
 
   return (
