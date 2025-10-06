@@ -32,12 +32,11 @@ export default function FeedSelector({
   const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
-  if (!org) return null;
 
   const feeds =
-    useQuery(api.feeds.getUserFeeds, {
-      orgId: org?._id,
-    }) || [];
+    useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
+
+  if (!org) return null;
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
@@ -67,7 +66,9 @@ export default function FeedSelector({
       {!chooseFeedForNewPost && (
         <>
           <div className={classNames(styles.selectedFeed, styles[variant])}>
-            <h2 className={styles.feedSelectorTitle}>What's happening in</h2>
+            <h2 className={styles.feedSelectorTitle}>
+              What&apos;s happening in
+            </h2>
             <Button
               icon="dropdown-arrow"
               iconSize={10}

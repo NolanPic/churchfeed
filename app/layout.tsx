@@ -39,6 +39,7 @@ export default async function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Gentium+Plus:ital@0;1&family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet"

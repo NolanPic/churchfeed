@@ -11,17 +11,14 @@ import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
-import { useAuthedUser } from "../hooks/useAuthedUser";
 import PostModalContent from "./PostModalContent";
 import Modal from "./common/Modal";
-import IconButton from "./common/IconButton";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
 import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
 import PostEditorPhone from "./editor/phone/PostEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
-import { EditorCommandsProvider } from "../context/EditorCommands";
 import { useSearchParams } from "next/navigation";
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;

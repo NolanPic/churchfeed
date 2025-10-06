@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useCallback } from "react";
 import {
   motion,
   useAnimate,
@@ -43,7 +43,7 @@ export default function Modal({
 
   useLockBodyScroll(isOpen);
 
-  const handleClose = async () => {
+  const handleClose = useCallback(async () => {
     if (doAnimateDragToCloseOnPhone) {
       const currentY = typeof y.get() === "number" ? y.get() : 0;
       const offscreen =
@@ -51,7 +51,7 @@ export default function Modal({
       await animate("#modal", { y: [currentY, offscreen] });
     }
     onClose();
-  };
+  }, [doAnimateDragToCloseOnPhone, y, animate, onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -71,7 +71,7 @@ export default function Modal({
     } else {
       y.set(0);
     }
-  }, [isOpen]);
+  }, [isOpen, animate, isTabletOrUp, y]);
 
   const modal = isOpen ? (
     <motion.div
