@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styles from "./Button.module.css";
 import Icon from "./Icon";
+import { forwardRef } from "react";
 
 interface BaseButtonProps {
   children?: React.ReactNode;
@@ -31,19 +32,22 @@ interface ButtonAsLink extends BaseButtonProps {
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  icon,
-  className = "",
-  disabled = false,
-  variant,
-  iconSize,
-  ariaLabel,
-  noBackground = false,
-  style,
-  popoverTarget,
-  ...props
-}) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    children,
+    icon,
+    className = "",
+    disabled = false,
+    variant,
+    iconSize,
+    ariaLabel,
+    noBackground = false,
+    style,
+    popoverTarget,
+    ...props
+  },
+  ref
+) {
   const hasChildren = !!children;
   const variantClassName =
     variant === "primary" ? styles.variantPrimary : styles.variantDefault;
@@ -84,6 +88,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      ref={ref}
       type={type || "button"}
       onClick={onClick}
       disabled={disabled}
@@ -95,6 +100,6 @@ const Button: React.FC<ButtonProps> = ({
       <ButtonContent />
     </button>
   );
-};
+});
 
 export default Button;
