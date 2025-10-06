@@ -1,0 +1,5 @@
+/* Breakpoints */
+@custom-media --tablet (min-width: 34.375rem); /* 550px */
+@custom-media --laptop (min-width: 68.75rem); /* 1100px */
+@custom-media --desktop (min-width: 93.75rem); /* 1500px */
+
