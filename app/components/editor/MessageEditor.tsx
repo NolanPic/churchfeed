@@ -5,6 +5,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "../../context/OrganizationProvider";
 import Editor, { EditorHandle } from "./Editor";
 import EditorToolbar from "./EditorToolbar";
+import { EditorCommandsProvider } from "../../context/EditorCommands";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import styles from "./MessageEditor.module.css";
@@ -34,21 +35,22 @@ export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
 
   return (
     <div className={styles.messageEditor}>
-      <Editor
-        ref={editorRef}
-        placeholder="Continue the conversation..."
-        className={styles.tiptapEditor}
-        onSubmit={onSend}
-      />
-      <EditorToolbar
-        className={styles.messageEditorToolbar}
-        actionButton={{
-          label: "Send",
-          icon: "send",
-          onClick: onSend,
-          disabled: isSending,
-        }}
-      />
+      <EditorCommandsProvider>
+        <Editor
+          ref={editorRef}
+          placeholder="Continue the conversation..."
+          className={styles.tiptapEditor}
+          onSubmit={onSend}
+        />
+        <EditorToolbar
+          className={styles.messageEditorToolbar}
+          actionButton={{
+            icon: "send",
+            onClick: onSend,
+            disabled: isSending,
+          }}
+        />
+      </EditorCommandsProvider>
     </div>
   );
 }

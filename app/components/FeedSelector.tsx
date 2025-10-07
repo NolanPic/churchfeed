@@ -1,123 +1,140 @@
+import Button from "./common/Button";
 import styles from "./FeedSelector.module.css";
-import { Id } from "@/convex/_generated/dataModel";
+import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
+import { useOrganization } from "@/app/context/OrganizationProvider";
 import { useState } from "react";
 import Backdrop from "./common/Backdrop";
-import { motion, AnimatePresence } from "framer-motion";
+import { Id } from "../../convex/_generated/dataModel";
+import { AnimatePresence, motion } from "framer-motion";
+import { useScrollToTop } from "@/app/hooks/useScrollToTop";
 import classNames from "classnames";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+type FeedSelectorVariant = "topOfFeed" | "inToolbar";
+interface FeedSelectorProps {
+  variant: FeedSelectorVariant;
+  chooseFeedForNewPost?: boolean;
+  onClose?: () => void;
+}
+
 export default function FeedSelector({
-  selectedFeedId,
-  setSelectedFeedId,
-  orgId,
-}: {
-  selectedFeedId: Id<"feeds"> | null;
-  setSelectedFeedId: (feedId: Id<"feeds"> | null) => void;
-  orgId: Id<"organizations">;
-}) {
+  variant,
+  chooseFeedForNewPost = false,
+  onClose,
+}: FeedSelectorProps) {
+  const { feedId: selectedFeedId, setFeedId } = useContext(
+    CurrentFeedAndPostContext
+  );
+  const org = useOrganization();
+  const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
+  const scrollToTop = useScrollToTop();
   const router = useRouter();
 
-  const [isOpen, setIsOpen] = useState(false);
   const feeds =
-    useQuery(api.feeds.getUserFeeds, {
-      orgId,
-    }) || [];
+    useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
+
+  if (!org) return null;
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
 
-  const selectFeed = (feedId: Id<"feeds"> | null) => {
+  const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
     setIsOpen(false);
-    setSelectedFeedId(feedId);
-    if (feedId) {
-      router.push(`/feed/${feedId}`);
-    } else {
-      router.push(`/`);
+    setFeedId(feedId);
+    scrollToTop();
+
+    const targetPath = feedId ? `/feed/${feedId}` : `/`;
+    const pathWithQuery = chooseFeedForNewPost
+      ? `${targetPath}?openEditor=true`
+      : targetPath;
+
+    router.push(pathWithQuery);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    if (onClose) {
+      onClose();
     }
   };
 
   return (
     <>
-      <nav className={styles.feedSelector} data-testid="feed-selector">
-        <button
-          className={styles.feedSelectorButton}
-          onClick={() => setIsOpen(!isOpen)}
-          role="combobox"
-          aria-haspopup="listbox"
-          aria-controls="feed-selector-dropdown"
-          aria-activedescendant={`option-${selectedFeedId}`}
-          aria-expanded={isOpen}
-        >
-          <span className={styles.selectedFeedName}>{selectedFeed}</span>
-          <Image
-            className={styles.dropdownArrow}
-            src="/icons/dropdown-arrow.svg"
-            alt="Expand feed selector"
-            width={10}
-            height={8}
-          />
-        </button>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.ul
-              style={isOpen ? { zIndex: 2 } : {}}
-              initial={{ height: "36px", borderWidth: 0 }}
-              animate={{ height: "auto", borderWidth: 1 }}
-              exit={{ height: "36px", borderWidth: 0 }}
-              transition={{ duration: 0.15 }}
-              className={styles.feedSelectorDropdown}
-              id="feed-selector-dropdown"
-              role="listbox"
-              tabIndex={-1}
-              aria-multiselectable={false}
+      {!chooseFeedForNewPost && (
+        <>
+          <div className={classNames(styles.selectedFeed, styles[variant])}>
+            <h2 className={styles.feedSelectorTitle}>
+              What&apos;s happening in
+            </h2>
+            <Button
+              icon="dropdown-arrow"
+              iconSize={10}
+              className={styles.feedSelector}
+              onClick={() => setIsOpen(true)}
             >
-              <li
-                key="all"
-                className={classNames({
-                  [styles.selectedFeed]: selectedFeedId === null,
-                })}
-              >
-                <label>
-                  <input
-                    type="radio"
-                    checked={selectedFeedId === null}
-                    onChange={() => selectFeed(null)}
-                    id={`option-all`}
-                    role="option"
-                    aria-selected={selectedFeedId === null}
-                  />
-                  <span>All feeds</span>
-                </label>
-              </li>
+              {selectedFeed}
+            </Button>
+          </div>
+
+          <hr
+            className={classNames(styles.feedSelectorRule, styles[variant])}
+          />
+        </>
+      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className={styles.feedList}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            <ol>
+              {chooseFeedForNewPost && (
+                <li>
+                  <h2 className={styles.chooseFeedHeading}>
+                    Select a feed to post in
+                  </h2>
+                </li>
+              )}
+              {!chooseFeedForNewPost && (
+                <li
+                  key="all"
+                  className={!selectedFeedId ? styles.selected : ""}
+                >
+                  <label>
+                    <input
+                      type="radio"
+                      checked={!selectedFeedId}
+                      onChange={() => onSelectFeed(undefined)}
+                    />
+                    All feeds
+                  </label>
+                </li>
+              )}
               {feeds.map((feed) => (
                 <li
                   key={feed._id}
-                  className={classNames({
-                    [styles.selectedFeed]: selectedFeedId === feed._id,
-                  })}
+                  className={selectedFeedId === feed._id ? styles.selected : ""}
                 >
                   <label>
                     <input
                       type="radio"
                       checked={selectedFeedId === feed._id}
-                      onChange={() => selectFeed(feed._id as Id<"feeds">)}
-                      id={`option-${feed._id}`}
-                      role="option"
-                      aria-selected={selectedFeedId === feed._id}
+                      onChange={() => onSelectFeed(feed._id)}
                     />
-                    <span>{feed.name}</span>
+                    {feed.name}
                   </label>
                 </li>
               ))}
-            </motion.ul>
-          )}
-        </AnimatePresence>
-      </nav>
-      <AnimatePresence>
-        {isOpen && <Backdrop onClick={() => setIsOpen(false)} />}
+            </ol>
+            <Backdrop onClick={handleClose} />
+          </motion.div>
+        )}
       </AnimatePresence>
     </>
   );

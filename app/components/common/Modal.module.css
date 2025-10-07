@@ -4,49 +4,115 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  pointer-events: none;
+  /* Stop scroll chaining outside the modal */
+  overscroll-behavior: none;
+  --modal-gutter: var(--spacing7);
 }
 
-.modalCard {
+.modal {
   width: min(800px, 100vw);
   height: 100vh;
-  background: var(--mid);
-  overflow: hidden;
+  background: rgb(from var(--mid) r g b / 0.6);;
+  backdrop-filter: blur(27px);
   pointer-events: auto;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing18);
-  padding-top: var(--spacing24);
+  padding: var(--spacing7) 0;
   box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
   -21px 16px 64px -36px rgba(0,0,0,0.25);
   overflow: scroll;
+  scrollbar-gutter: stable;
+  scrollbar-color: initial var(--mid);
+  
+  /* Keep scrolling contained within the modal */
+  overscroll-behavior: contain;
 }
 
-.closeButton {
-  position: absolute;
-  top: var(--spacing12);
-  right: var(--spacing12);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: transparent;
+.title {
+  position: relative;
+  margin: var(--spacing5) var(--modal-gutter) 0;
+  font-family: var(--font-gentium-plus);
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+}
+
+.titleSeparator {
+  margin: var(--spacing4) auto var(--spacing12);
+  width: 210px;
+  height: 1px;
   border: none;
-  cursor: pointer;
+  background-color: var(--light);
 }
 
-@media (--sm) {
-  .modalCard {
-    padding: var(--spacing8);
-    padding-top: var(--spacing16);
+.handleBar_PhoneOnly {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 60px;
+  height: 4px;
+  min-height: 4px;
+  border-radius: 4px;
+  background-color: var(--white);
+  opacity: 0.6;
+  border: none;
+  cursor: grab;
+  touch-action: none;
+  margin-bottom: var(--spacing19);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -25px -75px -60px;
+    pointer-events: auto;
+    z-index: 1;
+  }
+}
+
+.handleBar_PhoneOnly:active {
+  cursor: grabbing;
+}
+
+.closeButton_TabletUp {
+  display: none;
+}
+
+.toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: var(--spacing4);
+}
+
+@media (--tablet) {
+  .modal {
+    padding: var(--spacing18);
+    padding-top: var(--spacing24);
+    margin-top: var(--spacing8);
+    border-radius: var(--border-radius-lg);
   }
 
-  .closeButton {
-    top: var(--spacing6);
-    right: var(--spacing6);
+  .handleBar_PhoneOnly {
+    display: none;
+  }
+
+  .closeButton_TabletUp {
+    top: var(--spacing12);
+    right: var(--spacing12);
+  }
+
+  .closeButton_TabletUp {
+    position: absolute;
+    top: var(--spacing12);
+    right: var(--spacing12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
   }
 }
 

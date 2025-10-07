@@ -1,10 +1,5 @@
 .signinCard {
-    background-color: var(--mid);
-    border-radius: 12px;
-    width: 400px;
-    height: 368px;
-    margin: 0 auto;
-    padding: var(--spacing9) var(--spacing14);
+    margin: 0 var(--spacing4);
 
     form {
         width: 100%;
@@ -14,7 +9,7 @@
     }
 
     h1 {
-        font-size: var(--text-xl);
+        font-size: 2.5rem;
         font-weight: 400;
         font-family: var(--font-gentium-plus);
         text-align: center;
@@ -37,11 +32,15 @@
     }
 }
 
-@media (--sm) {
+@media (--tablet) {
     .signinCard {
-        max-width: calc(100% - var(--spacing8));
-        margin: 0 var(--spacing4);
-        height: auto;
+        background-color: var(--mid);
+        width: 400px;
+        height: 368px;
+        max-width: initial;
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing9) var(--spacing14);
+        margin: 0 auto;
     }
 }
 

@@ -1,0 +1,21 @@
+.userContent {
+    & a {
+        color: var(--white);
+        text-decoration: underline;
+
+        &:hover {
+            color: var(--accent);
+        }
+
+        transition: color 0.15s ease-in-out;
+    }
+
+    & img {
+        border-radius: 12px;
+        margin-bottom: var(--spacing3);
+    }
+
+    p:not(:last-child) {
+        margin-bottom: var(--spacing3);
+    }
+}

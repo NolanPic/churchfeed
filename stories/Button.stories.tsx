@@ -5,13 +5,13 @@ import Button from "../app/components/common/Button";
 type ButtonProps = React.ComponentProps<typeof Button>;
 
 const PlayIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
+  <svg viewBox="0 0 16 16" fill="currentColor" width="16px" height="16px">
     <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM6 11.5v-7l5.25 3.5L6 11.5z" />
   </svg>
 );
 
 const ArrowIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
+  <svg viewBox="0 0 16 16" fill="currentColor" width="16px" height="16px">
     <path d="M8 0L6.59 1.41 12.17 7H0v2h12.17l-5.58 5.59L8 16l8-8z" />
   </svg>
 );
@@ -38,6 +38,17 @@ const meta: Meta<ButtonProps> = {
       control: false,
       description: "Optional icon element to display alongside the text",
     },
+    variant: {
+      control: "radio",
+      options: ["primary", "none"],
+      description:
+        'Visual style of the button background ("primary" or "none")',
+    },
+    iconSize: {
+      control: { type: "number", min: 12, max: 48, step: 1 },
+      description:
+        "Width/height (px) applied to the icon without changing hit area",
+    },
     onClick: {
       action: "clicked",
       description: "Click handler for button variant",
@@ -49,6 +60,10 @@ const meta: Meta<ButtonProps> = {
     disabled: {
       control: "boolean",
       description: "Whether the button is disabled",
+    },
+    noBackground: {
+      control: "boolean",
+      description: "Whether the button has no background",
     },
     as: {
       control: "radio",
@@ -176,7 +191,6 @@ export const SubmitButton: Story = {
   },
 };
 
-// Interactive examples
 export const AllVariants: Story = {
   render: () => (
     <div
@@ -202,6 +216,23 @@ export const AllVariants: Story = {
     docs: {
       description: {
         story: "Overview of all button variants side by side.",
+      },
+    },
+  },
+};
+
+// Icon-only stories
+
+export const IconOnly: Story = {
+  args: {
+    icon: <PlayIcon />,
+    noBackground: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Icon-only button with no background. Focus ring still applies when focused.",
       },
     },
   },

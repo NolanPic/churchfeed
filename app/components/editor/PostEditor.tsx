@@ -2,18 +2,13 @@
 
 import Backdrop from "../common/Backdrop";
 import styles from "./PostEditor.module.css";
-import toolbarStyles from "./PostEditorToolbar.module.css";
-import { useState, useRef, useMemo } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { useOrganization } from "../../context/OrganizationProvider";
+import { useRef, useEffect } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
 import Editor, { EditorHandle } from "./Editor";
 import EditorToolbar from "./EditorToolbar";
-import Select from "../common/Select";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
-import { isEditorEmpty } from "./editor-utils";
+import { EditorCommandsProvider } from "../../context/EditorCommands";
+import { useOnPost } from "@/app/hooks/useOnPost";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -26,80 +21,26 @@ export default function PostEditor({
   setIsOpen,
   feedId,
 }: PostEditorProps) {
-  const [isPosting, setIsPosting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const createPost = useMutation(api.posts.createPost);
-  const org = useOrganization();
-  const { feeds } = useAuthedUser();
-  const [feedIdToPostTo, setFeedIdToPostTo] = useState<Id<"feeds"> | null>(
-    feedId
-  );
-
   const editorRef = useRef<EditorHandle | null>(null);
+  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
 
-  const onPost = async (feedIdToPostTo: Id<"feeds">) => {
-    setIsPosting(true);
-    const postContent = editorRef.current?.getJSON() ?? null;
-
-    if (!postContent || isEditorEmpty(postContent)) {
-      setError("Please add some content to your post");
-      setIsPosting(false);
-      return;
-    }
-
-    if (!org || !feedIdToPostTo) {
-      setError("No organization or feed found");
-      setIsPosting(false);
-      return;
-    }
-
-    try {
-      await createPost({
-        orgId: org?._id,
-        feedId: feedIdToPostTo,
-        content: JSON.stringify(postContent),
-      });
-      setIsPosting(false);
+  useEffect(() => {
+    if (state === "posted") {
       setIsOpen(false);
       editorRef.current?.clear();
-    } catch (error) {
-      console.error(error);
-      setError("Failed to create post");
-      setIsPosting(false);
+      reset();
     }
-  };
-
-  const feedOptions = useMemo(
-    () =>
-      feeds
-        ?.map((feed) => {
-          if (feed.owner || feed.memberPermissions?.includes("post")) {
-            return {
-              value: feed._id,
-              label: feed.name,
-            };
-          }
-          return null;
-        })
-        .filter((option) => option !== null) || [],
-    [feeds]
-  );
-
-  const isPostingDisabled = feedOptions.length === 0;
+  }, [state, setIsOpen, reset]);
 
   const editorInitial = {
     minHeight: 0,
     width: 0,
     opacity: 0,
-    borderTopRightRadius: "var(--editor-closed-radius)",
   };
   const editorOpen = {
     minHeight: "var(--editor-open-min-height)",
     width: "var(--editor-open-width)",
     opacity: 1,
-    borderTopRightRadius: isOpen
-      ? "var(--editor-open-radius)"
-      : "var(--editor-closed-radius)",
   };
 
   return (
@@ -119,34 +60,22 @@ export default function PostEditor({
         }}
       >
         {error && <div className={styles.error}>{error}</div>}
-        <Editor
-          ref={editorRef}
-          placeholder="What's happening?"
-          autofocus
-          className="tiptap-editor"
-        />
-        <EditorToolbar
-          leftSlot={
-            <Select
-              options={feedOptions}
-              defaultValue={feedIdToPostTo ?? undefined}
-              prependToSelected="Post in: "
-              placeholder={
-                isPostingDisabled ? "No feed memberships" : "Choose a feed"
-              }
-              className={toolbarStyles.feedSelect}
-              disabled={isPostingDisabled}
-              onChange={(value) => setFeedIdToPostTo(value as Id<"feeds">)}
-            />
-          }
-          actionButton={{
-            label: "Post",
-            icon: "send",
-            onClick: feedIdToPostTo ? () => onPost(feedIdToPostTo) : undefined,
-            disabled: isPosting || isPostingDisabled,
-            className: toolbarStyles.postButton,
-          }}
-        />
+        <EditorCommandsProvider>
+          <Editor
+            ref={editorRef}
+            placeholder="What's happening?"
+            autofocus
+            className="tiptap-editor"
+          />
+          <EditorToolbar
+            actionButton={{
+              label: "Post",
+              icon: "send",
+              onClick: onPost,
+              disabled: state === "posting",
+            }}
+          />
+        </EditorCommandsProvider>
       </motion.div>
       <Backdrop onClick={() => setIsOpen(false)} />
     </>

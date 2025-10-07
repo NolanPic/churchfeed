@@ -1,82 +1,19 @@
-.post {
-    display: flex;
-    gap: var(--spacing7);
-    font-size: var(--text-base);
-
-    .postAuthorAvatar {
-        flex-shrink: 0;
-    }
-
-    .postRight {
-        width: 100%;
-    }
-
-    .postInfo {
-        display: flex;
-    }
-
-    .postAuthorName {
-        font-weight: 600;
-    }
-
-    .postTimeAndSourceFeed, 
-    .postTimeAndSourceFeed a {
-        color: var(--light);
-        font-weight: 600;
-        min-width: 0;
-    }
-    
-    .postTimeAndSourceFeed {
-        margin-left: var(--spacing3);
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        flex: 1;
-
-        a:hover {
-            text-decoration: underline;
-            color: var(--white);
-        }
-
-    }
-
-    .postContent {
-        margin-top: var(--spacing2);
-
-        p:not(:last-child) {
-            margin-bottom: var(--spacing3);
-        }
-
-        iframe {
-            max-width: 100%;
-            border: none;
-            border-radius: var(--spacing3);
-        }
-    }
+.postWrapper {
+    padding-left: var(--modal-gutter);
+    padding-right: var(--modal-gutter);
 }
 
 .postSeparator {
-    margin: auto;
+    margin: var(--spacing9) auto;
     background: var(--light);
+    width: 210px;
     height: 1px;
     border: none;
-    margin-top: var(--spacing16);
-    margin-bottom: var(--spacing16);
 }
 
-@media (--sm) {
-    .post {
-        gap: var(--spacing3);
-
-        .postAuthorAvatar {
-            width: 32px;
-            height: 32px;
-            font-size: var(--text-sm);
-        }
-    }
-
+@media (--tablet) {
     .postSeparator {
-        margin-top: var(--spacing8);
-        margin-bottom: var(--spacing8);
+        margin-top: var(--spacing16);
+        margin-bottom: var(--spacing16);
     }
 }

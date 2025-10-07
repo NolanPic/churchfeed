@@ -1,13 +1,16 @@
 "use client";
 
 import UserAvatarMenu from "./UserAvatarMenu";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
+import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import styles from "./OrganizationLayout.module.css";
 import { useState } from "react";
 import Modal from "./common/Modal";
 import ProfileModalContent from "./ProfileModalContent";
+import Image from "next/image";
 
 export default function OrganizationLayout({
   children,
@@ -16,8 +19,8 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
+  const { isSignedIn } = useAuthedUser();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-
 
   if (org === null) {
     return (
@@ -28,35 +31,49 @@ export default function OrganizationLayout({
   }
 
   return (
-    <div className={styles.feedWrapper}>
+    <>
       {pathname !== "/login" && (
-        <div className={styles.userAvatarMenu}>
-          <UserAvatarMenu openProfileModal={() => setIsProfileModalOpen(true)}/>
-        </div>
+        <>
+          {isSignedIn ? (
+            <div className={styles.userAvatarMenu}>
+              <UserAvatarMenu
+                openProfileModal={() => setIsProfileModalOpen(true)}
+              />
+            </div>
+          ) : (
+            <div className={styles.loginLink}>
+              <Link href="/login">Sign in</Link>
+            </div>
+          )}
+        </>
       )}
-{isProfileModalOpen && (
-  <Modal isOpen={true} onClose={() => setIsProfileModalOpen(false)}>
-    <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
-  </Modal>
-)}
-      <h1 className={styles.mainTitle}>{org?.name}</h1>
-      <h2 className={styles.location}>{org?.location}</h2>
-      <motion.div
-        initial={{ height: 0 }}
-        animate={{ height: "var(--pointer-height)" }}
-        transition={{ duration: 0.25 }}
-        className={styles.lightPointer}
-      ></motion.div>
+      <section className={styles.header}>
+        <h1 className={styles.mainTitle}>{org?.name}</h1>
+        <h2 className={styles.location}>{org?.location}</h2>
+        <Image
+          src="/icons/chevron-down.svg"
+          role="presentation"
+          alt=""
+          width={22}
+          height={22}
+          className={styles.lightPointer}
+        />
+      </section>
       {org?._id && (
-        <motion.div
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
+          className={styles.feedWrapper}
         >
           {children}
-        </motion.div>
+        </motion.section>
       )}
-    </div>
+      {isProfileModalOpen && (
+        <Modal isOpen={true} onClose={() => setIsProfileModalOpen(false)}>
+          <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
+        </Modal>
+      )}
+    </>
   );
 }
-

@@ -1,15 +1,8 @@
 .postEditorToolbar {
     display: flex;
-    justify-content: space-between;
-    gap: var(--spacing4);
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--spacing1);
     align-self: flex-end;
     width: 100%;
-}
-
-.postButton {
-    align-self: flex-end;
-}
-
-.feedSelect {
-    max-width: 250px;
 }

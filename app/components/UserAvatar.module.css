@@ -1,12 +1,15 @@
 
 .userAvatar {
+    position: relative;
     background-color: var(--accent);
     border-radius: 50%;
     display: grid;
-    place-items: center;
     color: var(--dark);
-    font-weight: 600;
+    font-weight: 700;
     flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    font-size: var(--text-sm);
 
     &.highlight {
         border: 1px solid var(--accent);
@@ -18,12 +21,17 @@
         object-fit: cover;
         border-radius: 50%;
     }
+
+    div {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+    }
 }
 
-@media (--sm) {
+@media (--tablet) {
     .userAvatar {
-        width: 32px;
-        height: 32px;
-        font-size: var(--text-sm);
+        font-size: initial;
     }
 }

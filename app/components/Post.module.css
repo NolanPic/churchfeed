@@ -1,0 +1,118 @@
+.postWrapper {
+    --messageThreadButtonWidth: 32px;
+}
+
+.post {
+    display: grid;
+    grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--messageThreadButtonWidth));
+    grid-template-rows: repeat(2, fit-content);
+    grid-template-areas: "authorAvatar authorName metadata messageThread"
+                         "content content content content";
+    gap: var(--spacing3);
+}
+
+.authorAvatar {
+    grid-area: authorAvatar;
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.authorName,
+.metadata,
+.postedIn {
+    font-weight: 700;
+}
+
+.authorName {
+    grid-area: authorName;
+    white-space: nowrap;
+}
+
+.metadata {
+    grid-area: metadata;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: var(--light2);
+}
+
+.messageThreadButton {
+    position: relative;
+    grid-area: messageThread;
+    background-color: inherit;
+    border: none;
+    width: var(--messageThreadButtonWidth);
+    justify-self: end;
+    cursor: pointer;
+    transition: scale 0.2s ease-in-out;
+}
+
+.messageThreadButton:hover {
+    scale: 1.2;
+}
+
+.messageThreadCount {
+    position: absolute;
+    top: calc(-1.5 * var(--spacing1));
+    right: calc(-1 * var(--spacing1));
+    color: var(--white);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.content {
+    margin-top: 0;
+    grid-area: content;
+}
+
+.postedIn {
+    grid-area: postedIn;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--light2);
+    padding-top: var(--spacing4);
+
+    a {
+        color: var(--light2);
+    }
+}
+
+.postedIn_tabletUp {
+    display: none;
+}
+
+
+@media (--tablet) {
+
+    .post {
+        grid-template-areas: "authorAvatar authorName metadata messageThread"
+                         ". content content content";
+        gap: var(--spacing4);
+    }
+
+    .authorAvatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .authorName,
+    .metadata,
+    .messageThreadButton {
+        align-self: center;
+    }
+
+    .postedIn {
+        display: none;
+    }
+
+    .postedIn_tabletUp {
+        display: inline;
+
+        & a {
+            color: var(--light2);
+        }
+    }
+}
+

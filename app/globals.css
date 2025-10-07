@@ -1,12 +1,5 @@
 :root {
 
-  /* Breakpoints */
-  @custom-media --xs (width <= 22.5rem); /* 360px */
-  @custom-media --sm (width <= 30rem); /* 480px */
-  @custom-media --md (width <= 48rem); /* 768px */
-  @custom-media --lg (width <= 64rem); /* 1024px */
-  @custom-media --xl (width <= 90rem); /* 1440 */
-
   /* Colors */
   --dark: #2D3250;
   --mid: #424769;
@@ -24,7 +17,7 @@
   --text-base: 1rem; /* 16px */
   --text-md: 1.25rem; /* 20px */
   --text-lg: 1.5rem; /* 24px */
-  --text-xl: 2.5rem; /* 40px */
+  --text-xl: 3.375rem; /* 54px */
   --text-xxl: 4rem; /* 64px */
 
   /* Spacing */
@@ -53,9 +46,8 @@
   --spacing23: 5.75rem;  /* 92px */
   --spacing24: 6rem;     /* 96px */
 
-  @media (--sm) {
-    --text-xl: 2.5rem;
-  }
+  --border-radius-sm: 0.5rem;
+  --border-radius-lg: 2rem;
 }
 
 html,
@@ -66,22 +58,23 @@ body {
 }
 
 body {
-  background-color: var(--dark);
+  position: relative;
   color: var(--white);
   font-family: var(--font-lato);
+  background-color: var(--mid);
 }
 
-/* 1. Use a more-intuitive box-sizing model */
+/* Use a more-intuitive box-sizing model */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* 2. Remove default margin */
+/* Remove default margin */
 * {
   margin: 0;
 }
 
-/* 3. Enable keyword animations */
+/* Enable keyword animations */
 @media (prefers-reduced-motion: no-preference) {
   html {
     interpolate-size: allow-keywords;
@@ -89,29 +82,29 @@ body {
 }
 
 body {
-  /* 4. Add accessible line-height */
+  /* Add accessible line-height */
   line-height: 1.5;
-  /* 5. Improve text rendering */
+  /* Improve text rendering */
   -webkit-font-smoothing: antialiased;
 }
 
-/* 6. Improve media defaults */
+/* Improve media defaults */
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
 
-/* 7. Inherit fonts for form controls */
+/* Inherit fonts for form controls */
 input, button, textarea, select {
   font: inherit;
 }
 
-/* 8. Avoid text overflows */
+/* Avoid text overflows */
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-/* 9. Improve line wrapping */
+/* Improve line wrapping */
 p {
   text-wrap: pretty;
 }
@@ -119,15 +112,37 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+/* Improve links */
+a {
+  color: var(--white);
+}
+
 /*
-  10. Create a root stacking context
+  Create a root stacking context
 */
 #root, #__next {
   isolation: isolate;
 }
 
+@media (--tablet) {
+  body {
+    &::before {
+      position: fixed;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      content: "";
+      width: 100dvw;
+      height: 100dvh;
+      background: linear-gradient(to top, var(--dark), #5B628B);
+    }
+  }
+}
+
 /* Tiptap */
 .tiptap {
+  display: grid;
+  grid-template-columns: 1fr;
   height: 100%;
   color: var(--white);
 }
@@ -143,4 +158,25 @@ h1, h2, h3, h4, h5, h6 {
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+.tiptap img {
+  max-width: 75%;
+  max-height: 400px;
+  box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+  -21px 16px 64px -36px rgba(0,0,0,0.25);
+  justify-self: center;
+}
+
+.tiptap .node-imageDrop {
+  border-radius: 12px;
+}
+
+.tiptap img.has-focus,
+.tiptap .node-imageDrop.has-focus,
+.tiptap img.ProseMirror-selectednode,
+.tiptap .ProseMirror-selectednode.node-imageDrop {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+  border: none;
 }
