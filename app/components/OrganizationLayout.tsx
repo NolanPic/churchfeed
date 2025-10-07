@@ -1,9 +1,11 @@
 "use client";
 
 import UserAvatarMenu from "./UserAvatarMenu";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
+import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import styles from "./OrganizationLayout.module.css";
 import Image from "next/image";
 
@@ -14,6 +16,7 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
+  const { isSignedIn } = useAuthedUser();
 
   if (org === null) {
     return (
@@ -26,9 +29,17 @@ export default function OrganizationLayout({
   return (
     <>
       {pathname !== "/login" && (
-        <div className={styles.userAvatarMenu}>
-          <UserAvatarMenu />
-        </div>
+        <>
+          {isSignedIn ? (
+            <div className={styles.userAvatarMenu}>
+              <UserAvatarMenu />
+            </div>
+          ) : (
+            <div className={styles.loginLink}>
+              <Link href="/login">Sign in</Link>
+            </div>
+          )}
+        </>
       )}
       <section className={styles.header}>
         <h1 className={styles.mainTitle}>{org?.name}</h1>

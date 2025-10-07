@@ -70,3 +70,27 @@
         right: var(--spacing9);
     }
 }
+
+.loginLink {
+    position: absolute;
+    top: var(--spacing9);
+    right: var(--spacing9);
+}
+
+.loginLink a {
+    color: var(--white);
+    font-size: var(--text-md);
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
+
+.loginLink a:hover {
+    color: var(--accent);
+}
+
+.loginLink a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--spacing1);
+    color: var(--accent);
+}

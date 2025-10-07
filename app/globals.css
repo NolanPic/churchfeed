@@ -46,7 +46,8 @@
   --spacing23: 5.75rem;  /* 92px */
   --spacing24: 6rem;     /* 96px */
 
-  --border-radius-lg: 32px;
+  --border-radius-sm: 0.5rem;
+  --border-radius-lg: 2rem;
 }
 
 html,
