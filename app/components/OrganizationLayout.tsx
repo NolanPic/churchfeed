@@ -16,7 +16,7 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
-  const { user, isSignedIn } = useAuthedUser();
+  const { isSignedIn } = useAuthedUser();
 
   if (org === null) {
     return (
@@ -30,7 +30,7 @@ export default function OrganizationLayout({
     <>
       {pathname !== "/login" && (
         <>
-          {user && isSignedIn ? (
+          {isSignedIn ? (
             <div className={styles.userAvatarMenu}>
               <UserAvatarMenu />
             </div>
