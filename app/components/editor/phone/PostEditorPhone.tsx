@@ -19,14 +19,15 @@ interface PostEditorPhoneProps {
 function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
   const { addImageDrop } = useEditorCommands();
   const editorRef = useRef<EditorHandle | null>(null);
-  const { state, error, onPost } = useOnPost(feedId, editorRef);
+  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
 
   useEffect(() => {
     if (state === "posted") {
       onClose();
       editorRef.current?.clear();
+      reset();
     }
-  }, [state, onClose]);
+  }, [state, onClose, reset]);
 
   return (
     <Modal

@@ -49,6 +49,11 @@ export function useOnPost(
     }
   };
 
-  return { state, error, onPost };
+  const reset = () => {
+    setState("drafting");
+    setError(null);
+  }
+
+  return { state, error, onPost, reset };
 }
 

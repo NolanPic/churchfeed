@@ -22,14 +22,15 @@ export default function PostEditor({
   feedId,
 }: PostEditorProps) {
   const editorRef = useRef<EditorHandle | null>(null);
-  const { state, error, onPost } = useOnPost(feedId, editorRef);
+  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
 
   useEffect(() => {
     if (state === "posted") {
       setIsOpen(false);
       editorRef.current?.clear();
+      reset();
     }
-  }, [state, setIsOpen]);
+  }, [state, setIsOpen, reset]);
 
   const editorInitial = {
     minHeight: 0,
