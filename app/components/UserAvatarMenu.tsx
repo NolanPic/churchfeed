@@ -2,20 +2,15 @@ import UserAvatar from "./UserAvatar";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import styles from "./UserAvatarMenu.module.css";
 import { useState } from "react";
-import Link from "next/link";
 import Backdrop from "./common/Backdrop";
 import { motion, AnimatePresence } from "framer-motion";
 
 const UserAvatarMenu = () => {
-  const { user, isSignedIn, signOut } = useAuthedUser();
+  const { user, signOut } = useAuthedUser();
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!user || !isSignedIn) {
-    return (
-      <Link className={styles.signInLink} href="/login">
-        Sign in
-      </Link>
-    );
+  if (!user) {
+    return null;
   }
 
   return (
