@@ -1,0 +1,42 @@
+.iconButton {
+  width: var(--iconButtonSize);
+  min-width: var(--iconButtonSize);
+  height: var(--iconButtonSize);
+  border-radius: 50%;
+  padding: 0;
+
+  /* Layout overrides from Button */
+  gap: 0;
+  flex-direction: row-reverse;
+}
+
+.iconButton span {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(.23,.09,.62,.96);
+
+}
+
+.defaultVariant {
+  background: rgb(from var(--mid) r g b / 0.35);
+  backdrop-filter: blur(8px);
+  color: var(--white);
+}
+
+@media (pointer: fine) {
+    .iconButton.hasLabel:hover {
+        width: auto;
+        max-width: fit-content;
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing4);
+        
+        & span {
+            max-width: 200px;
+            margin-left: var(--spacing2);
+            opacity: 1;
+        }
+    }
+}
+

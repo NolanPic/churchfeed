@@ -17,7 +17,7 @@ type AvatarUser =
 
 interface UserAvatarProps {
   user: AvatarUser;
-  size: number;
+  size?: number;
   highlight?: boolean;
 }
 
@@ -25,9 +25,13 @@ const UserAvatar = ({ user, size, highlight }: UserAvatarProps) => {
   const { name, image } = user;
 
   const avatar = image ? (
-    <Image src={image} alt={name} width={size} height={size} />
+    size ? (
+      <Image src={image} alt={name} width={size} height={size} />
+    ) : (
+      <Image src={image} alt={name} fill />
+    )
   ) : (
-    <span>{getAuthorInitialsAvatar(name)}</span>
+    <div>{getAuthorInitialsAvatar(name)}</div>
   );
 
   return (

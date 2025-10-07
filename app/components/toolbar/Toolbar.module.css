@@ -1,0 +1,64 @@
+
+.toolbar {
+    --displayOnLaptop: none;
+    --displayOnMobile: flex;
+    position: fixed;
+    display: flex;
+    gap: var(--spacing4);
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: var(--spacing4);
+    z-index: 1;
+
+    background: linear-gradient(
+        to top,
+        var(--mid) 0%,
+        rgb(from var(--mid) r g b / 0.75) 25%,
+        rgb(from var(--mid) r g b / 0.5) 50%,
+        rgb(from var(--mid) r g b / 0.25) 75%,
+        rgb(from var(--mid) r g b / 0.0) 100%
+    );
+
+}
+
+.feedSelectorContainer {
+    display: var(--displayOnMobile);
+}
+.overflowMenuButton {
+    display: var(--displayOnMobile);
+    margin-left: auto;
+    anchor-name: --overflow-button;
+}
+
+.feedSettingsButton {
+    display: var(--displayOnLaptop);
+}
+
+.adminSettingsButton {
+    display: var(--displayOnLaptop);
+}
+
+@media (--laptop) {
+    .toolbar {
+        --displayOnLaptop: flex;
+        --displayOnMobile: none;
+        position-anchor: --feed;
+        top: anchor(top);
+        left: anchor(right);
+        flex-direction: column;
+        height: fit-content;
+        align-items: start;
+        background: none;
+        padding: var(--spacing13) 0 0 var(--spacing8);
+    }
+
+    .overflowMenuButton {
+        display: none;
+    }
+
+    .closeNewPostButton {
+        z-index: 1;
+    }
+}
+

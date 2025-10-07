@@ -5,13 +5,13 @@ import Button from "../app/components/common/Button";
 type ButtonProps = React.ComponentProps<typeof Button>;
 
 const PlayIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
+  <svg viewBox="0 0 16 16" fill="currentColor" width="16px" height="16px">
     <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM6 11.5v-7l5.25 3.5L6 11.5z" />
   </svg>
 );
 
 const ArrowIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
+  <svg viewBox="0 0 16 16" fill="currentColor" width="16px" height="16px">
     <path d="M8 0L6.59 1.41 12.17 7H0v2h12.17l-5.58 5.59L8 16l8-8z" />
   </svg>
 );
@@ -38,7 +38,7 @@ const meta: Meta<ButtonProps> = {
       control: false,
       description: "Optional icon element to display alongside the text",
     },
-    color: {
+    variant: {
       control: "radio",
       options: ["primary", "none"],
       description:
@@ -60,6 +60,10 @@ const meta: Meta<ButtonProps> = {
     disabled: {
       control: "boolean",
       description: "Whether the button is disabled",
+    },
+    noBackground: {
+      control: "boolean",
+      description: "Whether the button has no background",
     },
     as: {
       control: "radio",
@@ -187,7 +191,6 @@ export const SubmitButton: Story = {
   },
 };
 
-// Interactive examples
 export const AllVariants: Story = {
   render: () => (
     <div
@@ -219,59 +222,17 @@ export const AllVariants: Story = {
 };
 
 // Icon-only stories
-export const IconOnlyPrimary: Story = {
+
+export const IconOnly: Story = {
   args: {
     icon: <PlayIcon />,
-    color: "primary",
+    noBackground: true,
   },
   parameters: {
     docs: {
       description: {
         story:
-          "Icon-only button using the primary background. Hit area remains at least 44x44px.",
-      },
-    },
-  },
-};
-
-export const IconOnlyNone: Story = {
-  args: {
-    icon: <PlayIcon />,
-    color: "none",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Icon-only button with no background (color="none"). Focus ring still applies when focused.',
-      },
-    },
-  },
-};
-
-export const IconOnlySizes: Story = {
-  render: () => (
-    <div
-      style={{
-        display: "flex",
-        gap: 12,
-        alignItems: "center",
-        flexWrap: "wrap",
-      }}
-    >
-      <Button icon={<PlayIcon />} color="none" iconSize={16} />
-      <Button icon={<PlayIcon />} color="none" iconSize={20} />
-      <Button icon={<PlayIcon />} color="none" iconSize={24} />
-      <Button icon={<PlayIcon />} color="none" iconSize={28} />
-      <Button icon={<PlayIcon />} color="none" iconSize={32} />
-      <span style={{ marginLeft: 8, color: "#666" }}>(iconSize 16 → 32)</span>
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates controlling the icon size without changing the touch target.",
+          "Icon-only button with no background. Focus ring still applies when focused.",
       },
     },
   },

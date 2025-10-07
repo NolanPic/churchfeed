@@ -2,8 +2,15 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(45, 50, 80, 0.5);
+  width: 100dvw;
+  height: 100dvh;
+  background: linear-gradient(
+    to top, 
+    var(--dark) 0%,
+    rgb(from var(--dark) r g b / 0.75) 25%,
+    rgb(from var(--dark) r g b / 0.5) 50%,
+    transparent 100%
+  );
+  backdrop-filter: blur(10px);
   z-index: 1;
 }

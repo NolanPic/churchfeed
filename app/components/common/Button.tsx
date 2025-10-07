@@ -1,15 +1,19 @@
 import Link from "next/link";
 import styles from "./Button.module.css";
 import Icon from "./Icon";
+import { forwardRef } from "react";
 
 interface BaseButtonProps {
   children?: React.ReactNode;
   icon?: React.ReactNode | string;
   className?: string;
   disabled?: boolean;
-  color?: "primary" | "none";
+  variant?: "primary" | "none";
   iconSize?: number;
   ariaLabel?: string;
+  noBackground?: boolean;
+  style?: React.CSSProperties;
+  popoverTarget?: string;
 }
 
 interface ButtonAsButton extends BaseButtonProps {
@@ -26,23 +30,30 @@ interface ButtonAsLink extends BaseButtonProps {
   type?: never;
 }
 
-type ButtonProps = ButtonAsButton | ButtonAsLink;
+export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  icon,
-  className = "",
-  disabled = false,
-  color = "primary",
-  iconSize,
-  ariaLabel,
-  ...props
-}) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    children,
+    icon,
+    className = "",
+    disabled = false,
+    variant,
+    iconSize,
+    ariaLabel,
+    noBackground = false,
+    style,
+    popoverTarget,
+    ...props
+  },
+  ref
+) {
   const hasChildren = !!children;
-  const colorClassName = color === "none" ? styles.colorNone : "";
+  const variantClassName =
+    variant === "primary" ? styles.variantPrimary : styles.variantDefault;
   const iconOnlyClassName = !hasChildren ? styles.iconOnly : "";
   const baseClassName =
-    `${styles.button} ${colorClassName} ${iconOnlyClassName} ${className}`.trim();
+    `${styles.button} ${variantClassName} ${iconOnlyClassName} ${className} ${noBackground ? styles.noBackground : ""}`.trim();
 
   const ButtonContent = () => (
     <>
@@ -59,11 +70,12 @@ const Button: React.FC<ButtonProps> = ({
     </>
   );
 
-  if (props.as === "link") {
+  if ((props as ButtonAsLink).as === "link") {
     return (
       <Link
-        href={props.href}
+        href={(props as ButtonAsLink).href}
         className={baseClassName}
+        style={style}
         aria-disabled={disabled}
         aria-label={ariaLabel}
       >
@@ -72,17 +84,22 @@ const Button: React.FC<ButtonProps> = ({
     );
   }
 
+  const { onClick, type } = props as ButtonAsButton;
+
   return (
     <button
-      type={props.type || "button"}
-      onClick={props.onClick}
+      ref={ref}
+      type={type || "button"}
+      onClick={onClick}
       disabled={disabled}
       className={baseClassName}
+      style={style}
       aria-label={ariaLabel}
+      popoverTarget={popoverTarget}
     >
       <ButtonContent />
     </button>
   );
-};
+});
 
 export default Button;

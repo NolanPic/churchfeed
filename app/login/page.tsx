@@ -129,6 +129,7 @@ export default function SignIn() {
               icon="send"
               type="submit"
               disabled={!isLoaded}
+              variant="primary"
             >
               Continue
             </Button>
@@ -149,6 +150,7 @@ export default function SignIn() {
               className={styles.signinButton}
               type="submit"
               disabled={!isLoaded}
+              variant="primary"
             >
               Sign in
             </Button>

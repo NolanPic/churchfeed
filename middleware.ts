@@ -3,12 +3,18 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 
 const DEFAULT_DOMAIN = process.env.HOST || "";
 const MOCK_SUBDOMAIN_FOR_LOCALHOST = process.env.MOCK_SUBDOMAIN_FOR_LOCALHOST || "";
+const USE_LOCALHOST_TUNNELLING = process.env.USE_LOCALHOST_TUNNELLING === "true";
 
 export function customMiddleware(request: NextRequest) {
   const response = NextResponse.next();
   const host = request.headers.get("host") || DEFAULT_DOMAIN;
   const orgSubdomain = getOrgSubdomain(host);
-  response.headers.set("x-org-host", orgSubdomain || MOCK_SUBDOMAIN_FOR_LOCALHOST);
+
+  let subdomainToUse = orgSubdomain || MOCK_SUBDOMAIN_FOR_LOCALHOST;
+  if (USE_LOCALHOST_TUNNELLING) {
+    subdomainToUse = MOCK_SUBDOMAIN_FOR_LOCALHOST;
+  }
+  response.headers.set("x-org-host", subdomainToUse);
   return response;
 }
 

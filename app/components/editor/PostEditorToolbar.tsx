@@ -57,6 +57,7 @@ export default function PostEditorToolbar({
         onClick={feedIdToPostTo ? () => onPost(feedIdToPostTo) : undefined}
         disabled={isPosting || isPostingDisabled}
         className={styles.postButton}
+        variant="primary"
       >
         Post
       </Button>

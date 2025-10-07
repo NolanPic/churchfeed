@@ -45,7 +45,6 @@ export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
         <EditorToolbar
           className={styles.messageEditorToolbar}
           actionButton={{
-            label: "Send",
             icon: "send",
             onClick: onSend,
             disabled: isSending,
