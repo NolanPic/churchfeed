@@ -15,7 +15,7 @@ export default defineSchema({
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),
-    type: v.optional(v.union(
+    role: v.optional(v.union(
       v.literal("admin"), v.literal("user")
     ))
   }).index("by_org", ["orgId"]).index("by_org_and_email", ["orgId", "email"]).index("by_clerk_and_org_id", ["clerkId", "orgId"]),
