@@ -41,16 +41,18 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       "--iconButtonSize": `${size}px`,
     };
 
+    const { style, ...restProps } = props;
+
     return (
       <Button
         ref={ref}
-        {...(props as ButtonProps)}
+        {...(restProps as ButtonProps)}
         icon={icon}
         iconSize={iconSize}
         variant={buttonVariant}
         ariaLabel={ariaLabel || label}
         className={classes}
-        style={iconButtonStyle}
+        style={{ ...style, ...iconButtonStyle }}
         popoverTarget={popoverTarget}
       >
         {label}
