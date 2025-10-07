@@ -27,7 +27,7 @@ export default function Toolbar({
   const isFeedOwner = !!(
     feedId && userFeeds.find((f) => f._id === feedId && f.owner)
   );
-  const isAdmin = user?.type === "admin";
+  const isAdmin = user?.role === "admin";
 
   const showNewPostButton = !isNewPostOpen;
   const showCloseButton = !showNewPostButton;
