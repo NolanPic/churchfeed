@@ -72,6 +72,7 @@ export default function Post({
         {variant === "feed" && (
           <button
             className={styles.messageThreadButton}
+            type="button"
             onClick={() => onOpenPost?.(post._id)}
           >
             {messageCount && (

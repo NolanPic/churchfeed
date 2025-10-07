@@ -109,6 +109,7 @@ export default function Modal({
           <button
             aria-label="Drag to close"
             className={styles.handleBar_PhoneOnly}
+            type="button"
             onPointerDown={(e) => {
               dragControls.start(e);
             }}
@@ -117,6 +118,7 @@ export default function Modal({
         <button
           aria-label="Close"
           className={styles.closeButton_TabletUp}
+          type="button"
           onClick={handleClose}
         >
           <Icon name="close" size={24} />
