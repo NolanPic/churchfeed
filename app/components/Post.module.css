@@ -26,12 +26,12 @@
 
 .authorName {
     grid-area: authorName;
-    text-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .metadata {
     grid-area: metadata;
-    text-wrap: nowrap;
+    white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     color: var(--light2);
@@ -68,7 +68,7 @@
 
 .postedIn {
     grid-area: postedIn;
-    text-wrap: nowrap;
+    white-space: nowrap;
     text-align: right;
     font-size: 0.875rem;
     color: var(--light2);
