@@ -3,7 +3,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 
 const DEFAULT_DOMAIN = process.env.HOST || "";
 const MOCK_SUBDOMAIN_FOR_LOCALHOST = process.env.MOCK_SUBDOMAIN_FOR_LOCALHOST || "";
-const USE_LOCALHOST_TUNNELLING = process.env.USE_LOCALHOST_TUNNELLING || false;
+const USE_LOCALHOST_TUNNELLING = process.env.USE_LOCALHOST_TUNNELLING === "true";
 
 export function customMiddleware(request: NextRequest) {
   const response = NextResponse.next();
