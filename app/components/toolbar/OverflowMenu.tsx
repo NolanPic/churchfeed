@@ -37,7 +37,7 @@ export default function OverflowMenu({
   const { feedId } = useContext(CurrentFeedAndPostContext);
   return (
     <ul popover="auto" id="overflow-menu" className={styles.overflowMenu}>
-      {showFeedSettings && (
+      {showFeedSettings && !!feedId && (
         <OverflowMenuItem
           label="Feed settings"
           icon={<Icon name="toggles" size={ICON_SIZE} />}
