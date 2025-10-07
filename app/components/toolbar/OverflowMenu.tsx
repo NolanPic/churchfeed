@@ -14,8 +14,8 @@ interface MenuItem {
 
 const OverflowMenuItem = ({ label, icon, href }: MenuItem) => {
   return (
-    <li className={styles.overflowMenuItem}>
-      <Link href={href}>
+    <li role="none" className={styles.overflowMenuItem}>
+      <Link role="menuitem" href={href}>
         {icon}
         <p>{label}</p>
       </Link>
@@ -28,15 +28,21 @@ interface OverflowMenuProps {
   showFeedSettings: boolean;
 }
 
+const ICON_SIZE = 24;
+
 export default function OverflowMenu({
   showAdminSettings,
   showFeedSettings,
 }: OverflowMenuProps) {
-  const ICON_SIZE = 24;
   const { user } = useAuthedUser();
   const { feedId } = useContext(CurrentFeedAndPostContext);
   return (
-    <ul popover="auto" id="overflow-menu" className={styles.overflowMenu}>
+    <ul
+      popover="auto"
+      role="menu"
+      id="overflow-menu"
+      className={styles.overflowMenu}
+    >
       {showFeedSettings && !!feedId && (
         <OverflowMenuItem
           label="Feed settings"
