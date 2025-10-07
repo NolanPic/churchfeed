@@ -23,8 +23,6 @@ export function useOnPost(
 
     const postContent = editorRef.current?.getJSON() ?? null;
 
-    console.log("postContent", postContent);
-
     if (!postContent || isEditorEmpty(postContent)) {
       setError("Please add some content to your post");
       setState("error");
