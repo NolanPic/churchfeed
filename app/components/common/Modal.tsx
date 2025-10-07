@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useCallback } from "react";
+import { ReactNode, useEffect, useCallback, useId } from "react";
 import {
   motion,
   useAnimate,
@@ -73,12 +73,15 @@ export default function Modal({
     }
   }, [isOpen, animate, isTabletOrUp, y]);
 
+  const titleId = useId();
+
   const modal = isOpen ? (
     <motion.div
       ref={scope}
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
+      aria-labelledby={title && !ariaLabel ? titleId : undefined}
       initial={{ opacity: 0, y: "100%" }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: "100%" }}
@@ -120,7 +123,9 @@ export default function Modal({
         </button>
         {title && (
           <>
-            <h1 className={styles.title}>{title}</h1>
+            <h1 className={styles.title} id={titleId}>
+              {title}
+            </h1>
             <hr className={styles.titleSeparator} />
           </>
         )}
