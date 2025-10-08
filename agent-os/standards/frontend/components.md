@@ -8,4 +8,4 @@
 - **Consistent Naming**: Use clear, descriptive names that indicate the component's purpose and follow team conventions
 - **State Management**: Keep state as local as possible; lift it up only when needed by multiple components
 - **Minimal Props**: Keep the number of props manageable; if a component needs many props, consider composition or splitting it
-- **Documentation**: Document component usage, props, and provide examples for easier adoption by team members. This is usually done in Storybook, but please use whichever tool is installed in the project
+- **Storybook**: Showcase component usage, props, and provide examples for easier adoption by team members in Storybook. This should be done for common components (e.g. inputs, modals, etc.) and not components that are used very little

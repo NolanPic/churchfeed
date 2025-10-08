@@ -12,7 +12,7 @@ Define your technical stack below. This serves as a reference for all team membe
 
 - **JavaScript Framework:** React
 - **CSS Framework:** CSS Modules
-- **UI Components:** Custom
+- **UI Component Library:** none
 
 ### Database & Storage
 
@@ -24,6 +24,7 @@ Define your technical stack below. This serves as a reference for all team membe
 
 - **Integration tests:** Vitest, React Testing Library
 - **e2e tests:** Playwright
+- **Feature flags:** Not decided yet
 - **Linting/Formatting:** ESLint, Prettier
 
 ### Deployment & Infrastructure
