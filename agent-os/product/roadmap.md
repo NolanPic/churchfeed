@@ -103,19 +103,25 @@ The following features are required before closed beta launch:
 
 ### Beta Feedback
 
-- [ ] **Address beta feedback**
+- [ ] Address beta feedback
 
 ### Church Registration
 
-- [ ] **Self-Service Registration Flow**
+- [ ] Self-Service Registration Flow
   - [ ] Church registration form
   - [ ] Subdomain selection and validation
   - [ ] Initial setup wizard
   - [ ] First admin account creation
 
+### Subscriptions
+
+- [ ] Creating billing process
+  - [ ] Integrate Stripe with backend
+  - [ ] Build out frontend
+
 ### Organization Setup (?)
 
-- [ ] **Enhanced Organization Profile**
+- [ ] Enhanced Organization Profile
   - [ ] Church website link
   - [ ] Service times and location details
   - [ ] About/description text
@@ -131,7 +137,7 @@ The following features are required before closed beta launch:
 
 ### Accessibility
 
-- [ ] **WCAG Compliance**
+- [ ] WCAG Compliance
   - [ ] Keyboard navigation
   - [ ] Screen reader optimization
   - [ ] High contrast mode
