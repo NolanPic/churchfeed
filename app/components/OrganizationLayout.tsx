@@ -7,6 +7,9 @@ import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
 import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import styles from "./OrganizationLayout.module.css";
+import { useState } from "react";
+import Modal from "./common/Modal";
+import ProfileModalContent from "./ProfileModalContent";
 import Image from "next/image";
 
 export default function OrganizationLayout({
@@ -17,6 +20,7 @@ export default function OrganizationLayout({
   const org = useOrganization();
   const pathname = usePathname();
   const { isSignedIn } = useAuthedUser();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   if (org === null) {
     return (
@@ -32,7 +36,9 @@ export default function OrganizationLayout({
         <>
           {isSignedIn ? (
             <div className={styles.userAvatarMenu}>
-              <UserAvatarMenu />
+              <UserAvatarMenu
+                openProfileModal={() => setIsProfileModalOpen(true)}
+              />
             </div>
           ) : (
             <div className={styles.loginLink}>
@@ -62,6 +68,11 @@ export default function OrganizationLayout({
         >
           {children}
         </motion.section>
+      )}
+      {isProfileModalOpen && (
+        <Modal isOpen={true} onClose={() => setIsProfileModalOpen(false)}>
+          <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
+        </Modal>
       )}
     </>
   );

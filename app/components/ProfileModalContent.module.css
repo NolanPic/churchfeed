@@ -1,0 +1,92 @@
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: var(--spacing12);
+}
+.avatarContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatarContainer p{
+    margin-top: var(--spacing1);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    width: 287px;
+    gap: var(--spacing7);
+}
+
+.actionsMobile {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    justify-content: right;
+}
+
+.actionsMobile Button {
+    height: 54px;
+    width: 54px;
+    border-radius: 50%;
+    margin-bottom: var(--spacing4);
+    margin-right: var(--spacing4);
+}
+
+.actionsDesktop {
+    display: none;
+}
+
+
+@media (min-width: 768px){
+
+    .profile {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .contentContainer{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .avatarContainer {
+        width: 50%;
+        display: flex;
+        align-items: flex-end;
+        order: 2;
+
+    }
+
+    .content{
+        width: 50%;
+        margin-top: 0;
+    }
+
+    
+    .actionsMobile {
+        display: none;
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .actionsDesktop {
+        display: block;
+        width: 287px;
+        margin-top: var(--spacing10);
+    }
+
+    .profileButton {
+        margin-left: 0;
+    }
+}
+
