@@ -10,7 +10,7 @@ The following features are required before closed beta launch:
 
 ### Organization
 
-- [x] Each org has their own domain, e.g. [communion.churchfeed.com](http://communion.churchfeed.com)
+- [x] Each org has their own domain, e.g. kingscross.thechurchfeed.com
 - [ ] Each org can use their own logo
 
 ### Feed Screen
@@ -32,7 +32,7 @@ The following features are required before closed beta launch:
 
 ### Posting
 
-- [x] Implement [https://tiptap.dev/](https://tiptap.dev/)
+- [x] Implement [TipTap](https://tiptap.dev/)
 - [ ] Text area supports:
   - [x] Text (bold/italic/links)
   - [x] Images (possibly single image for now if multiple is too complex)
