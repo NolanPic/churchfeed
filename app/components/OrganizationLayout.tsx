@@ -69,11 +69,9 @@ export default function OrganizationLayout({
           {children}
         </motion.section>
       )}
-      {isProfileModalOpen && (
-        <Modal isOpen={true} onClose={() => setIsProfileModalOpen(false)}>
+        <Modal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)}>
           <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
         </Modal>
-      )}
     </>
   );
 }
