@@ -72,11 +72,13 @@ export default function OrganizationLayout({
       )}
         <Modal 
         title="Profile" 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)} 
         toolbar={({ onClose }) => (
-       <IconButton icon="close" onClick={onClose} />
+       <IconButton icon="close" onClick={onClose}/>
    )}
-         isOpen={isProfileModalOpen}>
-          <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
+  >
+        <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
         </Modal>
     </>
   );
