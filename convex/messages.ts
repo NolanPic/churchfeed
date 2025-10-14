@@ -1,8 +1,7 @@
 import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
-import { requireAuth, getAuthenticatedUser } from "./user";
-import { getUserFeedsWithMembershipsHelper } from "./feeds";
+import { getUserAuth } from "@/lib/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
 export const getForPost = query({
@@ -13,10 +12,11 @@ export const getForPost = query({
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
 
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
+    const authCheck = auth.hasRole("user");
 
     // If unauthenticated, only allow access when the post's feed is public
-    if (!user) {
+    if (!authCheck.allowed) {
       const post = await ctx.db.get(postId);
       if (!post || post.orgId !== orgId) {
         return [];
@@ -65,16 +65,32 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
 
-    const { user } = await requireAuth(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
 
     const post = await ctx.db.get(postId);
     if (!post) {
       throw new Error("Post not found");
     }
 
-    const canSend = await canUserSendMessageInFeed(ctx, user, post.feedId);
-    if (!canSend) {
-      throw new Error("User does not have permission to message in this feed");
+    // Check if user can message in this feed
+    const canMessage = await auth.feed(post.feedId).canMessage();
+    canMessage.throwIfNotPermitted();
+
+    // Get user document to create message
+    const clerkUser = await ctx.auth.getUserIdentity();
+    if (!clerkUser) {
+      throw new Error("User not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_and_org_id", (q) =>
+        q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
+      )
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
     }
 
     const now = Date.now();
@@ -90,26 +106,5 @@ export const create = mutation({
   },
 });
 
-const canUserSendMessageInFeed = async (
-  ctx: MutationCtx,
-  user: Doc<"users">,
-  feedId: Id<"feeds">
-): Promise<boolean> => {
-  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(
-    ctx,
-    user._id
-  );
-
-  const feed = userFeedsWithMemberships.feeds.find((f) => f._id === feedId);
-  const userFeed = userFeedsWithMemberships.userFeeds.find(
-    (uf) => uf.feedId === feedId
-  );
-
-  if (!feed || !userFeed) {
-    return false;
-  }
-
-  return feed.memberPermissions?.includes("message") || userFeed.owner;
-};
 
 

@@ -2,17 +2,32 @@ import { MutationCtx, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
-import { getAuthenticatedUser } from "./user";
+import { getUserAuth } from "@/lib/auth/convex";
 
 export const getUserFeeds = query({
   args: {
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx, args.orgId);
+    const auth = await getUserAuth(ctx, args.orgId);
+    const authCheck = auth.hasRole("user");
+
     const publicFeeds = await getPublicFeeds(ctx, args.orgId);
-  
-    if (user) {
+
+    if (authCheck.allowed) {
+      // Get the actual user document to access _id
+      const clerkUser = await ctx.auth.getUserIdentity();
+      if (!clerkUser) return publicFeeds;
+
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_clerk_and_org_id", (q) =>
+          q.eq("clerkId", clerkUser.subject).eq("orgId", args.orgId)
+        )
+        .first();
+
+      if (!user) return publicFeeds;
+
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
       return [...publicFeeds, ...feedsUserIsMemberOf];
     } else {
@@ -26,11 +41,25 @@ export const getUserFeedsWithMemberships = query({
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx, args.orgId);
+    const auth = await getUserAuth(ctx, args.orgId);
+    const authCheck = auth.hasRole("user");
 
-    if(!user) {
+    if(!authCheck.allowed) {
       return null;
     }
+
+    // Get the actual user document to access _id
+    const clerkUser = await ctx.auth.getUserIdentity();
+    if (!clerkUser) return null;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_and_org_id", (q) =>
+        q.eq("clerkId", clerkUser.subject).eq("orgId", args.orgId)
+      )
+      .first();
+
+    if (!user) return null;
 
     const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
 
@@ -62,21 +91,3 @@ export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) 
   return publicFeeds;
 };
 
-export const userPermissionsHelper = async (ctx: QueryCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
-  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
-
-  const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
-  const userFeed = userFeedsWithMemberships.userFeeds.find(userFeed => userFeed.feedId === feedId);
-
-  if(!feed || !userFeed) {
-    return {
-      memberPermissions: [],
-      isOwner: false,
-    };
-  }
-
-  return {
-    memberPermissions: feed.memberPermissions ?? [],
-    isOwner: userFeed.owner,
-  }
-}

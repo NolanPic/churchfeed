@@ -1,8 +1,8 @@
 import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { getUserFeedsWithMembershipsHelper, getPublicFeeds, userPermissionsHelper } from "./feeds";
-import { getAuthenticatedUser, requireAuth } from "./user";
+import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
+import { getUserAuth } from "@/lib/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
@@ -15,14 +15,28 @@ export const getUserPosts = query({
   handler: async (ctx, args) => {
     const { orgId, selectedFeedId } = args;
 
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
+    const authCheck = auth.hasRole("user");
     const publicFeeds = await getPublicFeeds(ctx, orgId);
 
     let feeds: Doc<"feeds">[] = [...publicFeeds];
 
-    if(user) {
-      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
-      feeds = feeds.concat(feedsUserIsMemberOf);
+    if(authCheck.allowed) {
+      // Get user document to access _id
+      const clerkUser = await ctx.auth.getUserIdentity();
+      if (clerkUser) {
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_clerk_and_org_id", (q) =>
+            q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
+          )
+          .first();
+
+        if (user) {
+          const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+          feeds = feeds.concat(feedsUserIsMemberOf);
+        }
+      }
     }
 
     if(selectedFeedId) {
@@ -78,15 +92,27 @@ export const createPost = mutation({
   handler: async (ctx, args) => {
     const { orgId, feedId, content } = args;
 
-    const authResult = await requireAuth(ctx, orgId);
-    const { user } = authResult;
+    const auth = await getUserAuth(ctx, orgId);
 
-    const { memberPermissions, isOwner } = await userPermissionsHelper(ctx, user, feedId);
+    // Check if user can post in this feed
+    const canPost = await auth.feed(feedId).canPost();
+    canPost.throwIfNotPermitted();
 
-    const canUserCreatePost = memberPermissions?.includes("post") || isOwner;
+    // Get user document to create post
+    const clerkUser = await ctx.auth.getUserIdentity();
+    if (!clerkUser) {
+      throw new Error("User not authenticated");
+    }
 
-    if(!canUserCreatePost) {
-      throw new Error("User does not have permission to create post in this feed");
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_and_org_id", (q) =>
+        q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
+      )
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
     }
 
     const now = Date.now();
@@ -116,15 +142,29 @@ export const getById = query({
     if (!post || post.orgId !== orgId) return null;
 
     // Determine visibility: public + user's member feeds
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
+    const authCheck = auth.hasRole("user");
     const publicFeeds = await getPublicFeeds(ctx, orgId);
     let allowedFeedIds = new Set<Id<"feeds">>(publicFeeds.map((f) => f._id));
-    if (user) {
-      const { feeds: memberFeeds } = await getUserFeedsWithMembershipsHelper(
-        ctx,
-        user._id
-      );
-      for (const f of memberFeeds) allowedFeedIds.add(f._id);
+
+    if (authCheck.allowed) {
+      const clerkUser = await ctx.auth.getUserIdentity();
+      if (clerkUser) {
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_clerk_and_org_id", (q) =>
+            q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
+          )
+          .first();
+
+        if (user) {
+          const { feeds: memberFeeds } = await getUserFeedsWithMembershipsHelper(
+            ctx,
+            user._id
+          );
+          for (const f of memberFeeds) allowedFeedIds.add(f._id);
+        }
+      }
     }
 
     if (!allowedFeedIds.has(post.feedId)) {
