@@ -11,6 +11,7 @@ import { useState } from "react";
 import Modal from "./common/Modal";
 import ProfileModalContent from "./ProfileModalContent";
 import Image from "next/image";
+import IconButton from "./common/IconButton";
 
 export default function OrganizationLayout({
   children,
@@ -69,7 +70,12 @@ export default function OrganizationLayout({
           {children}
         </motion.section>
       )}
-        <Modal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)}>
+        <Modal 
+        title="Profile" 
+        toolbar={({ onClose }) => (
+       <IconButton icon="close" onClick={onClose} />
+   )}
+         isOpen={isProfileModalOpen}>
           <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
         </Modal>
     </>
