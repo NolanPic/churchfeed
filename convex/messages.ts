@@ -72,26 +72,10 @@ export const create = mutation({
       throw new Error("Post not found");
     }
 
-    // Check if user can message in this feed
     const canMessage = await auth.feed(post.feedId).canMessage();
     canMessage.throwIfNotPermitted();
 
-    // Get user document to create message
-    const clerkUser = await ctx.auth.getUserIdentity();
-    if (!clerkUser) {
-      throw new Error("User not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_and_org_id", (q) =>
-        q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
-      )
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = auth.getUser()!;
 
     const now = Date.now();
     const messageId = await ctx.db.insert("messages", {

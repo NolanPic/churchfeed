@@ -16,27 +16,14 @@ export const getUserPosts = query({
     const { orgId, selectedFeedId } = args;
 
     const auth = await getUserAuth(ctx, orgId);
-    const authCheck = auth.hasRole("user");
+    const user = auth.getUser();
     const publicFeeds = await getPublicFeeds(ctx, orgId);
 
     let feeds: Doc<"feeds">[] = [...publicFeeds];
 
-    if(authCheck.allowed) {
-      // Get user document to access _id
-      const clerkUser = await ctx.auth.getUserIdentity();
-      if (clerkUser) {
-        const user = await ctx.db
-          .query("users")
-          .withIndex("by_clerk_and_org_id", (q) =>
-            q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
-          )
-          .first();
-
-        if (user) {
-          const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
-          feeds = feeds.concat(feedsUserIsMemberOf);
-        }
-      }
+    if(user) {
+      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+      feeds = feeds.concat(feedsUserIsMemberOf);
     }
 
     if(selectedFeedId) {
@@ -94,26 +81,10 @@ export const createPost = mutation({
 
     const auth = await getUserAuth(ctx, orgId);
 
-    // Check if user can post in this feed
     const canPost = await auth.feed(feedId).canPost();
     canPost.throwIfNotPermitted();
 
-    // Get user document to create post
-    const clerkUser = await ctx.auth.getUserIdentity();
-    if (!clerkUser) {
-      throw new Error("User not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_and_org_id", (q) =>
-        q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
-      )
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = auth.getUser()!;
 
     const now = Date.now();
 

@@ -1,5 +1,6 @@
 import { QueryCtx, MutationCtx } from "@/convex/_generated/server";
 import { Id, Doc } from "@/convex/_generated/dataModel";
+import { UserIdentity } from "convex/server";
 import {
   AuthUser,
   FeedAuthContext,
@@ -21,7 +22,8 @@ type ConvexContext = QueryCtx | MutationCtx;
  * Provides methods for checking user roles and feed permissions
  */
 export class UserAuth {
-  private user: AuthUser | null = null;
+  private user: Doc<"users"> | null = null;
+  private clerkUser: UserIdentity | null = null;
 
   constructor(
     private ctx: ConvexContext,
@@ -35,9 +37,12 @@ export class UserAuth {
   async init(): Promise<void> {
     const clerkUser = await this.ctx.auth.getUserIdentity();
     if (!clerkUser) {
+      this.clerkUser = null;
       this.user = null;
       return;
     }
+
+    this.clerkUser = clerkUser;
 
     const dbUser = await this.ctx.db
       .query("users")
@@ -51,12 +56,54 @@ export class UserAuth {
       return;
     }
 
-    this.user = {
-      id: dbUser._id,
-      clerkId: dbUser.clerkId,
-      role: dbUser.role,
-      deactivatedAt: dbUser.deactivatedAt,
-      orgId: dbUser.orgId,
+    this.user = dbUser;
+  }
+
+  /**
+   * Get the authenticated user document
+   * @returns The full user document from Convex database, or null if not authenticated
+   */
+  getUser(): Doc<"users"> | null {
+    return this.user;
+  }
+
+  /**
+   * Get the authenticated user document or throw an error
+   * @throws Error if user is not authenticated or not found
+   * @returns The full user document from Convex database
+   */
+  getUserOrThrow(): Doc<"users"> {
+    if (!this.clerkUser) {
+      throw new Error("User not authenticated with Clerk");
+    }
+    if (!this.user) {
+      throw new Error("User not found in database");
+    }
+    return this.user;
+  }
+
+  /**
+   * Get the Clerk user identity
+   * @returns The Clerk UserIdentity, or null if not authenticated
+   */
+  getClerkUser(): UserIdentity | null {
+    return this.clerkUser;
+  }
+
+  /**
+   * Convert stored user to AuthUser format for permission checks
+   * @private
+   */
+  private toAuthUser(): AuthUser | null {
+    if (!this.user) {
+      return null;
+    }
+    return {
+      id: this.user._id,
+      clerkId: this.user.clerkId,
+      role: this.user.role,
+      deactivatedAt: this.user.deactivatedAt,
+      orgId: this.user.orgId,
     };
   }
 
@@ -66,7 +113,7 @@ export class UserAuth {
    * @returns PermissionResult indicating if user has the role
    */
   hasRole(role: UserRole): PermissionResult {
-    return checkUserRole(this.user, role);
+    return checkUserRole(this.toAuthUser(), role);
   }
 
   /**
@@ -76,7 +123,7 @@ export class UserAuth {
    * @returns FeedAuthContext for checking feed permissions
    */
   feed(feedId: Id<"feeds">, feedData?: Doc<"feeds">): FeedAuthContext {
-    return new FeedAuthContextImpl(this.ctx, this.user, feedId, feedData);
+    return new FeedAuthContextImpl(this.ctx, this.toAuthUser(), feedId, feedData);
   }
 }
 

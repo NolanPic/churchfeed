@@ -10,24 +10,10 @@ export const getUserFeeds = query({
   },
   handler: async (ctx, args) => {
     const auth = await getUserAuth(ctx, args.orgId);
-    const authCheck = auth.hasRole("user");
-
+    const user = auth.getUser();
     const publicFeeds = await getPublicFeeds(ctx, args.orgId);
 
-    if (authCheck.allowed) {
-      // Get the actual user document to access _id
-      const clerkUser = await ctx.auth.getUserIdentity();
-      if (!clerkUser) return publicFeeds;
-
-      const user = await ctx.db
-        .query("users")
-        .withIndex("by_clerk_and_org_id", (q) =>
-          q.eq("clerkId", clerkUser.subject).eq("orgId", args.orgId)
-        )
-        .first();
-
-      if (!user) return publicFeeds;
-
+    if (user) {
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
       return [...publicFeeds, ...feedsUserIsMemberOf];
     } else {
@@ -42,24 +28,11 @@ export const getUserFeedsWithMemberships = query({
   },
   handler: async (ctx, args) => {
     const auth = await getUserAuth(ctx, args.orgId);
-    const authCheck = auth.hasRole("user");
+    const user = auth.getUser();
 
-    if(!authCheck.allowed) {
+    if(!user) {
       return null;
     }
-
-    // Get the actual user document to access _id
-    const clerkUser = await ctx.auth.getUserIdentity();
-    if (!clerkUser) return null;
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_and_org_id", (q) =>
-        q.eq("clerkId", clerkUser.subject).eq("orgId", args.orgId)
-      )
-      .first();
-
-    if (!user) return null;
 
     const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
 

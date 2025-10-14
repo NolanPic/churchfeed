@@ -54,8 +54,7 @@ export const generateUploadUrlForUserContent = mutation({
       const { storageId, orgId } = args;
 
       const auth = await getUserAuth(ctx, orgId);
-      const authCheck = auth.hasRole("user");
-      authCheck.throwIfNotPermitted();
+      auth.getUserOrThrow();
 
       const storageUrl = await ctx.storage.getUrl(storageId);
 

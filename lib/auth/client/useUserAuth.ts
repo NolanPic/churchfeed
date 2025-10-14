@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, User as ClerkUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
@@ -31,23 +31,65 @@ type UserWithImageUrl = Omit<Doc<"users">, "image"> & {
  * Provides methods for checking user roles and feed permissions on the frontend
  */
 export class UserAuthClient {
-  private user: AuthUser | null;
+  private user: UserWithImageUrl | null;
+  private clerkUser: ClerkUser | null;
 
   constructor(
     dbUser: UserWithImageUrl | null,
+    clerkUser: ClerkUser | null,
     private userFeeds: Doc<"userFeeds">[],
     private feeds: Doc<"feeds">[]
   ) {
-    // Convert database user to AuthUser format
-    this.user = dbUser
-      ? {
-          id: dbUser._id,
-          clerkId: dbUser.clerkId,
-          role: dbUser.role,
-          deactivatedAt: dbUser.deactivatedAt,
-          orgId: dbUser.orgId,
-        }
-      : null;
+    this.user = dbUser;
+    this.clerkUser = clerkUser;
+  }
+
+  /**
+   * Get the authenticated user document
+   * @returns The full user document with image URL, or null if not authenticated
+   */
+  getUser(): UserWithImageUrl | null {
+    return this.user;
+  }
+
+  /**
+   * Get the authenticated user document or throw an error
+   * @throws Error if user is not authenticated or not found
+   * @returns The full user document with image URL
+   */
+  getUserOrThrow(): UserWithImageUrl {
+    if (!this.clerkUser) {
+      throw new Error("User not authenticated with Clerk");
+    }
+    if (!this.user) {
+      throw new Error("User not found in database");
+    }
+    return this.user;
+  }
+
+  /**
+   * Get the Clerk user
+   * @returns The Clerk User object, or null if not authenticated
+   */
+  getClerkUser(): ClerkUser | null {
+    return this.clerkUser;
+  }
+
+  /**
+   * Convert stored user to AuthUser format for permission checks
+   * @private
+   */
+  private toAuthUser(): AuthUser | null {
+    if (!this.user) {
+      return null;
+    }
+    return {
+      id: this.user._id,
+      clerkId: this.user.clerkId,
+      role: this.user.role,
+      deactivatedAt: this.user.deactivatedAt,
+      orgId: this.user.orgId,
+    };
   }
 
   /**
@@ -56,7 +98,7 @@ export class UserAuthClient {
    * @returns PermissionResult indicating if user has the role
    */
   hasRole(role: UserRole): PermissionResult {
-    return checkUserRole(this.user, role);
+    return checkUserRole(this.toAuthUser(), role);
   }
 
   /**
@@ -67,7 +109,7 @@ export class UserAuthClient {
    */
   feed(feedId: Id<"feeds">, feedData?: Doc<"feeds">): FeedAuthContext {
     return new FeedAuthContextClient(
-      this.user,
+      this.toAuthUser(),
       this.userFeeds,
       this.feeds,
       feedId,
@@ -164,18 +206,21 @@ class FeedAuthContextClient implements FeedAuthContext {
 /**
  * React hook for accessing the authentication system
  * Returns a tuple of [auth, state] where auth is the UserAuthClient instance
- * and state contains loading and error information
+ * and state contains loading, error, user, and clerkUser information
  *
- * @returns Tuple of [UserAuthClient | null, { isLoading: boolean, error: Error | null }]
+ * @returns Tuple of [UserAuthClient | null, state]
  *
  * @example
  * ```typescript
  * function MyComponent() {
- *   const [auth, { isLoading, error }] = useUserAuth();
+ *   const [auth, { isLoading, error, user, clerkUser }] = useUserAuth();
  *
  *   if (isLoading) return <div>Loading...</div>;
  *   if (error) return <div>Error: {error.message}</div>;
  *   if (!auth) return <div>Not authenticated</div>;
+ *
+ *   // Access user directly from state
+ *   console.log(user?.name); // or auth.getUser()?.name
  *
  *   // Check user role
  *   const adminCheck = auth.hasRole('admin');
@@ -195,7 +240,12 @@ class FeedAuthContextClient implements FeedAuthContext {
  */
 export function useUserAuth(): [
   auth: UserAuthClient | null,
-  state: { isLoading: boolean; error: Error | null }
+  state: {
+    isLoading: boolean;
+    error: Error | null;
+    user: UserWithImageUrl | null;
+    clerkUser: ClerkUser | null;
+  }
 ] {
   const { user: clerkUser, isLoaded } = useUser();
   const org = useOrganization();
@@ -216,15 +266,24 @@ export function useUserAuth(): [
 
   // Handle loading state
   if (!isLoaded || user === undefined || feedsData === undefined) {
-    return [null, { isLoading: true, error: null }];
+    return [
+      null,
+      { isLoading: true, error: null, user: null, clerkUser: null },
+    ];
   }
 
   // Handle unauthenticated or user not found
-  if (!user) {
-    return [null, { isLoading: false, error: null }];
+  if (!user || !clerkUser) {
+    return [
+      null,
+      { isLoading: false, error: null, user: null, clerkUser: null },
+    ];
   }
 
   // Create and return auth instance
-  const auth = new UserAuthClient(user, userFeeds, feeds);
-  return [auth, { isLoading: false, error: null }];
+  const auth = new UserAuthClient(user, clerkUser, userFeeds, feeds);
+  return [
+    auth,
+    { isLoading: false, error: null, user, clerkUser },
+  ];
 }
