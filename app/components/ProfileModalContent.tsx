@@ -8,7 +8,7 @@ import {Input} from "./common/Input";
 export default function ProfileModalContent({ onClose }: { onClose: () => void }) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const disableSave = name.trim() === "" || email.trim() ==="";
+    const disableSave = name.trim() === "" || email.trim() === "";
     const { user, isSignedIn, signOut } = useAuthedUser();
 
     //Auto-populates the name and email address of signed-in user. -LL//
@@ -42,20 +42,4 @@ export default function ProfileModalContent({ onClose }: { onClose: () => void }
             </div>
         </div>
   ); 
-
-/*    return (
-        <div className={styles.profile}>
-            <div className={styles.content}>
-                <form>
-                    <Input label="Name" value={name} onChange={e => setName(e.target.value)} />
-                    <Input type="email" label="Email" value={email} onChange={e => setEmail(e.target.value)} />
-                    <Button type="submit" className={styles.profileButton} disabled={disableSave}>Save</Button>
-                </form> 
-            </div>
-            <div className={styles.profileContainer}>
-                <UserAvatar user={user} size={100}></UserAvatar>
-                <p>Change Photo</p>
-            </div>
-        </div>
-  ); */
 } 
