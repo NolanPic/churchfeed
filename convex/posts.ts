@@ -110,20 +110,15 @@ export const getById = query({
     const { orgId, postId } = args;
     
     const auth = await getUserAuth(ctx, orgId);
-    const user = auth.getUser();
 
     const post = await ctx.db.get(postId);
     if (!post) throw new Error("Post not found");
     const feed = await ctx.db.get(post.feedId);
     if(!feed) throw new Error("Feed not found");
 
-    const isUserAllowedToViewThisFeed = await auth.feed(post.feedId).hasRole("member");
+    const isUserAMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
     const feedIsPublic = feed.privacy === "public";
-    const postBelongsToUsersOrg = post.orgId === user?.orgId;
-    const userCanViewThisPost = feedIsPublic || (
-      isUserAllowedToViewThisFeed.allowed 
-      && postBelongsToUsersOrg
-    );
+    const userCanViewThisPost = feedIsPublic || isUserAMemberOfThisFeedCheck.allowed;
 
     if(!userCanViewThisPost) {
       throw new Error("User cannot view this post");

@@ -1,6 +1,5 @@
-import { mutation, MutationCtx, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
 import { getUserAuth } from "@/lib/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
@@ -12,19 +11,24 @@ export const getForPost = query({
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
 
-    const auth = await getUserAuth(ctx, orgId);
-    const authCheck = auth.hasRole("user");
+    const post = await ctx.db.get(postId);
+    if(!post) {
+      throw new Error("Post not found");
+    }
 
-    // If unauthenticated, only allow access when the post's feed is public
-    if (!authCheck.allowed) {
-      const post = await ctx.db.get(postId);
-      if (!post || post.orgId !== orgId) {
-        return [];
-      }
-      const feed = await ctx.db.get(post.feedId);
-      if (!feed || feed.privacy !== "public") {
-        return [];
-      }
+    const feed = await ctx.db.get(post.feedId);
+    if(!feed) {
+      throw new Error("Feed not found");
+    }
+
+    const auth = await getUserAuth(ctx, orgId);
+    
+    const isUserMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+    const feedIsPublic = feed.privacy === "public";
+    const userCanViewThisPost = feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
+
+    if (!userCanViewThisPost) {
+      throw new Error("User cannot view this post or its messages");
     }
 
     const rawMessages = await ctx.db
