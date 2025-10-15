@@ -1,4 +1,4 @@
-import { mutation, MutationCtx, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
@@ -108,44 +108,30 @@ export const getById = query({
   },
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
+    
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
 
     const post = await ctx.db.get(postId);
-    if (!post || post.orgId !== orgId) return null;
+    if (!post) throw new Error("Post not found");
+    const feed = await ctx.db.get(post.feedId);
+    if(!feed) throw new Error("Feed not found");
 
-    // Determine visibility: public + user's member feeds
-    const auth = await getUserAuth(ctx, orgId);
-    const authCheck = auth.hasRole("user");
-    const publicFeeds = await getPublicFeeds(ctx, orgId);
-    let allowedFeedIds = new Set<Id<"feeds">>(publicFeeds.map((f) => f._id));
+    const isUserAllowedToViewThisFeed = await auth.feed(post.feedId).hasRole("member");
+    const feedIsPublic = feed.privacy === "public";
+    const postBelongsToUsersOrg = post.orgId === user?.orgId;
+    const userCanViewThisPost = feedIsPublic || (
+      isUserAllowedToViewThisFeed.allowed 
+      && postBelongsToUsersOrg
+    );
 
-    if (authCheck.allowed) {
-      const clerkUser = await ctx.auth.getUserIdentity();
-      if (clerkUser) {
-        const user = await ctx.db
-          .query("users")
-          .withIndex("by_clerk_and_org_id", (q) =>
-            q.eq("clerkId", clerkUser.subject).eq("orgId", orgId)
-          )
-          .first();
-
-        if (user) {
-          const { feeds: memberFeeds } = await getUserFeedsWithMembershipsHelper(
-            ctx,
-            user._id
-          );
-          for (const f of memberFeeds) allowedFeedIds.add(f._id);
-        }
-      }
-    }
-
-    if (!allowedFeedIds.has(post.feedId)) {
-      return null;
+    if(!userCanViewThisPost) {
+      throw new Error("User cannot view this post");
     }
 
     const author = await ctx.db.get(post.posterId);
     if (!author) return null;
     const image = author.image ? await ctx.storage.getUrl(author.image) : null;
-    const feed = await ctx.db.get(post.feedId);
 
     return {
       ...post,
