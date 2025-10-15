@@ -158,6 +158,7 @@ class FeedAuthContextClient implements FeedAuthContext {
   /**
    * Check if user can post in the feed
    * Composite check: authenticated, member, and feed has 'post' permission
+   * Owners can always post regardless of feed permissions
    * @returns Promise resolving to permission result
    */
   async canPost(): Promise<PermissionResult> {
@@ -176,12 +177,17 @@ class FeedAuthContextClient implements FeedAuthContext {
       return createPermissionResult(false, "not_feed_member");
     }
 
-    return checkFeedPermission(true, feed, "post");
+    // Get ownership status from userFeed
+    const userFeed = this.userFeeds.find((uf) => uf.feedId === this.feedId);
+    const isOwner = userFeed?.owner ?? false;
+
+    return checkFeedPermission(true, isOwner, feed, "post");
   }
 
   /**
    * Check if user can message in the feed
    * Composite check: authenticated, member, and feed has 'message' permission
+   * Owners can always message regardless of feed permissions
    * @returns Promise resolving to permission result
    */
   async canMessage(): Promise<PermissionResult> {
@@ -200,7 +206,11 @@ class FeedAuthContextClient implements FeedAuthContext {
       return createPermissionResult(false, "not_feed_member");
     }
 
-    return checkFeedPermission(true, feed, "message");
+    // Get ownership status from userFeed
+    const userFeed = this.userFeeds.find((uf) => uf.feedId === this.feedId);
+    const isOwner = userFeed?.owner ?? false;
+
+    return checkFeedPermission(true, isOwner, feed, "message");
   }
 }
 

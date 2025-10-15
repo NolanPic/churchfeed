@@ -88,12 +88,14 @@ export function checkFeedRole(
 /**
  * Check if user has a specific permission in a feed
  * @param isMember - Whether user is a member of the feed
+ * @param isOwner - Whether user is an owner of the feed
  * @param feed - The feed document
  * @param permission - The required permission ('post' or 'message')
  * @returns PermissionResult indicating if user has the permission
  */
 export function checkFeedPermission(
   isMember: boolean,
+  isOwner: boolean,
   feed: Doc<"feeds">,
   permission: FeedPermission
 ): PermissionResult {
@@ -102,7 +104,10 @@ export function checkFeedPermission(
     return createPermissionResult(false, "not_feed_member");
   }
 
-  // Check if feed has the required permission
+  if (isOwner) {
+    return createPermissionResult(true);
+  }
+
   const hasPermission = feed.memberPermissions?.includes(permission) ?? false;
   if (!hasPermission) {
     return createPermissionResult(false, "missing_permission");
