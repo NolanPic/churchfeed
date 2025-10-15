@@ -1,6 +1,7 @@
 "use client";
 
-import { useUser, User as ClerkUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
+import type { UserResource } from "@clerk/types";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
@@ -32,11 +33,11 @@ type UserWithImageUrl = Omit<Doc<"users">, "image"> & {
  */
 export class UserAuthClient {
   private user: UserWithImageUrl | null;
-  private clerkUser: ClerkUser | null;
+  private clerkUser: UserResource | null;
 
   constructor(
     dbUser: UserWithImageUrl | null,
-    clerkUser: ClerkUser | null,
+    clerkUser: UserResource | null,
     private userFeeds: Doc<"userFeeds">[],
     private feeds: Doc<"feeds">[]
   ) {
@@ -71,7 +72,7 @@ export class UserAuthClient {
    * Get the Clerk user
    * @returns The Clerk User object, or null if not authenticated
    */
-  getClerkUser(): ClerkUser | null {
+  getClerkUser(): UserResource | null {
     return this.clerkUser;
   }
 
@@ -244,10 +245,12 @@ export function useUserAuth(): [
     isLoading: boolean;
     error: Error | null;
     user: UserWithImageUrl | null;
-    clerkUser: ClerkUser | null;
+    clerkUser: UserResource | null;
+    signOut: (options?: { redirectUrl?: string }) => Promise<void>;
   }
 ] {
   const { user: clerkUser, isLoaded } = useUser();
+  const { signOut } = useAuth();
   const org = useOrganization();
   const orgId = org?._id ?? ("" as Id<"organizations">);
 
@@ -268,7 +271,7 @@ export function useUserAuth(): [
   if (!isLoaded || user === undefined || feedsData === undefined) {
     return [
       null,
-      { isLoading: true, error: null, user: null, clerkUser: null },
+      { isLoading: true, error: null, user: null, clerkUser: null, signOut },
     ];
   }
 
@@ -276,7 +279,7 @@ export function useUserAuth(): [
   if (!user || !clerkUser) {
     return [
       null,
-      { isLoading: false, error: null, user: null, clerkUser: null },
+      { isLoading: false, error: null, user: null, clerkUser: null, signOut },
     ];
   }
 
@@ -284,6 +287,6 @@ export function useUserAuth(): [
   const auth = new UserAuthClient(user, clerkUser, userFeeds, feeds);
   return [
     auth,
-    { isLoading: false, error: null, user, clerkUser },
+    { isLoading: false, error: null, user, clerkUser, signOut },
   ];
 }

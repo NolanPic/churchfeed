@@ -7,7 +7,7 @@ import styles from "./ImageDrop.module.css";
 import Icon from "../common/Icon";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useAuthedUser } from "../../hooks/useAuthedUser";
+import { useOrganization } from "../../context/OrganizationProvider";
 import { CurrentFeedAndPostContext } from "../../context/CurrentFeedAndPostProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import { dequeueDroppedFile } from "./uploadQueue";
@@ -40,7 +40,7 @@ const ImageDrop = (props: NodeViewProps) => {
   const placeholderId: string | null =
     (props.node?.attrs as { id?: string } | undefined)?.id ?? null;
 
-  const user = useAuthedUser();
+  const org = useOrganization();
   const { feedId, postId } = useContext(CurrentFeedAndPostContext);
 
   const handleDrop = useCallback(
@@ -57,7 +57,7 @@ const ImageDrop = (props: NodeViewProps) => {
       setHasError(null);
 
       try {
-        const orgId = user.organization?._id as Id<"organizations"> | undefined;
+        const orgId = org?._id as Id<"organizations"> | undefined;
         if (!orgId || !feedId) {
           throw new Error("No organization or feed found");
         }
@@ -81,7 +81,7 @@ const ImageDrop = (props: NodeViewProps) => {
         const { storageId } = await result.json();
 
         const storageUrl = await getStorageUrlForUserContent({
-          orgId: user.organization?._id as Id<"organizations">,
+          orgId: orgId,
           storageId,
         });
 
@@ -130,7 +130,7 @@ const ImageDrop = (props: NodeViewProps) => {
       generateUploadUrlForUserContent,
       getStorageUrlForUserContent,
       feedId,
-      user,
+      org,
       placeholderId,
       postId,
     ]

@@ -2,7 +2,7 @@ import Icon from "../common/Icon";
 import Link from "next/link";
 import styles from "./OverflowMenu.module.css";
 import UserAvatar from "../UserAvatar";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { useUserAuth } from "@/lib/auth/client/useUserAuth";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 import { useContext } from "react";
 
@@ -34,7 +34,7 @@ export default function OverflowMenu({
   showAdminSettings,
   showFeedSettings,
 }: OverflowMenuProps) {
-  const { user } = useAuthedUser();
+  const [, { user }] = useUserAuth();
   const { feedId } = useContext(CurrentFeedAndPostContext);
   return (
     <ul

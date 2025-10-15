@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { useUserAuth } from "@/lib/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import Image from "next/image";
 
@@ -16,7 +16,8 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
-  const { isSignedIn } = useAuthedUser();
+  const [auth] = useUserAuth();
+  const isSignedIn = auth !== null;
 
   if (org === null) {
     return (
