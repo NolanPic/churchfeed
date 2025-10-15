@@ -155,8 +155,8 @@ class FeedAuthContextImpl implements FeedAuthContext {
 
     const userFeed = await this.ctx.db
       .query("userFeeds")
-      .withIndex("by_user_and_feed", (q) =>
-        q.eq("userId", this.user!.id).eq("feedId", this.feedId)
+      .withIndex("by_user_and_feed_and_org", (q) =>
+        q.eq("userId", this.user!.id).eq("feedId", this.feedId).eq("orgId", this.user!.orgId)
       )
       .first();
 
