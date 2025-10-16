@@ -49,12 +49,16 @@ export function checkUserRole(
     return createPermissionResult(false, "user_deactivated");
   }
 
-  // Default role is 'user' if not specified
   const userRole = user.role || "user";
 
-  // Check if user has the required role
-  if (userRole !== role) {
-    return createPermissionResult(false, "user_not_found");
+  // admins should also satisfy the user role
+  const satisfiesRole =
+    role === "user"
+      ? userRole === "user" || userRole === "admin"
+      : userRole === role;
+
+  if(!satisfiesRole) {
+    return createPermissionResult(false, "missing_permission");
   }
 
   return createPermissionResult(true);
