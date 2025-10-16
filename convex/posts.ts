@@ -1,8 +1,8 @@
-import { mutation, MutationCtx, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { getUserFeedsWithMembershipsHelper, getPublicFeeds, userPermissionsHelper } from "./feeds";
-import { getAuthenticatedUser, requireAuth } from "./user";
+import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
+import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
@@ -15,7 +15,8 @@ export const getUserPosts = query({
   handler: async (ctx, args) => {
     const { orgId, selectedFeedId } = args;
 
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
     const publicFeeds = await getPublicFeeds(ctx, orgId);
 
     let feeds: Doc<"feeds">[] = [...publicFeeds];
@@ -78,16 +79,12 @@ export const createPost = mutation({
   handler: async (ctx, args) => {
     const { orgId, feedId, content } = args;
 
-    const authResult = await requireAuth(ctx, orgId);
-    const { user } = authResult;
+    const auth = await getUserAuth(ctx, orgId);
 
-    const { memberPermissions, isOwner } = await userPermissionsHelper(ctx, user, feedId);
+    const canPost = await auth.feed(feedId).canPost();
+    canPost.throwIfNotPermitted();
 
-    const canUserCreatePost = memberPermissions?.includes("post") || isOwner;
-
-    if(!canUserCreatePost) {
-      throw new Error("User does not have permission to create post in this feed");
-    }
+    const user = auth.getUser()!;
 
     const now = Date.now();
 
@@ -111,30 +108,25 @@ export const getById = query({
   },
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
+    
+    const auth = await getUserAuth(ctx, orgId);
 
     const post = await ctx.db.get(postId);
-    if (!post || post.orgId !== orgId) return null;
+    if (!post) throw new Error("Post not found");
+    const feed = await ctx.db.get(post.feedId);
+    if(!feed) throw new Error("Feed not found");
 
-    // Determine visibility: public + user's member feeds
-    const user = await getAuthenticatedUser(ctx, orgId);
-    const publicFeeds = await getPublicFeeds(ctx, orgId);
-    let allowedFeedIds = new Set<Id<"feeds">>(publicFeeds.map((f) => f._id));
-    if (user) {
-      const { feeds: memberFeeds } = await getUserFeedsWithMembershipsHelper(
-        ctx,
-        user._id
-      );
-      for (const f of memberFeeds) allowedFeedIds.add(f._id);
-    }
+    const isUserAMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+    const feedIsPublic = feed.privacy === "public";
+    const userCanViewThisPost = feedIsPublic || isUserAMemberOfThisFeedCheck.allowed;
 
-    if (!allowedFeedIds.has(post.feedId)) {
-      return null;
+    if(!userCanViewThisPost) {
+      throw new Error("User cannot view this post");
     }
 
     const author = await ctx.db.get(post.posterId);
     if (!author) return null;
     const image = author.image ? await ctx.storage.getUrl(author.image) : null;
-    const feed = await ctx.db.get(post.feedId);
 
     return {
       ...post,

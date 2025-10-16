@@ -18,7 +18,13 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+
+    /* Path aliases */
+    "baseUrl": "..",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["./**/*", "../middleware.ts"],
   "exclude": ["./_generated"]

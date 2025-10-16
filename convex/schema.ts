@@ -15,9 +15,9 @@ export default defineSchema({
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),
-    role: v.optional(v.union(
+    role: v.union(
       v.literal("admin"), v.literal("user")
-    ))
+    )
   }).index("by_org", ["orgId"]).index("by_org_and_email", ["orgId", "email"]).index("by_clerk_and_org_id", ["clerkId", "orgId"]),
   organizations: defineTable({
     name: v.string(),
@@ -44,7 +44,7 @@ export default defineSchema({
     feedId: v.id("feeds"),
     owner: v.boolean(),
   })
-  .index("by_user_and_feed", ["userId", "feedId"])
+  .index("by_user_and_feed_and_org", ["userId", "feedId", "orgId"])
   .index("by_userId", ["userId"]),
   posts: defineTable({
     ...defaultColumns,

@@ -1,9 +1,8 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { requireAuth } from "./user";
-import { userPermissionsHelper } from "./feeds";
+import { getUserAuth } from "@/auth/convex";
 
-export const generateUploadUrlForUserContent = mutation({   
+export const generateUploadUrlForUserContent = mutation({
     args: {
       orgId: v.id("organizations"),
       postId: v.optional(v.id("posts")),
@@ -12,41 +11,36 @@ export const generateUploadUrlForUserContent = mutation({
     handler: async (ctx, args) => {
       const { orgId, postId, feedId } = args;
 
-      const { user } = await requireAuth(ctx, orgId);
+      const auth = await getUserAuth(ctx, orgId);
 
       const userAction = postId ? "messageInPost" : "postInFeed";
 
-      if(feedId) {
-        const feed = await ctx.db.get(feedId);
-
-        if(!feed || feed.orgId !== orgId) {
-          throw new Error("Feed not found");
-        }
-      }
-      else {
+      if(!feedId) {
         throw new Error("Feed id not found");
+      }
+
+      const feed = await ctx.db.get(feedId);
+      if(!feed || feed.orgId !== orgId) {
+        throw new Error("Feed not found");
       }
 
       if(postId) {
         const post = await ctx.db.get(postId);
-        
+
         if(!post || post.orgId !== orgId || post.feedId !== feedId) {
           throw new Error("Post not found");
         }
       }
-  
-      const { memberPermissions, isOwner } = await userPermissionsHelper(ctx, user, feedId);
 
+      // Check permissions using new auth system
       if(userAction === "messageInPost") {
-        if(!canUserMessageInPost(memberPermissions, isOwner)) {
-          throw new Error("User does not have permission to message in this post");
-        }
+        const canMessage = await auth.feed(feedId, feed).canMessage();
+        canMessage.throwIfNotPermitted();
       } else if(userAction === "postInFeed") {
-        if(!canUserPostInFeed(memberPermissions, isOwner)) {
-          throw new Error("User does not have permission to post in this feed");
-        }
+        const canPost = await auth.feed(feedId, feed).canPost();
+        canPost.throwIfNotPermitted();
       }
-  
+
       return await ctx.storage.generateUploadUrl();
     }
   });
@@ -59,7 +53,8 @@ export const generateUploadUrlForUserContent = mutation({
     handler: async (ctx, args) => {
       const { storageId, orgId } = args;
 
-      await requireAuth(ctx, orgId);
+      const auth = await getUserAuth(ctx, orgId);
+      auth.getUserOrThrow();
 
       const storageUrl = await ctx.storage.getUrl(storageId);
 
@@ -71,10 +66,3 @@ export const generateUploadUrlForUserContent = mutation({
     }
   });
 
-  const canUserPostInFeed = (memberPermissions: string[], isOwner: boolean) => {
-    return memberPermissions?.includes("post") || isOwner;
-  };
-
-  const canUserMessageInPost = (memberPermissions: string[], isOwner: boolean) => {
-    return memberPermissions?.includes("message") || isOwner;
-  };

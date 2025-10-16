@@ -1,8 +1,6 @@
-import { mutation, MutationCtx, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
-import { requireAuth, getAuthenticatedUser } from "./user";
-import { getUserFeedsWithMembershipsHelper } from "./feeds";
+import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 
 export const getForPost = query({
@@ -13,18 +11,24 @@ export const getForPost = query({
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
 
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const post = await ctx.db.get(postId);
+    if(!post) {
+      throw new Error("Post not found");
+    }
 
-    // If unauthenticated, only allow access when the post's feed is public
-    if (!user) {
-      const post = await ctx.db.get(postId);
-      if (!post || post.orgId !== orgId) {
-        return [];
-      }
-      const feed = await ctx.db.get(post.feedId);
-      if (!feed || feed.privacy !== "public") {
-        return [];
-      }
+    const feed = await ctx.db.get(post.feedId);
+    if(!feed) {
+      throw new Error("Feed not found");
+    }
+
+    const auth = await getUserAuth(ctx, orgId);
+    
+    const isUserMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+    const feedIsPublic = feed.privacy === "public";
+    const userCanViewThisPost = feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
+
+    if (!userCanViewThisPost) {
+      throw new Error("User cannot view this post or its messages");
     }
 
     const rawMessages = await ctx.db
@@ -64,17 +68,23 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
+    
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
 
-    const { user } = await requireAuth(ctx, orgId);
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
     const post = await ctx.db.get(postId);
     if (!post) {
       throw new Error("Post not found");
     }
 
-    const canSend = await canUserSendMessageInFeed(ctx, user, post.feedId);
-    if (!canSend) {
-      throw new Error("User does not have permission to message in this feed");
+    const canUserMessageCheck = await auth.feed(post.feedId).canMessage();
+
+    if (!canUserMessageCheck.allowed) {
+      throw new Error("User cannot message in this feed");
     }
 
     const now = Date.now();
@@ -90,26 +100,5 @@ export const create = mutation({
   },
 });
 
-const canUserSendMessageInFeed = async (
-  ctx: MutationCtx,
-  user: Doc<"users">,
-  feedId: Id<"feeds">
-): Promise<boolean> => {
-  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(
-    ctx,
-    user._id
-  );
-
-  const feed = userFeedsWithMemberships.feeds.find((f) => f._id === feedId);
-  const userFeed = userFeedsWithMemberships.userFeeds.find(
-    (uf) => uf.feedId === feedId
-  );
-
-  if (!feed || !userFeed) {
-    return false;
-  }
-
-  return feed.memberPermissions?.includes("message") || userFeed.owner;
-};
 
 
