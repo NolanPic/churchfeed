@@ -68,18 +68,24 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
-
+    
     const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
     const post = await ctx.db.get(postId);
     if (!post) {
       throw new Error("Post not found");
     }
 
-    const canMessage = await auth.feed(post.feedId).canMessage();
-    canMessage.throwIfNotPermitted();
+    const canUserMessageCheck = await auth.feed(post.feedId).canMessage();
 
-    const user = auth.getUser()!;
+    if (!canUserMessageCheck.allowed) {
+      throw new Error("User cannot message in this feed");
+    }
 
     const now = Date.now();
     const messageId = await ctx.db.insert("messages", {
