@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import UserAvatar from "./UserAvatar";
 import MessageEditor from "./editor/MessageEditor";
-import { useUserAuth } from "@/lib/auth/client/useUserAuth";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import { useOrganization } from "../context/OrganizationProvider";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import styles from "./MessageThread.module.css";

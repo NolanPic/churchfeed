@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
-import { getUserAuth } from "@/lib/auth/convex";
+import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 

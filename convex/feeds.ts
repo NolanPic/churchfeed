@@ -2,7 +2,7 @@ import { MutationCtx, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
-import { getUserAuth } from "@/lib/auth/convex";
+import { getUserAuth } from "@/auth/convex";
 
 export const getUserFeeds = query({
   args: {

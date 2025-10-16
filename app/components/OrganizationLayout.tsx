@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
-import { useUserAuth } from "@/lib/auth/client/useUserAuth";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import Image from "next/image";
 

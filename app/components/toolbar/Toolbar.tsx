@@ -1,6 +1,6 @@
 import styles from "./Toolbar.module.css";
 import IconButton from "../common/IconButton";
-import { useUserAuth } from "@/lib/auth/client/useUserAuth";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../FeedSelector";
 import { useContext, RefObject, useState, useEffect } from "react";

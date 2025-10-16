@@ -4,7 +4,7 @@ import { query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
- * @deprecated Use getUserAuth from @/lib/auth/convex instead
+ * @deprecated Use getUserAuth from @/auth/convex instead
  */
 export type AuthResult<T = any> =
   | { success: true; clerkUser: UserIdentity; user: Doc<"users">; data?: T }
@@ -58,7 +58,7 @@ export const getUserByClerkId = query({
 });
 
 /**
- * @deprecated Use getUserAuth from @/lib/auth/convex instead
+ * @deprecated Use getUserAuth from @/auth/convex instead
  */
 export const getAuthenticatedUser = async (
     ctx: AuthContext,
@@ -70,7 +70,7 @@ export const getAuthenticatedUser = async (
 
 /**
  * Get authentication result
- * @deprecated Use getUserAuth from @/lib/auth/convex instead
+ * @deprecated Use getUserAuth from @/auth/convex instead
  */
 export const getAuthResult = async (
   ctx: AuthContext,
@@ -100,7 +100,7 @@ export const getAuthResult = async (
 
 /**
  * Require authentication result (throw if unauthenticated)
- * @deprecated Use getUserAuth from @/lib/auth/convex instead
+ * @deprecated Use getUserAuth from @/auth/convex instead
  */
 export const requireAuth = async (
   ctx: AuthContext,

@@ -1,6 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getUserAuth } from "@/lib/auth/convex";
+import { getUserAuth } from "@/auth/convex";
 
 export const generateUploadUrlForUserContent = mutation({
     args: {

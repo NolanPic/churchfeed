@@ -1,5 +1,5 @@
 import UserAvatar from "./UserAvatar";
-import { useUserAuth } from "@/lib/auth/client/useUserAuth";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./UserAvatarMenu.module.css";
 import { useState } from "react";
 import Backdrop from "./common/Backdrop";

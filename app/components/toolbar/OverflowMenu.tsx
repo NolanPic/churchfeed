@@ -2,7 +2,7 @@ import Icon from "../common/Icon";
 import Link from "next/link";
 import styles from "./OverflowMenu.module.css";
 import UserAvatar from "../UserAvatar";
-import { useUserAuth } from "@/lib/auth/client/useUserAuth";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 import { useContext } from "react";
 
