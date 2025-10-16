@@ -290,6 +290,7 @@ export const seedUser = mutation({
       name: args.name || args.email.split("@")[0],
       emailVerificationTime: Date.now(), // Mark as verified for testing
       orgId: args.orgId,
+      role: "user",
     });
   },
 });
