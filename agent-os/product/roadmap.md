@@ -93,8 +93,9 @@ The following features are required before closed beta launch:
 - [ ] Able to invite existing users to feed
 - [ ] Able to invite new users to feed (when admin setting allows)
 
-### Storage management
+### Image/file improvements
 
+- [ ] Simplify image uploading on frontend
 - [ ] Store all uploads across the app in a permissions-based table
 
 ---

@@ -2,15 +2,16 @@
 
 import userContentStyles from "../shared-styles/user-content.module.css";
 import classNames from "classnames";
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import type { EditorView } from "prosemirror-view";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent } from "@tiptap/core";
 import { Image } from "@tiptap/extension-image";
-import { ImageDropNode } from "./tiptap/ImageDropNode";
 import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
+import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -29,6 +30,11 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   { placeholder, autofocus = false, onSubmit, className },
   ref
 ) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleDropRef = useRef<
+    ((view: EditorView, event: DragEvent) => boolean) | null
+  >(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -52,17 +58,24 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
       }),
       Placeholder.configure({ placeholder }),
       Image,
-      ImageDropNode.configure({
-        accept: "image/*",
-        onError: (error: Error) => {
-          console.error(error);
-        },
-      }),
       Focus,
     ],
     autofocus,
     immediatelyRender: false,
+    editorProps: {
+      handleDrop: (view, event) => {
+        if (handleDropRef.current) {
+          return handleDropRef.current(view, event);
+        }
+        return false;
+      },
+    },
   });
+
+  const { handleChooseFile, handleDrop } = useEditorImageUpload(editor);
+
+  // Store handleDrop in ref so it can be accessed in editorProps
+  handleDropRef.current = handleDrop;
 
   const registerCommands = useRegisterEditorCommands();
 
@@ -76,6 +89,20 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     [editor]
   );
 
+  const handleChooseFileInput = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    await handleChooseFile(file);
+
+    // Reset file input so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     if (!editor) {
       registerCommands(null);
@@ -87,7 +114,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
         editor.chain().focus().run();
       },
       addImageDrop: () => {
-        editor.chain().focus().setImageDrop().run();
+        fileInputRef.current?.click();
       },
     });
 
@@ -97,18 +124,28 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   }, [editor, registerCommands]);
 
   return (
-    <EditorContent
-      editor={editor}
-      className={classNames(className, userContentStyles.userContent)}
-      onKeyDown={(e) => {
-        if (!onSubmit) return;
-        const isSubmit = e.key === "Enter" && (e.metaKey || e.ctrlKey);
-        if (isSubmit) {
-          e.preventDefault();
-          onSubmit();
-        }
-      }}
-    />
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleChooseFileInput}
+        style={{ display: "none" }}
+        aria-label="Upload image"
+      />
+      <EditorContent
+        editor={editor}
+        className={classNames(className, userContentStyles.userContent)}
+        onKeyDown={(e) => {
+          if (!onSubmit) return;
+          const isSubmit = e.key === "Enter" && (e.metaKey || e.ctrlKey);
+          if (isSubmit) {
+            e.preventDefault();
+            onSubmit();
+          }
+        }}
+      />
+    </>
   );
 });
 
