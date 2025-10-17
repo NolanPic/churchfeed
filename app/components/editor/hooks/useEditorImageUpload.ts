@@ -16,10 +16,14 @@ export interface UseEditorImageUploadReturn {
    * Handler for drag-and-drop events in the editor
    */
   handleDrop: (view: EditorView, event: DragEvent) => boolean;
-    /**
+  /**
    * Captured error state (inherited from useImageUpload or editor-specific errors)
    */
-    error: Error | null;
+  error: Error | null;
+  /**
+   * Upload in progress state
+   */
+  isUploading: boolean;
 }
 
 /**
@@ -47,7 +51,7 @@ export interface UseEditorImageUploadReturn {
 export function useEditorImageUpload(
   editor: Editor | null
 ): UseEditorImageUploadReturn {
-  const { previewUrl, imageUrl, uploadImage: baseUploadImage, error: uploadError } = useImageUpload();
+  const { previewUrl, imageUrl, uploadImage: baseUploadImage, error: uploadError, isUploading } = useImageUpload();
   const currentUploadDataUrl = useRef<string | null>(null);
   const error = uploadError;
 
@@ -139,7 +143,7 @@ export function useEditorImageUpload(
 
   const handleChooseFile = useCallback(
     async (file: File) => {
-      if (!editor) return;
+      if (!editor || isUploading) return;
 
       try {
         await uploadImage(file);
@@ -147,11 +151,14 @@ export function useEditorImageUpload(
         console.error("Image upload failed:", error);
       }
     },
-    [editor, uploadImage]
+    [editor, uploadImage, isUploading]
   );
 
   const handleDrop = useCallback(
     (view: EditorView, event: DragEvent) => {
+      // Don't start a new upload if one is in progress
+      if (isUploading) return false;
+
       // Check if the drop contains files
       if (!event.dataTransfer?.files?.length) {
         return false;
@@ -196,12 +203,13 @@ export function useEditorImageUpload(
 
       return true; // We handled the drop
     },
-    [uploadImage]
+    [uploadImage, isUploading]
   );
 
   return {
     handleChooseFile,
     handleDrop,
-    error
+    error,
+    isUploading
   };
 }
