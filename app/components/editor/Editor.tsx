@@ -71,7 +71,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     },
   });
 
-  const { uploadImage, handleChooseFile, handleDrop } = useEditorImageUpload(editor);
+  const { handleChooseFile, handleDrop } = useEditorImageUpload(editor);
 
   // Store handleDrop in ref so it can be accessed in editorProps
   handleDropRef.current = handleDrop;

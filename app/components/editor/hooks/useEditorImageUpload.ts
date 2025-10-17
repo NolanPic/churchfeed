@@ -8,15 +8,6 @@ import { useImageUpload } from "./useImageUpload";
 
 export interface UseEditorImageUploadReturn {
   /**
-   * Upload an image file and insert it into the editor at the current cursor position
-   * @param file - The image file to upload
-   */
-  uploadImage: (file: File) => Promise<void>;
-  /**
-   * Captured error state (inherited from useImageUpload or editor-specific errors)
-   */
-  error: Error | null;
-  /**
    * Handler for file selection from file input
    * @param file - The selected file
    */
@@ -25,6 +16,10 @@ export interface UseEditorImageUploadReturn {
    * Handler for drag-and-drop events in the editor
    */
   handleDrop: (view: EditorView, event: DragEvent) => boolean;
+    /**
+   * Captured error state (inherited from useImageUpload or editor-specific errors)
+   */
+    error: Error | null;
 }
 
 /**
@@ -205,9 +200,8 @@ export function useEditorImageUpload(
   );
 
   return {
-    uploadImage,
-    error,
     handleChooseFile,
-    handleDrop
+    handleDrop,
+    error
   };
 }
