@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import type { Editor } from "@tiptap/react";
+import type { EditorView } from "prosemirror-view";
+import { Selection } from "prosemirror-state";
 import { useImageUpload } from "./useImageUpload";
 
 export interface UseEditorImageUploadReturn {
@@ -10,7 +12,19 @@ export interface UseEditorImageUploadReturn {
    * @param file - The image file to upload
    */
   uploadImage: (file: File) => Promise<void>;
+  /**
+   * Captured error state (inherited from useImageUpload or editor-specific errors)
+   */
   error: Error | null;
+  /**
+   * Handler for file selection from file input
+   * @param file - The selected file
+   */
+  handleChooseFile: (file: File) => Promise<void>;
+  /**
+   * Handler for drag-and-drop events in the editor
+   */
+  handleDrop: (view: EditorView, event: DragEvent) => boolean;
 }
 
 /**
@@ -128,8 +142,72 @@ export function useEditorImageUpload(
     [editor, baseUploadImage]
   );
 
+  const handleChooseFile = useCallback(
+    async (file: File) => {
+      if (!editor) return;
+
+      try {
+        await uploadImage(file);
+      } catch (error) {
+        console.error("Image upload failed:", error);
+      }
+    },
+    [editor, uploadImage]
+  );
+
+  const handleDrop = useCallback(
+    (view: EditorView, event: DragEvent) => {
+      // Check if the drop contains files
+      if (!event.dataTransfer?.files?.length) {
+        return false;
+      }
+
+      // Check if any of the files are images
+      const files = Array.from(event.dataTransfer.files);
+      const imageFiles = files.filter((file) =>
+        file.type.startsWith("image/")
+      );
+
+      if (imageFiles.length === 0) {
+        return false;
+      }
+
+      // Prevent opening image in new tab
+      event.preventDefault();
+
+      const imageFile = imageFiles[0];
+
+      // Get the drop position from the event
+      const coordinates = view.posAtCoords({
+        left: event.clientX,
+        top: event.clientY,
+      });
+
+      if (!coordinates) {
+        return true; // Couldn't determine position, but we handled the event
+      }
+
+      // Move cursor to drop position
+      const { state, dispatch } = view;
+      const tr = state.tr.setSelection(
+        Selection.near(state.doc.resolve(coordinates.pos))
+      );
+      dispatch(tr);
+
+      // Upload the image at the new cursor position
+      uploadImage(imageFile).catch((error) => {
+        console.error("Drag-drop image upload failed:", error);
+      });
+
+      return true; // We handled the drop
+    },
+    [uploadImage]
+  );
+
   return {
     uploadImage,
-    error
+    error,
+    handleChooseFile,
+    handleDrop
   };
 }

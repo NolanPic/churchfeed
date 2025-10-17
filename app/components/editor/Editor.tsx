@@ -11,7 +11,6 @@ import { Image } from "@tiptap/extension-image";
 import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
 import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
-import { Selection } from "prosemirror-state";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -31,7 +30,9 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
   ref
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadImageRef = useRef<((file: File) => Promise<void>) | null>(null);
+  const handleDropRef = useRef<
+    ((view: any, event: DragEvent) => boolean) | null
+  >(null);
 
   const editor = useEditor({
     extensions: [
@@ -62,60 +63,18 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     immediatelyRender: false,
     editorProps: {
       handleDrop: (view, event) => {
-        // Check if the drop contains files
-        if (!event.dataTransfer?.files?.length) {
-          return false;
+        if (handleDropRef.current) {
+          return handleDropRef.current(view, event);
         }
-
-        // Check if any of the files are images
-        const files = Array.from(event.dataTransfer.files);
-        const imageFiles = files.filter((file) =>
-          file.type.startsWith("image/")
-        );
-
-        if (imageFiles.length === 0) {
-          return false;
-        }
-
-        // Prevent opening image in new tab
-        event.preventDefault();
-
-        const imageFile = imageFiles[0];
-
-        // Get the drop position from the event
-        const coordinates = view.posAtCoords({
-          left: event.clientX,
-          top: event.clientY,
-        });
-
-        if (!coordinates) {
-          return true; // Couldn't determine position, but we handled the event
-        }
-
-        // Move cursor to drop position, then upload the image
-        const { state, dispatch } = view;
-
-        const tr = state.tr.setSelection(
-          Selection.near(state.doc.resolve(coordinates.pos))
-        );
-        dispatch(tr);
-
-        // Upload the image at the new cursor position
-        if (uploadImageRef.current) {
-          uploadImageRef.current(imageFile).catch((error) => {
-            console.error("Drag-drop image upload failed:", error);
-          });
-        }
-
-        return true; // We handled the drop
+        return false;
       },
     },
   });
 
-  const { uploadImage } = useEditorImageUpload(editor);
+  const { uploadImage, handleChooseFile, handleDrop } = useEditorImageUpload(editor);
 
-  // Store uploadImage in ref so handleDrop can access it
-  uploadImageRef.current = uploadImage;
+  // Store handleDrop in ref so it can be accessed in editorProps
+  handleDropRef.current = handleDrop;
 
   const registerCommands = useRegisterEditorCommands();
 
@@ -129,17 +88,13 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     [editor]
   );
 
-  const handleFileInputChange = async (
+  const handleChooseFileInput = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file || !editor) return;
+    if (!file) return;
 
-    try {
-      await uploadImage(file);
-    } catch (error) {
-      console.error("Image upload failed:", error);
-    }
+    await handleChooseFile(file);
 
     // Reset file input so the same file can be selected again
     if (fileInputRef.current) {
@@ -173,7 +128,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={handleFileInputChange}
+        onChange={handleChooseFileInput}
         style={{ display: "none" }}
         aria-label="Upload image"
       />
