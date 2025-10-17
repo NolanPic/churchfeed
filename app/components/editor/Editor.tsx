@@ -11,6 +11,7 @@ import { Image } from "@tiptap/extension-image";
 import { useRegisterEditorCommands } from "../../context/EditorCommands";
 import { Focus } from "@tiptap/extensions";
 import { useEditorImageUpload } from "./hooks/useEditorImageUpload";
+import { Selection } from "prosemirror-state";
 
 export interface EditorHandle {
   getJSON: () => JSONContent | null;
@@ -93,8 +94,9 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
 
         // Move cursor to drop position, then upload the image
         const { state, dispatch } = view;
+
         const tr = state.tr.setSelection(
-          state.selection.constructor.near(state.doc.resolve(coordinates.pos))
+          Selection.near(state.doc.resolve(coordinates.pos))
         );
         dispatch(tr);
 
