@@ -4,6 +4,7 @@ import userContentStyles from "../shared-styles/user-content.module.css";
 import classNames from "classnames";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import type { EditorView } from "prosemirror-view";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent } from "@tiptap/core";
@@ -31,7 +32,7 @@ const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleDropRef = useRef<
-    ((view: any, event: DragEvent) => boolean) | null
+    ((view: EditorView, event: DragEvent) => boolean) | null
   >(null);
 
   const editor = useEditor({
