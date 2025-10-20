@@ -12,6 +12,7 @@ export default defineSchema({
     emailVerificationTime: v.optional(v.number()),
     name: v.string(),
     image: v.optional(v.id("_storage")),
+    avatar: v.optional(v.id("uploads")),
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),
@@ -70,6 +71,25 @@ export default defineSchema({
     ),
     expiresAt: v.number(),
     usedAt: v.optional(v.number()),
-    feeds: v.array(v.id("feeds")), 
-  }) 
+    feeds: v.array(v.id("feeds")),
+  }),
+  uploads: defineTable({
+    ...defaultColumns,
+    storageId: v.id("_storage"),
+    source: v.union(
+      v.literal("post"),
+      v.literal("message"),
+      v.literal("avatar")
+    ),
+    sourceId: v.optional(v.union(
+      v.id("posts"),
+      v.id("messages"),
+      v.id("users")
+    )),
+    userId: v.id("users"),
+    fileExtension: v.string(),
+    deletedAt: v.optional(v.number()),
+  })
+  .index("by_org_source_sourceId", ["orgId", "source", "sourceId"])
+  .index("by_userId", ["userId"]),
 });
