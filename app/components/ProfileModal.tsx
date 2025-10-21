@@ -22,13 +22,16 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
   return (
     <Modal 
-        title="Profile" 
-        isOpen={true}
-        onClose={onClose} 
-        toolbar={({ onClose }) => (       
-        <IconButton icon="close" onClick={onClose}/>
-   )}
-        >
+      title="Profile" 
+      isOpen={true}
+      onClose={onClose} 
+      toolbar={({ onClose }) => (
+        <>
+          <IconButton icon="close" onClick={onClose} />
+          <IconButton className={styles.mobileSaveButton} icon="image" disabled={disableSave}/>
+        </>
+      )}
+    >
         <div className={styles.profile}>
             <div className={styles.contentContainer}>
                 <div className={styles.avatarContainer}>
@@ -44,9 +47,6 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
                 <div className={styles.actionsDesktop}>
                     <Button type="submit" icon="send" className={styles.profileButton} disabled={disableSave}>Save</Button>
                 </div>
-                </div>
-                <div className={styles.actionsMobile}>
-                    <Button type="submit" icon="send" disabled={disableSave}></Button>
                 </div>
             </div>
         </div>

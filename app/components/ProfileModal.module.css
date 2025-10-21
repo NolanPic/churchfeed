@@ -22,23 +22,6 @@
     gap: var(--spacing7);
 }
 
-.actionsMobile {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.actionsMobile Button {
-    height: 54px;
-    width: 54px;
-    border-radius: 50%;
-    margin-bottom: var(--spacing4);
-    margin-right: var(--spacing4);
-}
-
 .actionsDesktop {
     display: none;
 }
