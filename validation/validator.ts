@@ -27,20 +27,43 @@ const FILE_TYPE_RESTRICTION_RULES: FileTypeRestrictionRule[] = [
 ];
 
 /**
+ * MIME type to file extension mapping
+ */
+const MIME_TO_EXTENSION: Record<string, string[]> = {
+  "image/jpeg": ["jpg", "jpeg"],
+  "image/png": ["png"],
+  "image/webp": ["webp"],
+  "image/gif": ["gif"],
+  "image/heic": ["heic"],
+  "image/heif": ["heif"],
+};
+
+/**
+ * Extracts file extension from filename
+ */
+function getFileExtension(fileName: string): string | null {
+  const lastDot = fileName.lastIndexOf(".");
+  if (lastDot === -1 || lastDot === fileName.length - 1) {
+    return null;
+  }
+  return fileName.slice(lastDot + 1).toLowerCase();
+}
+
+/**
  * Validates file size based on upload type
  */
 function validateFileSize(
-  file: File,
+  blob: Blob,
   uploadType: UploadType
 ): ValidationError | null {
   const maxSize = VALIDATION_OPTIONS.sizeLimits[uploadType];
 
-  if (file.size > maxSize) {
+  if (blob.size > maxSize) {
     const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
     return {
       code: ValidationErrorCode.FILE_TOO_LARGE,
       message: `File size must be ${maxSizeMB}MB or less. Current size: ${(
-        file.size /
+        blob.size /
         (1024 * 1024)
       ).toFixed(2)}MB`,
     };
@@ -52,15 +75,42 @@ function validateFileSize(
 /**
  * Validates file type is an allowed image type
  */
-function validateFileType(file: File): ValidationError | null {
+function validateFileType(blob: Blob): ValidationError | null {
   const isValidType = VALIDATION_OPTIONS.allowedImageTypes.includes(
-    file.type as typeof VALIDATION_OPTIONS.allowedImageTypes[number]
+    blob.type as typeof VALIDATION_OPTIONS.allowedImageTypes[number]
   );
 
   if (!isValidType) {
     return {
       code: ValidationErrorCode.INVALID_FILE_TYPE,
-      message: `File type "${file.type}" is not supported. Allowed types: ${VALIDATION_OPTIONS.allowedImageTypes.join(", ")}`,
+      message: `File type "${blob.type}" is not supported. Allowed types: ${VALIDATION_OPTIONS.allowedImageTypes.join(", ")}`,
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Validates file extension matches MIME type
+ */
+function validateFileExtension(
+  blob: Blob,
+  fileName: string
+): ValidationError | null {
+  const extension = getFileExtension(fileName);
+
+  if (!extension) {
+    return {
+      code: ValidationErrorCode.FILE_EXTENSION_MISMATCH,
+      message: `File must have a valid extension`,
+    };
+  }
+
+  const expectedExtensions = MIME_TO_EXTENSION[blob.type];
+  if (!expectedExtensions || !expectedExtensions.includes(extension)) {
+    return {
+      code: ValidationErrorCode.FILE_EXTENSION_MISMATCH,
+      message: `File extension "${extension}" does not match MIME type "${blob.type}". Expected: ${expectedExtensions?.join(", ") || "unknown"}`,
     };
   }
 
@@ -71,16 +121,16 @@ function validateFileType(file: File): ValidationError | null {
  * Validates file type restrictions based on upload type
  */
 function validateFileTypeRestrictions(
-  file: File,
+  blob: Blob,
   uploadType: UploadType,
   rules: FileTypeRestrictionRule[]
 ): ValidationError | null {
   for (const rule of rules) {
-    if (rule.uploadType === uploadType && rule.fileType === file.type) {
+    if (rule.uploadType === uploadType && rule.fileType === blob.type) {
       if (!rule.allowed) {
         return {
           code: ValidationErrorCode.GIF_NOT_ALLOWED_FOR_AVATAR,
-          message: `${file.type} files are not allowed for ${uploadType}s`,
+          message: `${blob.type} files are not allowed for ${uploadType}s`,
         };
       }
     }
@@ -92,13 +142,14 @@ function validateFileTypeRestrictions(
 /**
  * Main validation function that validates a file for upload
  *
- * @param file - The file to validate
+ * @param blob - The file blob to validate
+ * @param fileName - The name of the file (for extension validation)
  * @param uploadType - The type of upload (post, message, or avatar)
  * @returns ValidationResult with valid flag and any errors
  *
  * @example
  * ```ts
- * const result = await validateFile(file, "avatar");
+ * const result = await validateFile(blob, "photo.jpg", "avatar");
  * if (!result.valid) {
  *   result.errors.forEach(error => {
  *     console.error(error.message);
@@ -107,16 +158,18 @@ function validateFileTypeRestrictions(
  * ```
  */
 export async function validateFile(
-  file: File,
+  blob: Blob,
+  fileName: string,
   uploadType: UploadType
 ): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
 
   // Run all validations
   const validations = [
-    validateFileType(file),
-    validateFileSize(file, uploadType),
-    validateFileTypeRestrictions(file, uploadType, FILE_TYPE_RESTRICTION_RULES),
+    validateFileType(blob),
+    validateFileSize(blob, uploadType),
+    validateFileExtension(blob, fileName),
+    validateFileTypeRestrictions(blob, uploadType, FILE_TYPE_RESTRICTION_RULES),
   ];
 
   // Collect errors from all validations
@@ -131,3 +184,8 @@ export async function validateFile(
     errors,
   };
 }
+
+/**
+ * Extracts file extension from filename (utility export)
+ */
+export { getFileExtension };

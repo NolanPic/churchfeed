@@ -5,7 +5,7 @@
  * that can be used on both the frontend and backend.
  */
 
-export { validateFile } from "./validator";
+export { validateFile, getFileExtension } from "./validator";
 export {
   UploadType,
   ValidationError,
