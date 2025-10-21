@@ -6,7 +6,7 @@
  */
 
 export { validateFile, getFileExtension } from "./validator";
-export {
+export type {
   UploadType,
   ValidationError,
   ValidationErrorCode,
