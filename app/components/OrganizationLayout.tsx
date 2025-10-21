@@ -9,7 +9,7 @@ import { useAuthedUser } from "@/app/hooks/useAuthedUser";
 import styles from "./OrganizationLayout.module.css";
 import { useState } from "react";
 import Modal from "./common/Modal";
-import ProfileModalContent from "./ProfileModalContent";
+import ProfileModal from "./ProfileModal";
 import Image from "next/image";
 import IconButton from "./common/IconButton";
 
@@ -71,7 +71,7 @@ export default function OrganizationLayout({
         </motion.section>
       )}
       {isProfileModalOpen && (
-        <ProfileModalContent onClose={() => setIsProfileModalOpen(false)} />
+        <ProfileModal onClose={() => setIsProfileModalOpen(false)} />
       )}
     </>
   );

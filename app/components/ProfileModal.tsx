@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import styles from "./ProfileModalContent.module.css";
+import styles from "./ProfileModal.module.css";
 import { useAuthedUser } from "../hooks/useAuthedUser";
 import Modal from "./common/Modal";
 import Button from "./common/Button";
@@ -7,7 +7,7 @@ import UserAvatar from "./UserAvatar";
 import {Input} from "./common/Input";
 import IconButton from "./common/IconButton";
 
-export default function ProfileModalContent({ onClose }: { onClose: () => void }) {
+export default function ProfileModal({ onClose }: { onClose: () => void }) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const disableSave = name.trim() === "" || email.trim() === "";
