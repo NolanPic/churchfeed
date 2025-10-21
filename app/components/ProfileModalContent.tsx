@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react";
 import styles from "./ProfileModalContent.module.css";
 import { useAuthedUser } from "../hooks/useAuthedUser";
+import Modal from "./common/Modal";
 import Button from "./common/Button";
 import UserAvatar from "./UserAvatar";
 import {Input} from "./common/Input";
+import IconButton from "./common/IconButton";
 
 export default function ProfileModalContent({ onClose }: { onClose: () => void }) {
     const [name, setName] = useState("");
@@ -11,7 +13,6 @@ export default function ProfileModalContent({ onClose }: { onClose: () => void }
     const disableSave = name.trim() === "" || email.trim() === "";
     const { user, isSignedIn, signOut } = useAuthedUser();
 
-    //Auto-populates the name and email address of signed-in user. -LL//
     useEffect(()=> {
         if (user) {
             setName(user.name || "");
@@ -19,8 +20,15 @@ export default function ProfileModalContent({ onClose }: { onClose: () => void }
         }
     }, [user]);
 
-
   return (
+    <Modal 
+        title="Profile" 
+        isOpen={true}
+        onClose={onClose} 
+        toolbar={({ onClose }) => (       
+        <IconButton icon="close" onClick={onClose}/>
+   )}
+        >
         <div className={styles.profile}>
             <div className={styles.contentContainer}>
                 <div className={styles.avatarContainer}>
@@ -31,6 +39,7 @@ export default function ProfileModalContent({ onClose }: { onClose: () => void }
                     <form className={styles.form}>
                         <Input label="Name" value={name} onChange={e => setName(e.target.value)} />
                         <Input type="email" label="Email" value={email} onChange={e => setEmail(e.target.value)} />
+                    
                     </form> 
                 <div className={styles.actionsDesktop}>
                     <Button type="submit" icon="send" className={styles.profileButton} disabled={disableSave}>Save</Button>
@@ -41,5 +50,6 @@ export default function ProfileModalContent({ onClose }: { onClose: () => void }
                 </div>
             </div>
         </div>
+        </Modal>
   ); 
 } 
