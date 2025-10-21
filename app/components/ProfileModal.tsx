@@ -28,7 +28,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       toolbar={({ onClose }) => (
         <>
           <IconButton icon="close" onClick={onClose} />
-          <IconButton className={styles.mobileSaveButton} icon="image" disabled={disableSave}/>
+          <IconButton icon="image" disabled={disableSave}/>
         </>
       )}
     >
