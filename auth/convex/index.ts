@@ -27,7 +27,7 @@ export class UserAuth {
 
   constructor(
     private ctx: ConvexContext,
-    private orgId: Id<"organizations">
+    private orgId: Id<"organizations">,
   ) {}
 
   /**
@@ -47,7 +47,7 @@ export class UserAuth {
     const dbUser = await this.ctx.db
       .query("users")
       .withIndex("by_clerk_and_org_id", (q) =>
-        q.eq("clerkId", clerkUser.subject).eq("orgId", this.orgId)
+        q.eq("clerkId", clerkUser.subject).eq("orgId", this.orgId),
       )
       .first();
 
@@ -123,7 +123,12 @@ export class UserAuth {
    * @returns FeedAuthContext for checking feed permissions
    */
   feed(feedId: Id<"feeds">, feedData?: Doc<"feeds">): FeedAuthContext {
-    return new FeedAuthContextImpl(this.ctx, this.toAuthUser(), feedId, feedData);
+    return new FeedAuthContextImpl(
+      this.ctx,
+      this.toAuthUser(),
+      feedId,
+      feedData,
+    );
   }
 }
 
@@ -136,7 +141,7 @@ class FeedAuthContextImpl implements FeedAuthContext {
     private ctx: ConvexContext,
     private user: AuthUser | null,
     private feedId: Id<"feeds">,
-    private feedData?: Doc<"feeds">
+    private feedData?: Doc<"feeds">,
   ) {}
 
   /**
@@ -156,7 +161,10 @@ class FeedAuthContextImpl implements FeedAuthContext {
     const userFeed = await this.ctx.db
       .query("userFeeds")
       .withIndex("by_user_and_feed_and_org", (q) =>
-        q.eq("userId", this.user!.id).eq("feedId", this.feedId).eq("orgId", this.user!.orgId)
+        q
+          .eq("userId", this.user!.id)
+          .eq("feedId", this.feedId)
+          .eq("orgId", this.user!.orgId),
       )
       .first();
 
@@ -188,7 +196,10 @@ class FeedAuthContextImpl implements FeedAuthContext {
     const userFeed = await this.ctx.db
       .query("userFeeds")
       .withIndex("by_user_and_feed_and_org", (q) =>
-        q.eq("userId", this.user!.id).eq("feedId", this.feedId).eq("orgId", this.user!.orgId)
+        q
+          .eq("userId", this.user!.id)
+          .eq("feedId", this.feedId)
+          .eq("orgId", this.user!.orgId),
       )
       .first();
 
@@ -218,7 +229,10 @@ class FeedAuthContextImpl implements FeedAuthContext {
     const userFeed = await this.ctx.db
       .query("userFeeds")
       .withIndex("by_user_and_feed_and_org", (q) =>
-        q.eq("userId", this.user!.id).eq("feedId", this.feedId).eq("orgId", this.user!.orgId)
+        q
+          .eq("userId", this.user!.id)
+          .eq("feedId", this.feedId)
+          .eq("orgId", this.user!.orgId),
       )
       .first();
 
@@ -260,7 +274,7 @@ class FeedAuthContextImpl implements FeedAuthContext {
  */
 export async function getUserAuth(
   ctx: ConvexContext,
-  orgId: Id<"organizations">
+  orgId: Id<"organizations">,
 ): Promise<UserAuth> {
   const auth = new UserAuth(ctx, orgId);
   await auth.init();
