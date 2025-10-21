@@ -34,6 +34,7 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
             >
               <li className={styles.userAvatarMenuItem}>
                 <button
+                  type="button"
                   onClick={() => {
                     openProfileModal();
                     setIsOpen(false);
