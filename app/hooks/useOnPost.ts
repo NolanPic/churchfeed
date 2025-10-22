@@ -10,10 +10,13 @@ type PostState = "drafting" | "posting" | "posted" | "error";
 
 export function useOnPost(
   feedId: Id<"feeds"> | null,
-  editorRef: RefObject<EditorHandle | null>
+  editorRef: RefObject<EditorHandle | null>,
 ) {
   const [state, setState] = useState<PostState>("drafting");
   const [error, setError] = useState<string | null>(null);
+  const [savedPostId, setSavedPostId] = useState<
+    Id<"posts"> | Id<"messages">
+  >();
   const createPost = useMutation(api.posts.createPost);
   const org = useOrganization();
 
@@ -35,13 +38,15 @@ export function useOnPost(
       return;
     }
 
+    let postId;
     try {
-      await createPost({
+      postId = await createPost({
         orgId: org._id,
         feedId: feedId,
         content: JSON.stringify(postContent),
       });
       setState("posted");
+      setSavedPostId(postId);
     } catch (error) {
       console.error(error);
       setError("Failed to create post. Please contact support");
@@ -52,8 +57,7 @@ export function useOnPost(
   const reset = () => {
     setState("drafting");
     setError(null);
-  }
+  };
 
-  return { state, error, onPost, reset };
+  return { state, error, onPost, savedPostId, reset };
 }
-

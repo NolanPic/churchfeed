@@ -22,7 +22,10 @@ export default function PostEditor({
   feedId,
 }: PostEditorProps) {
   const editorRef = useRef<EditorHandle | null>(null);
-  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
+  const { state, error, onPost, savedPostId, reset } = useOnPost(
+    feedId,
+    editorRef,
+  );
 
   useEffect(() => {
     if (state === "posted") {
@@ -66,6 +69,7 @@ export default function PostEditor({
             placeholder="What's happening?"
             autofocus
             className="tiptap-editor"
+            sourceId={savedPostId}
           />
           <EditorToolbar
             actionButton={{
