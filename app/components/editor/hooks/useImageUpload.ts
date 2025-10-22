@@ -77,7 +77,9 @@ export function useImageUpload(
   const { getToken } = useAuth();
 
   const org = useOrganization();
-  const { feedId } = useContext(CurrentFeedAndPostContext);
+  const { feedId, feedIdOfCurrentPost } = useContext(CurrentFeedAndPostContext);
+
+  const feedIdForPostsAndMessages = feedId || feedIdOfCurrentPost;
 
   // Track previous sourceId to detect changes
   const prevSourceIdRef = useRef(sourceId);
@@ -85,6 +87,11 @@ export function useImageUpload(
   // Effect to patch upload source IDs when sourceId changes
   useEffect(() => {
     const updateUploadSourceIds = async () => {
+      // Only run for post and message uploads (not avatars)
+      if (source !== "post" && source !== "message") {
+        return;
+      }
+
       // Only run if sourceId changed from null/undefined to a value
       if (
         uploadIds.length > 0 &&
@@ -95,7 +102,7 @@ export function useImageUpload(
         try {
           await patchUploadSourceIds({
             uploadIds,
-            sourceId,
+            sourceId: sourceId as Id<"posts"> | Id<"messages">,
             orgId: org._id as Id<"organizations">,
           });
           // Clear uploadIds after successful patch
@@ -108,7 +115,7 @@ export function useImageUpload(
     };
 
     updateUploadSourceIds();
-  }, [sourceId, uploadIds, patchUploadSourceIds, org]);
+  }, [sourceId, uploadIds, patchUploadSourceIds, org, source]);
 
   const uploadImage = useCallback(
     async (file: File) => {
@@ -122,11 +129,6 @@ export function useImageUpload(
           throw new Error(
             "No organization found. Please ensure you're logged in.",
           );
-        }
-
-        // Validate that feedId exists for post/message uploads
-        if ((source === "post" || source === "message") && !feedId) {
-          throw new Error("No feed found. Please select a feed.");
         }
 
         // Validate file before upload
@@ -163,10 +165,10 @@ export function useImageUpload(
 
         // Only include feedId for post/message uploads
         if (source === "post" || source === "message") {
-          if (!feedId) {
+          if (!feedIdForPostsAndMessages) {
             throw new Error("Feed ID is required for post/message uploads");
           }
-          formData.append("feedId", feedId);
+          formData.append("feedId", feedIdForPostsAndMessages);
         }
 
         // Include sourceId if available
@@ -210,7 +212,7 @@ export function useImageUpload(
         setIsUploading(false);
       }
     },
-    [source, sourceId, feedId, org, getToken],
+    [source, sourceId, feedIdForPostsAndMessages, org, getToken],
   );
 
   return {
