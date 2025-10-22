@@ -103,11 +103,9 @@ export const uploadFile = httpAction(async (ctx, request) => {
   // Validate the file
   const { valid, errors } = await validateFile(file, fileName, source);
   if (!valid) {
+    const errorMessages = errors.map((e) => e.message).join(", ");
     return jsonResponse(
-      {
-        error: "File validation failed",
-        validationErrors: errors,
-      },
+      { error: `File validation failed: ${errorMessages}` },
       400,
     );
   }
@@ -120,6 +118,14 @@ export const uploadFile = httpAction(async (ctx, request) => {
       { error: "Invalid file name: no extension found" },
       400,
     );
+  }
+
+  // For avatars, delete previous avatar if it exists
+  if (source === "avatar") {
+    await ctx.runMutation(internal.uploads.deletePreviousAvatar, {
+      userId: user._id,
+      orgId,
+    });
   }
 
   // Upload to Convex storage
@@ -165,6 +171,11 @@ export const uploadFile = httpAction(async (ctx, request) => {
 function jsonResponse(data: unknown, status: number = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
   });
 }

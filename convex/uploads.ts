@@ -185,3 +185,83 @@ export const getStorageUrl = query({
   },
 });
 
+/**
+ * Internal mutation to delete previous avatar uploads for a user
+ * Hard-deletes the upload record and storage file
+ */
+export const deletePreviousAvatar = internalMutation({
+  args: {
+    userId: v.id("users"),
+    orgId: v.id("organizations"),
+  },
+  handler: async (ctx, args) => {
+    const { userId, orgId } = args;
+
+    // Find all avatar uploads for this user
+    const avatarUploads = await ctx.db
+      .query("uploads")
+      .withIndex("by_org_source_sourceId", (q) =>
+        q.eq("orgId", orgId).eq("source", "avatar").eq("sourceId", userId),
+      )
+      .collect();
+
+    // Delete each avatar upload
+    for (const upload of avatarUploads) {
+      // Delete the storage file
+      await ctx.storage.delete(upload.storageId);
+      // Delete the upload record
+      await ctx.db.delete(upload._id);
+    }
+  },
+});
+
+/**
+ * Mutation to patch upload source IDs after post/message creation
+ * Updates uploadIds with the newly created source ID
+ */
+export const patchUploadSourceIds = mutation({
+  args: {
+    uploadIds: v.array(v.id("uploads")),
+    sourceId: v.union(v.id("posts"), v.id("messages")),
+    orgId: v.id("organizations"),
+  },
+  handler: async (ctx, args) => {
+    const { uploadIds, sourceId, orgId } = args;
+
+    // Authenticate user
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    const successfullyUpdated: Id<"uploads">[] = [];
+
+    for (const uploadId of uploadIds) {
+      const upload = await ctx.db.get(uploadId);
+
+      // Skip if upload doesn't exist
+      if (!upload) {
+        continue;
+      }
+
+      // Verify upload belongs to authenticated user
+      if (upload.userId !== user._id) {
+        continue;
+      }
+
+      // Verify upload is in the same org
+      if (upload.orgId !== orgId) {
+        continue;
+      }
+
+      // Update the sourceId
+      await ctx.db.patch(uploadId, {
+        sourceId,
+        updatedAt: Date.now(),
+      });
+
+      successfullyUpdated.push(uploadId);
+    }
+
+    return successfullyUpdated;
+  },
+});
+
