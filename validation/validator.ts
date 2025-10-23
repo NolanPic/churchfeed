@@ -149,7 +149,7 @@ function validateFileTypeRestrictions(
  *
  * @example
  * ```ts
- * const result = await validateFile(blob, "photo.jpg", "avatar");
+ * const result = validateFile(blob, "photo.jpg", "avatar");
  * if (!result.valid) {
  *   result.errors.forEach(error => {
  *     console.error(error.message);
@@ -157,11 +157,11 @@ function validateFileTypeRestrictions(
  * }
  * ```
  */
-export async function validateFile(
+export function validateFile(
   blob: Blob,
   fileName: string,
   uploadType: UploadType
-): Promise<ValidationResult> {
+): ValidationResult {
   const errors: ValidationError[] = [];
 
   // Run all validations

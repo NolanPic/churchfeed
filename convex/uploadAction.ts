@@ -101,7 +101,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
   // For avatars, just being authenticated is sufficient (user uploads their own avatar)
 
   // Validate the file
-  const { valid, errors } = await validateFile(file, fileName, source);
+  const { valid, errors } = validateFile(file, fileName, source);
   if (!valid) {
     const errorMessages = errors.map((e) => e.message).join(", ");
     return jsonResponse(

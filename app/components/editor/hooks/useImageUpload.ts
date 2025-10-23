@@ -123,7 +123,7 @@ export function useImageUpload(
         }
 
         // Validate file before upload
-        const validationResult = await validateFile(file, file.name, source);
+        const validationResult = validateFile(file, file.name, source);
         if (!validationResult.valid) {
           const errorMessages = validationResult.errors
             .map((e) => e.message)
