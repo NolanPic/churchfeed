@@ -168,12 +168,14 @@ export function useImageUpload(
         }
 
         // Upload to HTTP action
-        // HTTP actions are served from .convex.site, not .convex.cloud
-        const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_URL?.replace(
-          ".convex.cloud",
-          ".convex.site",
-        );
-        const uploadUrl = `${convexSiteUrl}/upload`;
+        const convexHttpActionsUrl = process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTIONS_URL;
+        console.log("convexHttpActionsUrl", convexHttpActionsUrl);
+
+        if(!convexHttpActionsUrl) {
+          throw new Error("CONVEX_HTTP_ACTIONS_URL is not set");
+        }
+
+        const uploadUrl = `${convexHttpActionsUrl}/upload`;
         const result = await fetch(uploadUrl, {
           method: "POST",
           headers: {
