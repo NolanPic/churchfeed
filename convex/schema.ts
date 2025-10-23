@@ -86,8 +86,7 @@ export default defineSchema({
       v.id("users")
     )),
     userId: v.id("users"),
-    fileExtension: v.string(),
-    deletedAt: v.optional(v.number()),
+    fileExtension: v.string()
   })
   .index("by_org_source_sourceId", ["orgId", "source", "sourceId"])
   .index("by_userId", ["userId"]),
