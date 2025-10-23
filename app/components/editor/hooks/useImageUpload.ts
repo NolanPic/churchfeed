@@ -81,9 +81,6 @@ export function useImageUpload(
 
   const feedIdForPostsAndMessages = feedId || feedIdOfCurrentPost;
 
-  // Track previous sourceId to detect changes
-  const prevSourceIdRef = useRef(sourceId);
-
   // Effect to patch upload source IDs when sourceId changes
   useEffect(() => {
     const updateUploadSourceIds = async () => {
@@ -93,12 +90,7 @@ export function useImageUpload(
       }
 
       // Only run if sourceId changed from null/undefined to a value
-      if (
-        uploadIds.length > 0 &&
-        sourceId &&
-        !prevSourceIdRef.current &&
-        org?._id
-      ) {
+      if (uploadIds.length > 0 && sourceId && org?._id) {
         try {
           await patchUploadSourceIds({
             uploadIds,
@@ -111,7 +103,6 @@ export function useImageUpload(
           console.error("Failed to patch upload source IDs:", err);
         }
       }
-      prevSourceIdRef.current = sourceId;
     };
 
     updateUploadSourceIds();
