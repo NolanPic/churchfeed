@@ -86,9 +86,16 @@ export const deletePreviousAvatar = internalMutation({
     // Delete each avatar upload
     for (const upload of avatarUploads) {
       // Delete the storage file
-      await ctx.storage.delete(upload.storageId);
+      try {
+        await ctx.storage.delete(upload.storageId);
+      }
+      catch {}
+      
       // Delete the upload record
-      await ctx.db.delete(upload._id);
+      try {
+        await ctx.db.delete(upload._id);
+      }
+      catch {}
     }
   },
 });
