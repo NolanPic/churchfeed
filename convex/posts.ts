@@ -5,6 +5,7 @@ import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
 import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
+import { getStorageUrl } from "./uploads";
 
 export const getUserPosts = query({
   args: {
@@ -48,8 +49,8 @@ export const getUserPosts = query({
       posts.page.map(async (post) => {
         const author = await ctx.db.get(post.posterId);
         if (!author) return null; // skip posts with no author
-        
-        const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+
+        const image = await getStorageUrl(ctx, author.image);
         const feed = feedMap.get(post.feedId) || null;
         const messageCount = (
           await ctx.db
@@ -126,7 +127,7 @@ export const getById = query({
 
     const author = await ctx.db.get(post.posterId);
     if (!author) return null;
-    const image = author.image ? await ctx.storage.getUrl(author.image) : null;
+    const image = await getStorageUrl(ctx, author.image);
 
     return {
       ...post,

@@ -95,8 +95,8 @@ The following features are required before closed beta launch:
 
 ### Image/file improvements
 
-- [ ] Simplify image uploading on frontend
-- [ ] Store all uploads across the app in a permissions-based table
+- [x] Simplify image uploading on frontend
+- [x] Store all uploads across the app in a permissions-based table
 
 ---
 

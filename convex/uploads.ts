@@ -1,7 +1,37 @@
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, internalMutation, internalQuery, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
+
+/**
+ * Internal query to get storage URL from an upload ID
+ * Should only be called from authenticated backend functions
+ */
+export const getStorageUrlFromUploadId = internalQuery({
+  args: {
+    uploadId: v.id("uploads"),
+  },
+  handler: async (ctx, args) => {
+    const upload = await ctx.db.get(args.uploadId);
+    if (!upload) {
+      return null;
+    }
+    return await ctx.storage.getUrl(upload.storageId);
+  },
+});
+
+/**
+ * Helper function to get storage URL from an upload ID
+ * Use this in queries/mutations instead of calling the internal query directly
+ */
+export async function getStorageUrl(
+  ctx: QueryCtx,
+  uploadId: Id<"uploads"> | null | undefined
+): Promise<string | null> {
+  if (!uploadId) return null;
+  return await ctx.runQuery(internal.uploads.getStorageUrlFromUploadId, { uploadId });
+}
 
 /**
  * Internal mutation to create an upload record in the database
@@ -30,88 +60,6 @@ export const createUploadRecord = internalMutation({
     });
 
     return uploadId;
-  },
-});
-
-/**
- * Query to get storage URL for an upload with auth checks
- * Verifies user has permission to access the file
- */
-export const getStorageUrl = query({
-  args: {
-    uploadId: v.id("uploads"),
-  },
-  handler: async (ctx, args) => {
-    const { uploadId } = args;
-
-    // Get the upload record
-    const upload = await ctx.db.get(uploadId);
-    if (!upload) {
-      throw new Error("Upload not found");
-    }
-
-    // Get auth context
-    const auth = await getUserAuth(ctx, upload.orgId);
-    const user = auth.getUserOrThrow();
-
-    // Check user is in the same org
-    if (user.orgId !== upload.orgId) {
-      throw new Error("Unauthorized: user not in same organization");
-    }
-
-    // Auth checks based on source type
-    if (upload.source === "post" || upload.source === "message") {
-      // Get the post/message to find the feed
-      let feedId: Id<"feeds"> | null = null;
-
-      if (upload.source === "post" && upload.sourceId) {
-        const post = await ctx.db.get(upload.sourceId as Id<"posts">);
-        if (!post) {
-          throw new Error("Post not found");
-        }
-        feedId = post.feedId;
-      } else if (upload.source === "message" && upload.sourceId) {
-        const message = await ctx.db.get(upload.sourceId as Id<"messages">);
-        if (!message) {
-          throw new Error("Message not found");
-        }
-        const post = await ctx.db.get(message.postId);
-        if (!post) {
-          throw new Error("Post not found");
-        }
-        feedId = post.feedId;
-      }
-
-      if (!feedId) {
-        throw new Error("Feed not found for upload");
-      }
-
-      // Check if user is a member of the feed (has read access)
-      const feed = await ctx.db.get(feedId);
-      if (!feed) {
-        throw new Error("Feed not found");
-      }
-
-      // Public feeds are accessible to everyone in the org
-      if (feed.privacy !== "public") {
-        const memberCheck = await auth.feed(feedId, feed).hasRole("member");
-        if (!memberCheck.allowed) {
-          throw new Error("Unauthorized: user does not have access to this feed");
-        }
-      }
-    }
-    // For avatar uploads, just being logged in and in the same org is sufficient
-
-    // Get the storage URL
-    const url = await ctx.storage.getUrl(upload.storageId);
-    if (!url) {
-      throw new Error("Storage URL not found");
-    }
-
-    return {
-      url,
-      uploadId,
-    };
   },
 });
 

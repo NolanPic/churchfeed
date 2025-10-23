@@ -2,6 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
+import { getStorageUrl } from "./uploads";
 
 export const getForPost = query({
   args: {
@@ -46,7 +47,7 @@ export const getForPost = query({
         const sender = await ctx.db.get(message.senderId);
 
         if (!sender) return null;
-        const image = sender.image ? await ctx.storage.getUrl(sender.image) : null;
+        const image = await getStorageUrl(ctx, sender.image);
 
         return {
           ...message,
