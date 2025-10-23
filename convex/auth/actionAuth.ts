@@ -68,6 +68,13 @@ export const checkUploadPermission = internalQuery({
       };
     }
 
+    if(user.deactivatedAt) {
+      return {
+        allowed: false,
+        reason: "user_deactivated",
+      };
+    }
+
     // Verify the user ID matches (security check)
     if (user._id !== userId) {
       return {
