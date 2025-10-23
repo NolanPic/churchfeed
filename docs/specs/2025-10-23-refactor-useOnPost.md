@@ -52,7 +52,3 @@ Requirements:
    ```
    Or should we validate the parentId type matches the source at runtime?
    **Answer**: This is fine
-
-# Part 2 - Image uploading
-
-Images are uploaded via the `useImageUpload` and `useEditorImageUpload` hooks.

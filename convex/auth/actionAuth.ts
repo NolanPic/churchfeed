@@ -2,13 +2,14 @@ import { internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import { Doc } from "../_generated/dataModel";
 import { getUserAuth } from "@/auth/convex";
+import { PermissionDenialReason } from "@/auth/core/types";
 
 /**
  * Permission check result for actions
  */
 export interface ActionPermissionResult {
   allowed: boolean;
-  reason?: string;
+  reason?: PermissionDenialReason;
   user?: Doc<"users">;
 }
 
@@ -26,14 +27,14 @@ export const getAuthenticatedUser = internalQuery({
     if (!user) {
       return {
         allowed: false,
-        reason: "User not found",
+        reason: "user_not_found",
       };
     }
 
     if (user.deactivatedAt) {
       return {
         allowed: false,
-        reason: "User is deactivated",
+        reason: "user_deactivated",
       };
     }
 
@@ -63,7 +64,7 @@ export const checkUploadPermission = internalQuery({
     if (!user) {
       return {
         allowed: false,
-        reason: "User not authenticated",
+        reason: "unauthenticated",
       };
     }
 
@@ -71,7 +72,7 @@ export const checkUploadPermission = internalQuery({
     if (user._id !== userId) {
       return {
         allowed: false,
-        reason: "User ID mismatch",
+        reason: "user_not_found",
       };
     }
 
