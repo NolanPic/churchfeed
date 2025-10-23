@@ -169,7 +169,6 @@ export function useImageUpload(
 
         // Upload to HTTP action
         const convexHttpActionsUrl = process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTIONS_URL;
-        console.log("convexHttpActionsUrl", convexHttpActionsUrl);
 
         if(!convexHttpActionsUrl) {
           throw new Error("CONVEX_HTTP_ACTIONS_URL is not set");

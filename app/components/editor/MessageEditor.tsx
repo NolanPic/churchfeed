@@ -1,57 +1,45 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
-import { useOrganization } from "../../context/OrganizationProvider";
 import Editor, { EditorHandle } from "./Editor";
 import EditorToolbar from "./EditorToolbar";
 import { EditorCommandsProvider } from "../../context/EditorCommands";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import styles from "./MessageEditor.module.css";
-import { isEditorEmpty } from "./editor-utils";
+import { useOnPublish } from "@/app/hooks/useOnPublish";
 
 export default function MessageEditor({ postId }: { postId: Id<"posts"> }) {
   const editorRef = useRef<EditorHandle | null>(null);
-  const [isSending, setIsSending] = useState(false);
-  const [savedMessageId, setSavedMessageId] = useState<Id<"messages">>();
-  const org = useOrganization();
-  const createMessage = useMutation(api.messages.create);
+  const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
+    "message",
+    editorRef,
+    postId,
+  );
 
-  const onSend = async () => {
-    const json = editorRef.current?.getJSON();
-    if (!json || isEditorEmpty(json)) return;
-    setIsSending(true);
-    let messageId;
-    try {
-      messageId = await createMessage({
-        orgId: org?._id as Id<"organizations">,
-        postId,
-        content: JSON.stringify(json),
-      });
-      setSavedMessageId(messageId);
+  useEffect(() => {
+    if (state === "published") {
       editorRef.current?.clear();
-    } finally {
-      setIsSending(false);
+      reset();
     }
-  };
+  }, [state, reset]);
 
   return (
     <div className={styles.messageEditor}>
+      {error && <div className={styles.error}>{error}</div>}
       <EditorCommandsProvider>
         <Editor
           ref={editorRef}
           placeholder="Continue the conversation..."
           className={styles.tiptapEditor}
-          onSubmit={onSend}
-          sourceId={savedMessageId}
+          onSubmit={onPublish}
+          sourceId={publishedSourceId}
         />
         <EditorToolbar
           className={styles.messageEditorToolbar}
           actionButton={{
             icon: "send",
-            onClick: onSend,
-            disabled: isSending,
+            onClick: onPublish,
+            disabled: state === "publishing",
           }}
         />
       </EditorCommandsProvider>
