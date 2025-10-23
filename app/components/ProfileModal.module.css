@@ -26,18 +26,34 @@
     display: none;
 }
 
+.toolbarActions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.toolbarActions > * {
+  margin-bottom: var(--spacing4);
+
+}
+
+.toolbarActions > :nth-child(2) {
+  background-color: var(--accent);
+}
 
 @media (--tablet){
 
     .profile {
         display: flex;
+        justify-content: center;
         flex-direction: row;
     }
 
     .contentContainer {
-        width: 100%;
+        width: 552px;
         display: flex;
         flex-direction: row;
+        margin-top: var(--spacing18);
+        
     }
 
     .avatarContainer {
@@ -52,17 +68,17 @@
         margin-top: 0;
     }
 
-    .actionsMobile {
-        display: none;
-    }
-
     .actionsDesktop {
         display: block;
         width: 287px;
         margin-top: var(--spacing10);
     }
 
-    .profileButton {
-        margin-left: 0;
+    .actionsDesktop button {
+        background-color: var(--accent);
     }
+
+    .toolbarActions {
+        display: none;
+}
 }
