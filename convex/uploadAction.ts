@@ -35,11 +35,11 @@ export const uploadFile = httpAction(async (ctx, request) => {
   const orgId = formData.get("orgId") as Id<"organizations">;
   const source = formData.get("source");
 
-  if (!orgId) {
+  if (!orgId || typeof orgId !== "string") {
     return jsonResponse({ error: "Missing orgId" }, 400);
   }
 
-  if (source !== "post" && source !== "message" && source !== "avatar") {
+  if (source !== "post" && source !== "message" && source !== "avatar" || typeof source !== "string") {
     return jsonResponse(
       { error: "Invalid source. Must be 'post', 'message', or 'avatar'" },
       400,
@@ -47,12 +47,12 @@ export const uploadFile = httpAction(async (ctx, request) => {
   }
 
   const sourceIdStr = formData.get("sourceId");
-  const sourceId = sourceIdStr
+  const sourceId = sourceIdStr && typeof sourceIdStr === "string"
     ? (sourceIdStr as Id<"posts"> | Id<"messages"> | Id<"users">)
     : undefined;
 
   const feedIdStr = formData.get("feedId");
-  const feedId = feedIdStr ? (feedIdStr as Id<"feeds">) : undefined;
+  const feedId = feedIdStr && typeof feedIdStr === "string" ? (feedIdStr as Id<"feeds">) : undefined;
 
   // Check Authentication
   const authResult = await ctx.runQuery(
