@@ -90,7 +90,7 @@ export const deletePreviousAvatar = internalMutation({
         await ctx.storage.delete(upload.storageId);
       }
       catch {}
-      
+
       // Delete the upload record
       try {
         await ctx.db.delete(upload._id);
@@ -134,6 +134,11 @@ export const patchUploadSourceIds = mutation({
 
       // Verify upload is in the same org
       if (upload.orgId !== orgId) {
+        continue;
+      }
+
+      // Only patch post/message uploads
+      if(upload.source === "avatar") {
         continue;
       }
 
