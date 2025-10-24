@@ -55,8 +55,8 @@ export function useOnPublish(
           content: JSON.stringify(content),
         });
       }
-      setState("published");
       setPublishedSourceId(sourceId);
+      setState("published");
     } catch (error) {
       console.error(error);
       setError("Failed to publish content. Please contact support");
