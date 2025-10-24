@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useContext } from "react";
 import type { Editor } from "@tiptap/react";
 import type { EditorView } from "prosemirror-view";
 import { Selection } from "prosemirror-state";
 import { useImageUpload } from "./useImageUpload";
+import { CurrentFeedAndPostContext } from "../../../context/CurrentFeedAndPostProvider";
+import { Id } from "@/convex/_generated/dataModel";
 
 export interface UseEditorImageUploadReturn {
   /**
@@ -33,25 +35,38 @@ export interface UseEditorImageUploadReturn {
  * for inserting placeholder images and replacing them with final URLs.
  *
  * @param editor - TipTap editor instance
+ * @param sourceId - Optional source ID (post ID or message ID) from parent component
  * @returns Object with uploadImage function and error state
  *
  * @example
  * ```tsx
- * const { uploadImage, error } = useEditorImageUpload(editor);
+ * const [publishedPostId, setPublishedPostId] = useState(null);
+ * const { uploadImage, error } = useEditorImageUpload(editor, publishedPostId);
  *
- * const handleFileSelect = async (file: File) => {
- *   await uploadImage(file);
+ * const handlePublish = async () => {
+ *   const postId = await createPost();
+ *   setPublishedPostId(postId); // Triggers patchUploadSourceIds
  * };
- *
- * if (error) {
- *   console.error("Upload failed:", error);
- * }
  * ```
  */
 export function useEditorImageUpload(
-  editor: Editor | null
+  editor: Editor | null,
+  sourceId?: Id<"posts"> | Id<"messages"> | null,
 ): UseEditorImageUploadReturn {
-  const { previewUrl, imageUrl, uploadImage: baseUploadImage, error: uploadError, isUploading } = useImageUpload();
+  const { postId } = useContext(CurrentFeedAndPostContext);
+
+  // Determine source based on context
+  // If postId exists, we're messaging in a post, otherwise we're creating a post
+  const source = postId ? "message" : "post";
+
+  const {
+    previewUrl,
+    imageUrl,
+    uploadImage: baseUploadImage,
+    error: uploadError,
+    isUploading,
+  } = useImageUpload({ source, sourceId });
+
   const currentUploadDataUrl = useRef<string | null>(null);
   const error = uploadError;
 
@@ -90,10 +105,7 @@ export function useEditorImageUpload(
     let targetNodeSize: number | null = null;
 
     currentState.doc.descendants((node, pos) => {
-      if (
-        node.type.name === "image" &&
-        node.attrs.src === dataUrl
-      ) {
+      if (node.type.name === "image" && node.attrs.src === dataUrl) {
         targetPos = pos;
         targetNodeSize = node.nodeSize;
         return false; // Stop searching
@@ -112,14 +124,14 @@ export function useEditorImageUpload(
       const replaceTr = currentState.tr.replaceWith(
         targetPos,
         targetPos + targetNodeSize,
-        finalImageNode
+        finalImageNode,
       );
       editor.view.dispatch(replaceTr);
     } else {
       // Fallback: if we can't find the placeholder, insert at the end
       const fallbackTr = currentState.tr.insert(
         currentState.doc.content.size,
-        imageType.create({ src: imageUrl })
+        imageType.create({ src: imageUrl }),
       );
       editor.view.dispatch(fallbackTr);
     }
@@ -138,7 +150,7 @@ export function useEditorImageUpload(
       // Trigger the base upload
       await baseUploadImage(file);
     },
-    [editor, baseUploadImage]
+    [editor, baseUploadImage],
   );
 
   const handleChooseFile = useCallback(
@@ -151,7 +163,7 @@ export function useEditorImageUpload(
         console.error("Image upload failed:", error);
       }
     },
-    [editor, uploadImage, isUploading]
+    [editor, uploadImage, isUploading],
   );
 
   const handleDrop = useCallback(
@@ -166,9 +178,7 @@ export function useEditorImageUpload(
 
       // Check if any of the files are images
       const files = Array.from(event.dataTransfer.files);
-      const imageFiles = files.filter((file) =>
-        file.type.startsWith("image/")
-      );
+      const imageFiles = files.filter((file) => file.type.startsWith("image/"));
 
       if (imageFiles.length === 0) {
         return false;
@@ -192,7 +202,7 @@ export function useEditorImageUpload(
       // Move cursor to drop position
       const { state, dispatch } = view;
       const tr = state.tr.setSelection(
-        Selection.near(state.doc.resolve(coordinates.pos))
+        Selection.near(state.doc.resolve(coordinates.pos)),
       );
       dispatch(tr);
 
@@ -203,13 +213,13 @@ export function useEditorImageUpload(
 
       return true; // We handled the drop
     },
-    [uploadImage, isUploading]
+    [uploadImage, isUploading],
   );
 
   return {
     handleChooseFile,
     handleDrop,
     error,
-    isUploading
+    isUploading,
   };
 }

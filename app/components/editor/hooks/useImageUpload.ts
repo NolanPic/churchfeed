@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback, useContext, useEffect } from "react";
 import { useMutation } from "convex/react";
+import { useAuth } from "@clerk/nextjs";
 import { api } from "../../../../convex/_generated/api";
 import { useOrganization } from "../../../context/OrganizationProvider";
 import { CurrentFeedAndPostContext } from "../../../context/CurrentFeedAndPostProvider";
 import { Id } from "@/convex/_generated/dataModel";
+import { validateFile } from "@/validation";
+
+type UploadType = "post" | "message" | "avatar";
 
 export interface UseImageUploadReturn {
   /**
@@ -25,38 +29,84 @@ export interface UseImageUploadReturn {
   uploadImage: (file: File) => Promise<void>;
 }
 
+export interface UseImageUploadOptions {
+  /**
+   * The type of upload (post, message, or avatar)
+   */
+  source: UploadType;
+  /**
+   * The source ID (post ID, message ID, or user ID)
+   * Can be null while drafting, then updated once published
+   */
+  sourceId?: Id<"posts"> | Id<"messages"> | Id<"users"> | null;
+}
+
 /**
  * Reusable hook for uploading images to Convex storage.
  *
  * This hook provides core image upload functionality that can be used
  * anywhere in the app (avatars, profile images, editor images, etc.).
  *
+ * @param options - Upload options including source type and optional sourceId
  * @returns Object with imageUrl, previewUrl, isUploading, error, and uploadImage function
  *
  * @example
  * ```tsx
- * const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload();
+ * const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
+ *   source: "post",
+ *   sourceId: postId,
+ * });
  *
  * const handleFileSelect = async (file: File) => {
  *   await uploadImage(file);
  * };
  * ```
  */
-export function useImageUpload(): UseImageUploadReturn {
+export function useImageUpload(
+  options: UseImageUploadOptions,
+): UseImageUploadReturn {
+  const { source, sourceId } = options;
+
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [uploadIds, setUploadIds] = useState<Id<"uploads">[]>([]);
 
-  const generateUploadUrlForUserContent = useMutation(
-    api.uploads.generateUploadUrlForUserContent
-  );
-  const getStorageUrlForUserContent = useMutation(
-    api.uploads.getStorageUrlForUserContent
-  );
+  const patchUploadSourceIds = useMutation(api.uploads.patchUploadSourceIds);
+  const { getToken } = useAuth();
 
   const org = useOrganization();
-  const { feedId, postId } = useContext(CurrentFeedAndPostContext);
+  const { feedId, feedIdOfCurrentPost } = useContext(CurrentFeedAndPostContext);
+
+  const feedIdForPostsAndMessages = feedId || feedIdOfCurrentPost;
+
+  // Effect to patch upload source IDs when sourceId changes
+  useEffect(() => {
+    const updateUploadSourceIds = async () => {
+      // Only run for post and message uploads (not avatars)
+      if (source !== "post" && source !== "message") {
+        return;
+      }
+
+      // Only run if sourceId changed from null/undefined to a value
+      if (uploadIds.length > 0 && sourceId && org?._id) {
+        try {
+          await patchUploadSourceIds({
+            uploadIds,
+            sourceId: sourceId as Id<"posts"> | Id<"messages">,
+            orgId: org._id as Id<"organizations">,
+          });
+          // Clear uploadIds after successful patch
+          setUploadIds([]);
+        } catch (err) {
+          console.error("Failed to patch upload source IDs:", err);
+        }
+      }
+    };
+
+    updateUploadSourceIds();
+  }, [sourceId, uploadIds, patchUploadSourceIds, org, source]);
 
   const uploadImage = useCallback(
     async (file: File) => {
@@ -67,10 +117,18 @@ export function useImageUpload(): UseImageUploadReturn {
         // Validate context
         const orgId = org?._id as Id<"organizations"> | undefined;
         if (!orgId) {
-          throw new Error("No organization found. Please ensure you're logged in.");
+          throw new Error(
+            "No organization found. Please ensure you're logged in.",
+          );
         }
-        if (!feedId) {
-          throw new Error("No feed found. Please select a feed.");
+
+        // Validate file before upload
+        const validationResult = validateFile(file, file.name, source);
+        if (!validationResult.valid) {
+          const errorMessages = validationResult.errors
+            .map((e) => e.message)
+            .join(", ");
+          throw new Error(`File validation failed: ${errorMessages}`);
         }
 
         // Create data URL for immediate visual feedback
@@ -83,35 +141,61 @@ export function useImageUpload(): UseImageUploadReturn {
 
         setPreviewUrl(dataUrl);
 
-        // Start upload process
-        const postUrl = await generateUploadUrlForUserContent({
-          orgId,
-          feedId,
-          postId,
-        });
+        // Get auth token from Clerk
+        const token = await getToken({ template: "convex" });
+        if (!token) {
+          throw new Error("Failed to get authentication token");
+        }
 
-        const result = await fetch(postUrl, {
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("fileName", file.name);
+        formData.append("orgId", orgId);
+        formData.append("source", source);
+
+        // Only include feedId for post/message uploads
+        if (source === "post" || source === "message") {
+          if (!feedIdForPostsAndMessages) {
+            throw new Error("Feed ID is required for post/message uploads");
+          }
+          formData.append("feedId", feedIdForPostsAndMessages);
+        }
+
+        // Include sourceId if available
+        if (sourceId) {
+          formData.append("sourceId", sourceId);
+        }
+
+        // Upload to HTTP action
+        const convexHttpActionsUrl = process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTIONS_URL;
+
+        if(!convexHttpActionsUrl) {
+          throw new Error("Upload URL is not set");
+        }
+
+        const uploadUrl = `${convexHttpActionsUrl}/upload`;
+        const result = await fetch(uploadUrl, {
           method: "POST",
-          headers: { "Content-Type": file.type },
-          body: file,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
         });
 
         if (!result.ok) {
-          throw new Error("Failed to upload image");
+          const errorData = await result.json();
+          throw new Error(errorData.error || "Failed to upload image");
         }
 
-        const { storageId } = await result.json();
+        const { uploadId, url } = await result.json();
 
-        const storageUrl = await getStorageUrlForUserContent({
-          orgId: orgId,
-          storageId,
-        });
+        setImageUrl(url);
 
-        if (!storageUrl) {
-          throw new Error("Failed to retrieve storage URL for uploaded image");
+        // Track uploadId if sourceId is not yet set (for post/message drafts)
+        if (!sourceId && (source === "post" || source === "message")) {
+          setUploadIds((prev) => [...prev, uploadId]);
         }
-
-        setImageUrl(storageUrl);
       } catch (err) {
         const error = err as Error;
         setError(error);
@@ -120,13 +204,7 @@ export function useImageUpload(): UseImageUploadReturn {
         setIsUploading(false);
       }
     },
-    [
-      generateUploadUrlForUserContent,
-      getStorageUrlForUserContent,
-      feedId,
-      org,
-      postId,
-    ]
+    [source, sourceId, feedIdForPostsAndMessages, org, getToken],
   );
 
   return {

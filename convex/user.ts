@@ -2,6 +2,7 @@ import { Id, Doc } from "./_generated/dataModel";
 import { UserIdentity } from "convex/server";
 import { query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { getStorageUrl } from "./uploads";
 
 /**
  * @deprecated Use getUserAuth from @/auth/convex instead
@@ -48,7 +49,7 @@ export const getUserByClerkId = query({
             return null;
         }
 
-        const image = user.image ? await ctx.storage.getUrl(user.image) : null;
+        const image = await getStorageUrl(ctx, user.image);
 
         return {
             ...user,

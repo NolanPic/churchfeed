@@ -1,4 +1,4 @@
-import { MutationCtx, query, QueryCtx } from "./_generated/server";
+import { MutationCtx, query, QueryCtx, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
@@ -54,7 +54,7 @@ export const getUserFeedsWithMembershipsHelper = async (
   };
 }
 
-export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => { 
+export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => {
   const publicFeeds = await ctx.db.query("feeds")
   .withIndex("by_org_privacy", (q) =>
     q.eq("orgId", orgId).eq("privacy", "public")
@@ -63,4 +63,17 @@ export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) 
 
   return publicFeeds;
 };
+
+/**
+ * Internal query to get a feed by ID
+ * Used by HTTP actions for auth checks
+ */
+export const get = internalQuery({
+  args: {
+    feedId: v.id("feeds"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.feedId);
+  },
+});
 
