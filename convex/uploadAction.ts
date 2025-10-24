@@ -120,14 +120,6 @@ export const uploadFile = httpAction(async (ctx, request) => {
     );
   }
 
-  // For avatars, delete previous avatar if it exists
-  if (source === "avatar") {
-    await ctx.runMutation(internal.uploads.deletePreviousAvatar, {
-      userId: user._id,
-      orgId,
-    });
-  }
-
   // Upload to Convex storage
   let storageId: Id<"_storage">;
   try {
@@ -154,6 +146,14 @@ export const uploadFile = httpAction(async (ctx, request) => {
     sourceId: finalSourceId,
     fileExtension,
   });
+
+  // For avatars, delete previous avatar if it exists
+  if (source === "avatar") {
+    await ctx.runMutation(internal.uploads.deletePreviousAvatar, {
+      userId: user._id,
+      orgId,
+    });
+  }
 
   // Get storage URL
   const url = await ctx.storage.getUrl(storageId);
