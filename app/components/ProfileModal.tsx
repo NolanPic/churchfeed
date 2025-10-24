@@ -22,13 +22,13 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
   return (
     <Modal 
-      title="Profile" 
+      title="Profile"
       isOpen={true}
       onClose={onClose} 
       toolbar={({ onClose }) => (
         <div className={styles.toolbarActions}>
           <IconButton icon="close" onClick={onClose} />
-          <IconButton type="submit" icon="image" disabled={disableSave}/>
+          <IconButton type="submit" icon="image" variant="primary" disabled={disableSave}/>
         </div>
       )}
     >
@@ -45,7 +45,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
                     
                     </form> 
                 <div className={styles.actionsDesktop}>
-                    <Button type="submit" icon="send" disabled={disableSave}>Save</Button>
+                    <Button type="submit" icon="send" variant="primary" disabled={disableSave}>Save</Button>
                 </div>
                 </div>
             </div>
