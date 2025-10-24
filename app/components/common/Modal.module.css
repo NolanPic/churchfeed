@@ -94,6 +94,15 @@
     border-radius: var(--border-radius-lg);
   }
 
+  .title {
+    font-size: var(--text-xxl);
+    text-align: left;
+  }
+
+  .titleSeparator {
+    width: 700px;
+  }
+
   .handleBar_PhoneOnly {
     display: none;
   }
