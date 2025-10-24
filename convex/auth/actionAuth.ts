@@ -2,7 +2,7 @@ import { internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import { Doc } from "../_generated/dataModel";
 import { getUserAuth } from "@/auth/convex";
-import { PermissionDenialReason } from "@/auth/core/types";
+import type { PermissionDenialReason } from "@/auth/core/types";
 
 /**
  * Permission check result for actions
