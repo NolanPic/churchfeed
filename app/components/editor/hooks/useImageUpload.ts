@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useContext, useEffect, useRef } from "react";
+import { useState, useCallback, useContext, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
 import { api } from "../../../../convex/_generated/api";
