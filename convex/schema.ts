@@ -89,5 +89,6 @@ export default defineSchema({
     fileExtension: v.string()
   })
   .index("by_org_source_sourceId", ["orgId", "source", "sourceId"])
-  .index("by_userId", ["userId"]),
+  .index("by_userId", ["userId"])
+  .index("by_storageId", ["storageId"])
 });
