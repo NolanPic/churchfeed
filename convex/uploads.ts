@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 
 /**
  * Internal query to get storage URL from an upload ID
@@ -139,6 +140,23 @@ export const patchUploadSourceIds = mutation({
 
       // Only patch post/message uploads
       if(upload.source === "avatar") {
+        continue;
+      }
+
+      const record = await ctx.db.get(sourceId); // post or message
+      if (!record) {
+        continue;
+      }
+
+      // Verify the record belongs to the authenticated user
+      const post = upload.source === "post" ? record as Doc<"posts"> : null;
+      const message = upload.source === "message" ? record as Doc<"messages"> : null;
+      
+      if (post && post.posterId !== user._id) {
+        continue;
+      }
+
+      if (message && message.senderId !== user._id) {
         continue;
       }
 
