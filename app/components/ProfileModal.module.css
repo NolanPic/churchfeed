@@ -49,23 +49,25 @@
     }
 
     .contentContainer {
-        width: 552px;
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
         margin-top: var(--spacing18);
         
     }
 
     .avatarContainer {
-        width: 50%;
         display: flex;
         align-items: flex-end;
         order: 2;
+        margin-right: var(--spacing13);
     }
 
     .content{
-        width: 50%;
         margin-top: 0;
+        margin-left: var(--spacing13);
     }
 
     .actionsDesktop {
