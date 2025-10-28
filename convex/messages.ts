@@ -1,9 +1,10 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 export const getForPost = query({
   args: {
@@ -102,12 +103,38 @@ export const create = mutation({
   },
 });
 
-export const deleteMessage = mutation({
+/**
+ * Internal mutation to delete a message without auth checks
+ * Used by public mutations with their own auth checks
+ */
+export const deleteMessageInternal = internalMutation({
   args: {
     orgId: v.id("organizations"),
     messageId: v.id("messages"),
   },
   handler: async (ctx, args) => {
+    const { orgId, messageId } = args;
+
+    // Delete all uploads associated with this message
+    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+      orgId,
+      source: "message",
+      sourceId: messageId,
+    });
+
+    // Delete the message
+    await ctx.db.delete(messageId);
+
+    return messageId;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args): Promise<Id<"messages">> => {
     const { orgId, messageId } = args;
 
     const auth = await getUserAuth(ctx, orgId);
@@ -137,17 +164,10 @@ export const deleteMessage = mutation({
       throw new Error("You do not have permission to delete this message");
     }
 
-    // Delete all uploads associated with this message
-    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+    return await ctx.runMutation(internal.messages.deleteMessageInternal, {
       orgId,
-      source: "message",
-      sourceId: messageId,
+      messageId,
     });
-
-    // Delete the message
-    await ctx.db.delete(messageId);
-
-    return messageId;
   },
 });
 

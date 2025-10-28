@@ -6,6 +6,7 @@ import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
+import { internal } from "./_generated/api";
 
 export const getUserPosts = query({
   args: {
@@ -109,7 +110,7 @@ export const getById = query({
   },
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
-    
+
     const auth = await getUserAuth(ctx, orgId);
 
     const post = await ctx.db.get(postId);
@@ -135,5 +136,64 @@ export const getById = query({
       feed: feed ?? null,
       content: fromJSONToHTML(post.content),
     };
+  },
+});
+
+export const deletePost = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, postId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the post
+    const post = await ctx.db.get(postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    // Check if user is the post author
+    const isAuthor = post.posterId === user._id;
+
+    // Check if user is the feed owner
+    const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
+    const isFeedOwner = feedOwnerCheck.allowed;
+
+    // User must be either the author or the feed owner
+    if (!isAuthor && !isFeedOwner) {
+      throw new Error("You do not have permission to delete this post");
+    }
+
+    // Get all messages for this post
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_orgId_postId", (q) =>
+        q.eq("orgId", orgId).eq("postId", postId)
+      )
+      .collect();
+
+    // Delete each message using the internal deleteMessage mutation
+    for (const message of messages) {
+      await ctx.runMutation(internal.messages.deleteMessageInternal, {
+        orgId,
+        messageId: message._id,
+      });
+    }
+
+    // Delete uploads for the post itself
+    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+      orgId,
+      source: "post",
+      sourceId: postId,
+    });
+
+    // Delete the post
+    await ctx.db.delete(postId);
+
+    return postId;
   },
 });
