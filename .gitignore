@@ -49,3 +49,6 @@ Caddyfile
 
 *storybook.log
 storybook-static
+
+# script assets
+scripts/seed/assets/
