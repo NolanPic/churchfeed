@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
+import { internal } from "./_generated/api";
 
 export const getForPost = query({
   args: {
@@ -69,7 +70,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
-    
+
     const auth = await getUserAuth(ctx, orgId);
     const user = auth.getUser();
 
@@ -96,6 +97,55 @@ export const create = mutation({
       content,
       updatedAt: now,
     });
+
+    return messageId;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, messageId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the message
+    const message = await ctx.db.get(messageId);
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    // Get the post to check feed ownership
+    const post = await ctx.db.get(message.postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    // Check if user is the message author
+    const isAuthor = message.senderId === user._id;
+
+    // Check if user is the feed owner
+    const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
+    const isFeedOwner = feedOwnerCheck.allowed;
+
+    // User must be either the author or the feed owner
+    if (!isAuthor && !isFeedOwner) {
+      throw new Error("You do not have permission to delete this message");
+    }
+
+    // Delete all uploads associated with this message
+    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+      orgId,
+      source: "message",
+      sourceId: messageId,
+    });
+
+    // Delete the message
+    await ctx.db.delete(messageId);
 
     return messageId;
   },
