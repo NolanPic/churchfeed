@@ -1,6 +1,6 @@
-import { MutationCtx, query, QueryCtx, internalQuery } from "./_generated/server";
+import { query, QueryCtx, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
+import { Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
 import { getUserAuth } from "@/auth/convex";
 
@@ -15,7 +15,15 @@ export const getUserFeeds = query({
 
     if (user) {
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
-      return [...publicFeeds, ...feedsUserIsMemberOf];
+
+      const publicFeedIds = new Set(publicFeeds.map(feed => feed._id));
+
+      // Filter out feeds the user is a member of that are already in publicFeeds
+      const uniqueFeedsUserIsMemberOf = feedsUserIsMemberOf.filter(
+        feed => !publicFeedIds.has(feed._id)
+      );
+
+      return [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
     } else {
       return publicFeeds;
     }
