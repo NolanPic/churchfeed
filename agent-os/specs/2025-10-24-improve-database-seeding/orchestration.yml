@@ -1,0 +1,11 @@
+task_groups:
+  - name: Infrastructure Setup
+    claude_code_subagent: implementer
+  - name: Backend Layer - Convex Mutations
+    claude_code_subagent: implementer
+  - name: Seed Script Enhancement
+    claude_code_subagent: implementer
+  - name: LLM Prompt Enhancement
+    claude_code_subagent: implementer
+  - name: Documentation
+    claude_code_subagent: implementer
