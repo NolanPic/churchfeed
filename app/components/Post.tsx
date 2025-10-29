@@ -154,7 +154,7 @@ export default function Post({
             <Button
               icon="ellipsis"
               ariaLabel="Post options"
-              iconSize={20}
+              iconSize={24}
               className={styles.postMenuButton}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               noBackground
