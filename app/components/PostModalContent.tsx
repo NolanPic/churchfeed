@@ -10,7 +10,13 @@ import { useOrganization } from "../context/OrganizationProvider";
 import MessageThread from "./MessageThread";
 import Post from "./Post";
 
-export default function PostModal({ postId }: { postId: Id<"posts"> }) {
+export default function PostModal({
+  postId,
+  onClose,
+}: {
+  postId: Id<"posts">;
+  onClose: () => void;
+}) {
   const org = useOrganization();
   const { setFeedIdOfCurrentPost } = useContext(CurrentFeedAndPostContext);
   const post = useQuery(
@@ -29,7 +35,12 @@ export default function PostModal({ postId }: { postId: Id<"posts"> }) {
   return (
     <div>
       <div className={styles.postWrapper}>
-        <Post post={post} variant="postDetails" showSourceFeed />
+        <Post
+          post={post}
+          variant="postDetails"
+          showSourceFeed
+          onPostDeleted={onClose}
+        />
       </div>
       <hr className={styles.postSeparator} />
       <MessageThread postId={post._id} />

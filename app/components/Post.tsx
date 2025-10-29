@@ -7,6 +7,13 @@ import { getTimeAgoLabel } from "../utils/ui-utils";
 import UserAvatar from "./UserAvatar";
 import SanitizedUserContent from "./common/SanitizedUserContent";
 import classNames from "classnames";
+import { useState, useEffect, useRef } from "react";
+import { useUserAuth } from "@/auth/client/useUserAuth";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useOrganization } from "../context/OrganizationProvider";
+import { motion, AnimatePresence } from "framer-motion";
+import Button from "./common/Button";
 
 interface PostProps {
   post: Doc<"posts"> & {
@@ -18,6 +25,7 @@ interface PostProps {
   variant: "feed" | "postDetails";
   showSourceFeed: boolean;
   onOpenPost?: (postId: Id<"posts">) => void;
+  onPostDeleted?: () => void;
 }
 
 export default function Post({
@@ -25,14 +33,82 @@ export default function Post({
   variant,
   showSourceFeed,
   onOpenPost,
+  onPostDeleted,
 }: PostProps) {
   const { _id, content } = post;
+  const [auth] = useUserAuth();
+  const org = useOrganization();
+  const orgId = org?._id as Id<"organizations">;
+  const deletePost = useMutation(api.posts.deletePost);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const postedAt = post.postedAt ?? post._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
   const postedInLink = post.feed ? (
     <Link href={`/feed/${post.feed._id}`}>{post.feed.name}</Link>
   ) : null;
+
+  // Check if user can delete this post
+  useEffect(() => {
+    if (!auth || !post.feed) {
+      setCanDelete(false);
+      return;
+    }
+
+    const user = auth.getUser();
+    if (!user) {
+      setCanDelete(false);
+      return;
+    }
+
+    // User can delete if they're the author or a feed owner
+    const isAuthor = post.posterId === user._id;
+
+    auth
+      .feed(post.feed._id)
+      .hasRole("owner")
+      .then((result) => {
+        setCanDelete(isAuthor || result.allowed);
+      });
+  }, [auth, post.posterId, post.feed]);
+
+  // Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  const handleDeletePost = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) {
+      return;
+    }
+
+    try {
+      onPostDeleted?.();
+
+      // Hack: wait for the navigation/modal close animation to complete
+      // before deleting the post to avoid query errors
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      await deletePost({ orgId, postId: _id });
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      alert("Failed to delete post. Please try again.");
+    }
+  };
 
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed && post.feed) {
@@ -69,6 +145,44 @@ export default function Post({
         >
           {getTimeAndSourceFeed()}
         </p>
+        {canDelete && (
+          <div
+            className={styles.postMenu}
+            ref={menuRef}
+            data-menu-open={isMenuOpen}
+          >
+            <Button
+              icon="ellipsis"
+              ariaLabel="Post options"
+              iconSize={20}
+              className={styles.postMenuButton}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              noBackground
+            />
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.ul
+                  className={styles.postMenuList}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.1 }}
+                >
+                  <li className={styles.postMenuItem}>
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleDeletePost();
+                      }}
+                    >
+                      Delete post
+                    </button>
+                  </li>
+                </motion.ul>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
         {variant === "feed" && (
           <button
             className={styles.messageThreadButton}
