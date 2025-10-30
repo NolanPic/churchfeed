@@ -1,6 +1,5 @@
 .messagesContainer {
     position: relative;
-    overflow: hidden;
 }
 
 .messages {
@@ -42,6 +41,9 @@
     header {
         font-weight: 700;
         margin-bottom: var(--spacing1);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing2);
     }
 
     .messageTimestamp {
@@ -98,6 +100,58 @@
     margin: var(--spacing4) var(--modal-gutter);
 }
 
+.messageMenu {
+    position: relative;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 2;
+}
+
+.messageMenuButton {
+    background-color: transparent !important;
+    cursor: pointer;
+}
+
+.messageMenuList,
+.messageMenuListMobile {
+    background-color: var(--mid);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    list-style: none;
+    padding: var(--spacing2) 0;
+    margin: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 174px;
+    text-align: center;
+    color: var(--white);
+    font-family: var(--font-gentium-plus);
+    font-size: var(--text-base);
+    overflow: hidden;
+    z-index: 2;
+}
+
+.messageMenuListMobile {
+    top: calc(100% + var(--spacing2));
+    left: 100%;
+    transform: translateX(-100%);
+}
+
+.messageMenuItem > button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+    width: 100%;
+    padding: var(--spacing1) 0;
+}
+
+.messageMenuItem > button:hover {
+    background-color: var(--mid2);
+}
+
 
 @media (--tablet) {
     .messages {
@@ -116,6 +170,12 @@
             font-size: var(--text-base);
             color: var(--light2);
             align-self: flex-start;
+        }
+
+        /* Show message menu on hover on desktop */
+        &:hover .messageMenu,
+        .messageMenu[data-menu-open="true"] {
+            opacity: 1;
         }
     }
 

@@ -1,8 +1,10 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
+import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 export const getForPost = query({
   args: {
@@ -69,7 +71,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
-    
+
     const auth = await getUserAuth(ctx, orgId);
     const user = auth.getUser();
 
@@ -98,6 +100,84 @@ export const create = mutation({
     });
 
     return messageId;
+  },
+});
+
+/**
+ * Internal mutation to delete multiple messages without auth checks
+ * Used by public mutations with their own auth checks
+ */
+export const deleteMessagesInternal = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageIds: v.array(v.id("messages")),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, messageIds } = args;
+
+    // Delete all uploads associated with these messages
+    await ctx.runMutation(internal.uploads.deleteUploadsForSources, {
+      orgId,
+      source: "message",
+      sourceIds: messageIds,
+    });
+
+    // Delete all messages
+    const deletedMessageIds: Id<"messages">[] = [];
+    for (const messageId of messageIds) {
+      try {
+        await ctx.db.delete(messageId);
+        deletedMessageIds.push(messageId);
+      } catch (error) {
+        console.warn(`Failed to delete message ${messageId}:`, error);
+      }
+    }
+
+    return deletedMessageIds;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args): Promise<Id<"messages">> => {
+    const { orgId, messageId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the message
+    const message = await ctx.db.get(messageId);
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    // Get the post to check feed ownership
+    const post = await ctx.db.get(message.postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    // Check if user is the message author
+    const isAuthor = message.senderId === user._id;
+
+    // Check if user is the feed owner
+    const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
+    const isFeedOwner = feedOwnerCheck.allowed;
+
+    // User must be either the author or the feed owner
+    if (!isAuthor && !isFeedOwner) {
+      throw new Error("You do not have permission to delete this message");
+    }
+
+    const deletedIds = await ctx.runMutation(internal.messages.deleteMessagesInternal, {
+      orgId,
+      messageIds: [messageId],
+    });
+
+    return deletedIds[0];
   },
 });
 
