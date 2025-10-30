@@ -8,4 +8,5 @@
 - Be sure to fully understand the relevant parts of the codebase before you begin. If a relevant part of the codebase is unclear, please ask questions.
 - Once you begin coding, if a question comes up that you did not get an answer to previously, **do NOT guess at the answer or decide your own strategy**, just ask a question.
 - Try to understand the coding style that is already in the project and follow that, rather than bringing your own style.
+- Lint regularly
 - Commit regularly. Do not commit in large chunks. Each commit should have one primary change, e.g. "Add new table to database schema", "Fix duplicates in feed", "Add new mutation for creating posts", etc.
