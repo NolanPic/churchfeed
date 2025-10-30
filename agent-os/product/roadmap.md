@@ -75,10 +75,10 @@ The following features are required before closed beta launch:
 
 ### Admin
 
-- [ ] Able to delete any post or comment
+- [ ] Able to delete any post or comment by way of becoming a feed owner
 - [ ] Able to manage users in a list
   - [ ] Invite
-  - [ ] Approve users invited through link/QR code
+  - [ ] Approve users invited through link/QR code -> deferred until after closed beta
   - [ ] Deactivate
   - [ ] Change role
   - [ ] View pending invitations/cancel an invitation
