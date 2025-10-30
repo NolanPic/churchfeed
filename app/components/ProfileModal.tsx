@@ -40,7 +40,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       <div className={styles.profile}>
         <div className={styles.contentContainer}>
           <div className={styles.avatarContainer}>
-            <UserAvatar user={user} size={100}></UserAvatar>
+            {user && <UserAvatar user={user} size={100} />}
             <p>Change Photo</p>
           </div>
           <div className={styles.content}>
