@@ -104,28 +104,36 @@ export const create = mutation({
 });
 
 /**
- * Internal mutation to delete a message without auth checks
+ * Internal mutation to delete multiple messages without auth checks
  * Used by public mutations with their own auth checks
  */
-export const deleteMessageInternal = internalMutation({
+export const deleteMessagesInternal = internalMutation({
   args: {
     orgId: v.id("organizations"),
-    messageId: v.id("messages"),
+    messageIds: v.array(v.id("messages")),
   },
   handler: async (ctx, args) => {
-    const { orgId, messageId } = args;
+    const { orgId, messageIds } = args;
 
-    // Delete all uploads associated with this message
-    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+    // Delete all uploads associated with these messages
+    await ctx.runMutation(internal.uploads.deleteUploadsForSources, {
       orgId,
       source: "message",
-      sourceId: messageId,
+      sourceIds: messageIds,
     });
 
-    // Delete the message
-    await ctx.db.delete(messageId);
+    // Delete all messages
+    const deletedMessageIds: Id<"messages">[] = [];
+    for (const messageId of messageIds) {
+      try {
+        await ctx.db.delete(messageId);
+        deletedMessageIds.push(messageId);
+      } catch (error) {
+        console.warn(`Failed to delete message ${messageId}:`, error);
+      }
+    }
 
-    return messageId;
+    return deletedMessageIds;
   },
 });
 
@@ -164,10 +172,12 @@ export const deleteMessage = mutation({
       throw new Error("You do not have permission to delete this message");
     }
 
-    return await ctx.runMutation(internal.messages.deleteMessageInternal, {
+    const deletedIds = await ctx.runMutation(internal.messages.deleteMessagesInternal, {
       orgId,
-      messageId,
+      messageIds: [messageId],
     });
+
+    return deletedIds[0];
   },
 });
 

@@ -174,44 +174,49 @@ export const patchUploadSourceIds = mutation({
 });
 
 /**
- * Internal mutation to delete uploads for a post or message
+ * Internal mutation to delete uploads for multiple posts or messages
  * Deletes both the upload records and storage files
  */
-export const deleteUploadsForSource = internalMutation({
+export const deleteUploadsForSources = internalMutation({
   args: {
     orgId: v.id("organizations"),
     source: v.union(v.literal("post"), v.literal("message")),
-    sourceId: v.union(v.id("posts"), v.id("messages")),
+    sourceIds: v.array(v.union(v.id("posts"), v.id("messages"))),
   },
   handler: async (ctx, args) => {
-    const { orgId, source, sourceId } = args;
+    const { orgId, source, sourceIds } = args;
 
-    // Find all uploads for this source
-    const uploads = await ctx.db
-      .query("uploads")
-      .withIndex("by_org_source_sourceId", (q) =>
-        q.eq("orgId", orgId).eq("source", source).eq("sourceId", sourceId),
-      )
-      .collect();
+    const deletedUploadIds: Id<"uploads">[] = [];
 
-    // Delete each upload
-    for (const upload of uploads) {
-      // Delete the storage file
-      try {
-        await ctx.storage.delete(upload.storageId);
-      } catch {
-        // Ignore errors if storage file is already deleted
-      }
+    // Find and delete uploads for all source IDs
+    for (const sourceId of sourceIds) {
+      const uploads = await ctx.db
+        .query("uploads")
+        .withIndex("by_org_source_sourceId", (q) =>
+          q.eq("orgId", orgId).eq("source", source).eq("sourceId", sourceId),
+        )
+        .collect();
 
-      // Delete the upload record
-      try {
-        await ctx.db.delete(upload._id);
-      } catch {
-        // Ignore errors if upload record is already deleted
+      // Delete each upload
+      for (const upload of uploads) {
+        // Delete the storage file
+        try {
+          await ctx.storage.delete(upload.storageId);
+        } catch (error) {
+          console.warn(`Failed to delete storage for upload ${upload._id}:`, error);
+        }
+
+        // Delete the upload record
+        try {
+          await ctx.db.delete(upload._id);
+          deletedUploadIds.push(upload._id);
+        } catch (error) {
+          console.warn(`Failed to delete upload record ${upload._id}:`, error);
+        }
       }
     }
 
-    return uploads.length;
+    return deletedUploadIds;
   },
 });
 

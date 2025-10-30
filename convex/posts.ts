@@ -163,11 +163,11 @@ export const deletePost = mutation({
     const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
     const isFeedOwner = feedOwnerCheck.allowed;
 
-    // User must be either the author or the feed owner
-    if (!isAuthor && !isFeedOwner) {
+    const canDelete = isAuthor || isFeedOwner;
+    if (!canDelete) {
       throw new Error("You do not have permission to delete this post");
     }
-
+    
     // Get all messages for this post
     const messages = await ctx.db
       .query("messages")
@@ -176,23 +176,29 @@ export const deletePost = mutation({
       )
       .collect();
 
-    // Delete each message using the internal deleteMessage mutation
-    for (const message of messages) {
-      await ctx.runMutation(internal.messages.deleteMessageInternal, {
+    // Delete all messages (which also deletes their uploads)
+    const messageIds = messages.map(m => m._id);
+    if (messageIds.length > 0) {
+      await ctx.runMutation(internal.messages.deleteMessagesInternal, {
         orgId,
-        messageId: message._id,
+        messageIds,
       });
     }
 
     // Delete uploads for the post itself
-    await ctx.runMutation(internal.uploads.deleteUploadsForSource, {
+    await ctx.runMutation(internal.uploads.deleteUploadsForSources, {
       orgId,
       source: "post",
-      sourceId: postId,
+      sourceIds: [postId],
     });
 
     // Delete the post
-    await ctx.db.delete(postId);
+    try {
+      await ctx.db.delete(postId);
+    } catch (error) {
+      console.warn(`Failed to delete post ${postId}:`, error);
+      throw error; // Re-throw since this is critical
+    }
 
     return postId;
   },
