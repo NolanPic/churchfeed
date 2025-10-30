@@ -6,7 +6,7 @@ import IconButton from "../../common/IconButton";
 import Modal from "../../common/Modal";
 import Editor, { EditorHandle } from "../Editor";
 import styles from "./PostEditorPhone.module.css";
-import { useOnPost } from "@/app/hooks/useOnPost";
+import { useOnPublish } from "@/app/hooks/useOnPublish";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRef, useEffect } from "react";
 
@@ -19,10 +19,14 @@ interface PostEditorPhoneProps {
 function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
   const { addImageDrop } = useEditorCommands();
   const editorRef = useRef<EditorHandle | null>(null);
-  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
+  const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
+    "post",
+    editorRef,
+    feedId,
+  );
 
   useEffect(() => {
-    if (state === "posted") {
+    if (state === "published") {
       onClose();
       editorRef.current?.clear();
       reset();
@@ -41,9 +45,9 @@ function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
           <IconButton icon="image" onClick={addImageDrop} />
           <IconButton
             icon="send"
-            onClick={onPost}
+            onClick={onPublish}
             variant="primary"
-            disabled={state === "posting"}
+            disabled={state === "publishing"}
           />
         </div>
       )}
@@ -54,6 +58,7 @@ function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
         placeholder="What's happening?"
         className={styles.editor}
         autofocus
+        sourceId={publishedSourceId}
       />
     </Modal>
   );

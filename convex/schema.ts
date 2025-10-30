@@ -11,13 +11,13 @@ export default defineSchema({
     email: v.string(),
     emailVerificationTime: v.optional(v.number()),
     name: v.string(),
-    image: v.optional(v.id("_storage")),
+    image: v.optional(v.id("uploads")),
     orgId: v.id("organizations"),
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),
-    role: v.optional(v.union(
+    role: v.union(
       v.literal("admin"), v.literal("user")
-    ))
+    )
   }).index("by_org", ["orgId"]).index("by_org_and_email", ["orgId", "email"]).index("by_clerk_and_org_id", ["clerkId", "orgId"]),
   organizations: defineTable({
     name: v.string(),
@@ -44,7 +44,7 @@ export default defineSchema({
     feedId: v.id("feeds"),
     owner: v.boolean(),
   })
-  .index("by_user_and_feed", ["userId", "feedId"])
+  .index("by_user_and_feed_and_org", ["userId", "feedId", "orgId"])
   .index("by_userId", ["userId"]),
   posts: defineTable({
     ...defaultColumns,
@@ -70,6 +70,25 @@ export default defineSchema({
     ),
     expiresAt: v.number(),
     usedAt: v.optional(v.number()),
-    feeds: v.array(v.id("feeds")), 
-  }) 
+    feeds: v.array(v.id("feeds")),
+  }),
+  uploads: defineTable({
+    ...defaultColumns,
+    storageId: v.id("_storage"),
+    source: v.union(
+      v.literal("post"),
+      v.literal("message"),
+      v.literal("avatar")
+    ),
+    sourceId: v.optional(v.union(
+      v.id("posts"),
+      v.id("messages"),
+      v.id("users")
+    )),
+    userId: v.id("users"),
+    fileExtension: v.string()
+  })
+  .index("by_org_source_sourceId", ["orgId", "source", "sourceId"])
+  .index("by_userId", ["userId"])
+  .index("by_storageId", ["storageId"])
 });

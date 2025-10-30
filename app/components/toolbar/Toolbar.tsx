@@ -1,9 +1,9 @@
 import styles from "./Toolbar.module.css";
 import IconButton from "../common/IconButton";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import OverflowMenu from "./OverflowMenu";
 import FeedSelector from "../FeedSelector";
-import { useContext, RefObject } from "react";
+import { useContext, RefObject, useState, useEffect } from "react";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,12 +22,24 @@ export default function Toolbar({
   setIsNewPostOpen,
   feedWrapperRef,
 }: ToolbarProps) {
-  const { isSignedIn, user, feeds: userFeeds } = useAuthedUser();
+  const [auth, { user }] = useUserAuth();
   const { feedId } = useContext(CurrentFeedAndPostContext);
-  const isFeedOwner = !!(
-    feedId && userFeeds.find((f) => f._id === feedId && f.owner)
-  );
+  const [isFeedOwner, setIsFeedOwner] = useState(false);
+
+  const isSignedIn = auth !== null;
   const isAdmin = user?.role === "admin";
+
+  // Check feed ownership asynchronously
+  useEffect(() => {
+    if (!auth || !feedId) {
+      setIsFeedOwner(false);
+      return;
+    }
+
+    auth.feed(feedId).hasRole("owner").then((result) => {
+      setIsFeedOwner(result.allowed);
+    });
+  }, [auth, feedId]);
 
   const showNewPostButton = !isNewPostOpen;
   const showCloseButton = !showNewPostButton;

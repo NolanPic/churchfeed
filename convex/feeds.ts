@@ -1,20 +1,29 @@
-import { MutationCtx, query, QueryCtx } from "./_generated/server";
+import { query, QueryCtx, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
+import { Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
-import { getAuthenticatedUser } from "./user";
+import { getUserAuth } from "@/auth/convex";
 
 export const getUserFeeds = query({
   args: {
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx, args.orgId);
+    const auth = await getUserAuth(ctx, args.orgId);
+    const user = auth.getUser();
     const publicFeeds = await getPublicFeeds(ctx, args.orgId);
-  
+
     if (user) {
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
-      return [...publicFeeds, ...feedsUserIsMemberOf];
+
+      const publicFeedIds = new Set(publicFeeds.map(feed => feed._id));
+
+      // Filter out feeds the user is a member of that are already in publicFeeds
+      const uniqueFeedsUserIsMemberOf = feedsUserIsMemberOf.filter(
+        feed => !publicFeedIds.has(feed._id)
+      );
+
+      return [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
     } else {
       return publicFeeds;
     }
@@ -26,7 +35,8 @@ export const getUserFeedsWithMemberships = query({
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const user = await getAuthenticatedUser(ctx, args.orgId);
+    const auth = await getUserAuth(ctx, args.orgId);
+    const user = auth.getUser();
 
     if(!user) {
       return null;
@@ -52,7 +62,7 @@ export const getUserFeedsWithMembershipsHelper = async (
   };
 }
 
-export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => { 
+export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) => {
   const publicFeeds = await ctx.db.query("feeds")
   .withIndex("by_org_privacy", (q) =>
     q.eq("orgId", orgId).eq("privacy", "public")
@@ -62,21 +72,16 @@ export const getPublicFeeds = async (ctx: QueryCtx, orgId: Id<"organizations">) 
   return publicFeeds;
 };
 
-export const userPermissionsHelper = async (ctx: QueryCtx, user: Doc<"users">, feedId: Id<"feeds">) => {
-  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+/**
+ * Internal query to get a feed by ID
+ * Used by HTTP actions for auth checks
+ */
+export const get = internalQuery({
+  args: {
+    feedId: v.id("feeds"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.feedId);
+  },
+});
 
-  const feed = userFeedsWithMemberships.feeds.find(feed => feed._id === feedId);
-  const userFeed = userFeedsWithMemberships.userFeeds.find(userFeed => userFeed.feedId === feedId);
-
-  if(!feed || !userFeed) {
-    return {
-      memberPermissions: [],
-      isOwner: false,
-    };
-  }
-
-  return {
-    memberPermissions: feed.memberPermissions ?? [],
-    isOwner: userFeed.owner,
-  }
-}

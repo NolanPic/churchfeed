@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import Editor, { EditorHandle } from "./Editor";
 import EditorToolbar from "./EditorToolbar";
 import { EditorCommandsProvider } from "../../context/EditorCommands";
-import { useOnPost } from "@/app/hooks/useOnPost";
+import { useOnPublish } from "@/app/hooks/useOnPublish";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -22,10 +22,14 @@ export default function PostEditor({
   feedId,
 }: PostEditorProps) {
   const editorRef = useRef<EditorHandle | null>(null);
-  const { state, error, onPost, reset } = useOnPost(feedId, editorRef);
+  const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
+    "post",
+    editorRef,
+    feedId,
+  );
 
   useEffect(() => {
-    if (state === "posted") {
+    if (state === "published") {
       setIsOpen(false);
       editorRef.current?.clear();
       reset();
@@ -66,13 +70,14 @@ export default function PostEditor({
             placeholder="What's happening?"
             autofocus
             className="tiptap-editor"
+            sourceId={publishedSourceId}
           />
           <EditorToolbar
             actionButton={{
               label: "Post",
               icon: "send",
-              onClick: onPost,
-              disabled: state === "posting",
+              onClick: onPublish,
+              disabled: state === "publishing",
             }}
           />
         </EditorCommandsProvider>

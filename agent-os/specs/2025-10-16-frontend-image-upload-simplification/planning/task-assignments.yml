@@ -1,0 +1,12 @@
+task_assignments:
+  - task_group: "Task Group 1: Create Reusable Image Upload Hook"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 2: Integrate Direct Upload into Editor"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 3: Remove Legacy Upload Components"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4: Integration Testing and Accessibility Verification"
+    assigned_subagent: "testing-engineer"

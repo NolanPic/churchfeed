@@ -1,5 +1,5 @@
 import UserAvatar from "./UserAvatar";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./UserAvatarMenu.module.css";
 import { useState } from "react";
 import Backdrop from "./common/Backdrop";
@@ -9,7 +9,7 @@ interface UserAvatarMenuProps {
   openProfileModal: () => void;
 }
 const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
-  const { user, signOut } = useAuthedUser();
+  const [, { user, signOut }] = useUserAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   if (!user) {

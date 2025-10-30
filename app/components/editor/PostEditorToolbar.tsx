@@ -1,8 +1,8 @@
+// DEPRECATED - DO NOT USE - This component is no longer used
 import styles from "./PostEditorToolbar.module.css";
 import Button from "../common/Button";
 import Select from "../common/Select";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface PostEditorToolbarProps {
@@ -16,26 +16,13 @@ export default function PostEditorToolbar({
   isPosting,
   feedId,
 }: PostEditorToolbarProps) {
-  const { feeds } = useAuthedUser();
+  // Stubbed for deprecated component
+  const feeds: { value: Id<"feeds">; label: string }[] = [];
   const [feedIdToPostTo, setFeedIdToPostTo] = useState<Id<"feeds"> | null>(
     feedId
   );
 
-  const feedOptions = useMemo(
-    () =>
-      feeds
-        ?.map((feed) => {
-          if (feed.owner || feed.memberPermissions?.includes("post")) {
-            return {
-              value: feed._id,
-              label: feed.name,
-            };
-          }
-          return null;
-        })
-        .filter((option) => option !== null) || [],
-    [feeds]
-  );
+  const feedOptions = feeds;
 
   const isPostingDisabled = feedOptions.length === 0;
 

@@ -3,19 +3,17 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import UserAvatar from "./UserAvatar";
 import MessageEditor from "./editor/MessageEditor";
-import { useAuthedUser } from "@/app/hooks/useAuthedUser";
+import Message from "./Message";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 import { useOrganization } from "../context/OrganizationProvider";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import styles from "./MessageThread.module.css";
-import userContentStyles from "./shared-styles/user-content.module.css";
 import { getTimeAgoLabel } from "../utils/ui-utils";
-import classNames from "classnames";
 import Hint from "./common/Hint";
-import SanitizedUserContent from "./common/SanitizedUserContent";
 import Link from "next/link";
 import { motion, useMotionValue, animate } from "motion/react";
+import { useState, useEffect } from "react";
 
 export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   const org = useOrganization();
@@ -25,13 +23,22 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
     postId,
   });
   const messages = useQuery(api.messages.getForPost, { orgId, postId });
-  const { isSignedIn, isLoaded: isUserLoaded, user, feeds } = useAuthedUser();
-  const memberFeed = feeds.find((f) => f._id === post?.feedId);
+  const [auth, { isLoading: isUserLoaded, user }] = useUserAuth();
+  const [canSendMessage, setCanSendMessage] = useState(false);
 
-  const canSendMessage =
-    isSignedIn &&
-    memberFeed &&
-    (memberFeed.owner || post?.feed?.memberPermissions?.includes("message"));
+  const isSignedIn = auth !== null;
+
+  // Check if user can send message using new auth system
+  useEffect(() => {
+    if (!auth || !post?.feedId) {
+      setCanSendMessage(false);
+      return;
+    }
+
+    auth.feed(post.feedId).canMessage().then((result) => {
+      setCanSendMessage(result.allowed);
+    });
+  }, [auth, post?.feedId]);
 
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
   const doAnimateTimeStampRevealOnPhone = !isTabletOrUp;
@@ -64,34 +71,14 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
               const postedAt = m?._creationTime;
               const timeAgoLabel = getTimeAgoLabel(postedAt);
               return (
-                <li
-                  className={classNames(styles.message, {
-                    [styles.messageSelf]: m.sender._id === user?._id,
-                  })}
+                <Message
                   key={m._id}
-                >
-                  <article>
-                    <div className={styles.messageAvatar}>
-                      <UserAvatar
-                        user={m.sender}
-                        size={isTabletOrUp ? 34 : 24}
-                      />
-                    </div>
-                    <div className={styles.messageBubble}>
-                      <header>{m.sender.name}</header>
-                      <SanitizedUserContent
-                        className={classNames(
-                          styles.messageContent,
-                          userContentStyles.userContent
-                        )}
-                        html={m.content}
-                      />
-                    </div>
-                  </article>
-                  <span className={styles.messageTimestamp}>
-                    {timeAgoLabel}
-                  </span>
-                </li>
+                  message={m}
+                  feedId={post!.feedId}
+                  timeAgoLabel={timeAgoLabel}
+                  isCurrentUser={m.sender._id === user?._id}
+                  isTabletOrUp={isTabletOrUp}
+                />
               );
             })}
           </motion.ol>

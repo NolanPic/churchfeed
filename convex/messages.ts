@@ -1,9 +1,10 @@
-import { mutation, MutationCtx, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc, Id } from "./_generated/dataModel";
-import { requireAuth, getAuthenticatedUser } from "./user";
-import { getUserFeedsWithMembershipsHelper } from "./feeds";
+import { getUserAuth } from "@/auth/convex";
 import { fromJSONToHTML } from "./utils/postContentConverter";
+import { getStorageUrl } from "./uploads";
+import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
 
 export const getForPost = query({
   args: {
@@ -13,18 +14,24 @@ export const getForPost = query({
   handler: async (ctx, args) => {
     const { orgId, postId } = args;
 
-    const user = await getAuthenticatedUser(ctx, orgId);
+    const post = await ctx.db.get(postId);
+    if(!post) {
+      throw new Error("Post not found");
+    }
 
-    // If unauthenticated, only allow access when the post's feed is public
-    if (!user) {
-      const post = await ctx.db.get(postId);
-      if (!post || post.orgId !== orgId) {
-        return [];
-      }
-      const feed = await ctx.db.get(post.feedId);
-      if (!feed || feed.privacy !== "public") {
-        return [];
-      }
+    const feed = await ctx.db.get(post.feedId);
+    if(!feed) {
+      throw new Error("Feed not found");
+    }
+
+    const auth = await getUserAuth(ctx, orgId);
+    
+    const isUserMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+    const feedIsPublic = feed.privacy === "public";
+    const userCanViewThisPost = feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
+
+    if (!userCanViewThisPost) {
+      throw new Error("User cannot view this post or its messages");
     }
 
     const rawMessages = await ctx.db
@@ -42,7 +49,7 @@ export const getForPost = query({
         const sender = await ctx.db.get(message.senderId);
 
         if (!sender) return null;
-        const image = sender.image ? await ctx.storage.getUrl(sender.image) : null;
+        const image = await getStorageUrl(ctx, sender.image);
 
         return {
           ...message,
@@ -65,16 +72,22 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const { orgId, postId, content } = args;
 
-    const { user } = await requireAuth(ctx, orgId);
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
     const post = await ctx.db.get(postId);
     if (!post) {
       throw new Error("Post not found");
     }
 
-    const canSend = await canUserSendMessageInFeed(ctx, user, post.feedId);
-    if (!canSend) {
-      throw new Error("User does not have permission to message in this feed");
+    const canUserMessageCheck = await auth.feed(post.feedId).canMessage();
+
+    if (!canUserMessageCheck.allowed) {
+      throw new Error("User cannot message in this feed");
     }
 
     const now = Date.now();
@@ -90,26 +103,83 @@ export const create = mutation({
   },
 });
 
-const canUserSendMessageInFeed = async (
-  ctx: MutationCtx,
-  user: Doc<"users">,
-  feedId: Id<"feeds">
-): Promise<boolean> => {
-  const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(
-    ctx,
-    user._id
-  );
+/**
+ * Internal mutation to delete multiple messages without auth checks
+ * Used by public mutations with their own auth checks
+ */
+export const deleteMessagesInternal = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageIds: v.array(v.id("messages")),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, messageIds } = args;
 
-  const feed = userFeedsWithMemberships.feeds.find((f) => f._id === feedId);
-  const userFeed = userFeedsWithMemberships.userFeeds.find(
-    (uf) => uf.feedId === feedId
-  );
+    // Delete all uploads associated with these messages
+    await ctx.runMutation(internal.uploads.deleteUploadsForSources, {
+      orgId,
+      source: "message",
+      sourceIds: messageIds,
+    });
 
-  if (!feed || !userFeed) {
-    return false;
-  }
+    // Delete all messages
+    const deletedMessageIds: Id<"messages">[] = [];
+    for (const messageId of messageIds) {
+      try {
+        await ctx.db.delete(messageId);
+        deletedMessageIds.push(messageId);
+      } catch (error) {
+        console.warn(`Failed to delete message ${messageId}:`, error);
+      }
+    }
 
-  return feed.memberPermissions?.includes("message") || userFeed.owner;
-};
+    return deletedMessageIds;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args): Promise<Id<"messages">> => {
+    const { orgId, messageId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the message
+    const message = await ctx.db.get(messageId);
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    // Get the post to check feed ownership
+    const post = await ctx.db.get(message.postId);
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    // Check if user is the message author
+    const isAuthor = message.senderId === user._id;
+
+    // Check if user is the feed owner
+    const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
+    const isFeedOwner = feedOwnerCheck.allowed;
+
+    // User must be either the author or the feed owner
+    if (!isAuthor && !isFeedOwner) {
+      throw new Error("You do not have permission to delete this message");
+    }
+
+    const deletedIds = await ctx.runMutation(internal.messages.deleteMessagesInternal, {
+      orgId,
+      messageIds: [messageId],
+    });
+
+    return deletedIds[0];
+  },
+});
+
 
 

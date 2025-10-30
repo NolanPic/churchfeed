@@ -219,7 +219,9 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
         ariaLabel="Post details and messages"
         dragToClose
       >
-        {openPostId && <PostModalContent postId={openPostId} />}
+        {openPostId && (
+          <PostModalContent postId={openPostId} onClose={handleClosePost} />
+        )}
       </Modal>
     </>
   );

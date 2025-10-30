@@ -13,11 +13,15 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as auth_actionAuth from "../auth/actionAuth.js";
 import type * as feeds from "../feeds.js";
+import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
-import type * as seed from "../seed.js";
+import type * as seed_seed from "../seed/seed.js";
+import type * as seed_storage from "../seed/storage.js";
+import type * as uploadAction from "../uploadAction.js";
 import type * as uploads from "../uploads.js";
 import type * as user from "../user.js";
 import type * as utils_postContentConverter from "../utils/postContentConverter.js";
@@ -31,11 +35,15 @@ import type * as utils_postContentConverter from "../utils/postContentConverter.
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "auth/actionAuth": typeof auth_actionAuth;
   feeds: typeof feeds;
+  http: typeof http;
   messages: typeof messages;
   organizations: typeof organizations;
   posts: typeof posts;
-  seed: typeof seed;
+  "seed/seed": typeof seed_seed;
+  "seed/storage": typeof seed_storage;
+  uploadAction: typeof uploadAction;
   uploads: typeof uploads;
   user: typeof user;
   "utils/postContentConverter": typeof utils_postContentConverter;
