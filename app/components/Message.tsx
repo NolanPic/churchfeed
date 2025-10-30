@@ -149,6 +149,7 @@ export default function Message({
                     >
                       <li className={styles.messageMenuItem}>
                         <button
+                          type="button"
                           onClick={() => {
                             setIsMenuOpen(false);
                             handleDeleteMessage();
@@ -187,6 +188,7 @@ export default function Message({
             >
               <li className={styles.messageMenuItem}>
                 <button
+                  type="button"
                   onClick={() => {
                     setIsMenuOpen(false);
                     handleDeleteMessage();

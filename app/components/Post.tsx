@@ -170,6 +170,7 @@ export default function Post({
                 >
                   <li className={styles.postMenuItem}>
                     <button
+                      type="button"
                       onClick={() => {
                         setIsMenuOpen(false);
                         handleDeletePost();
