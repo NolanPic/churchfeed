@@ -10,12 +10,9 @@ export function useLongPress({
   delay = 800,
 }: UseLongPressOptions) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isLongPress = useRef(false);
 
   const start = useCallback(() => {
-    isLongPress.current = false;
     timeoutRef.current = setTimeout(() => {
-      isLongPress.current = true;
       onLongPress();
     }, delay);
   }, [onLongPress, delay]);
