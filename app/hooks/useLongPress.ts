@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 
 interface UseLongPressOptions {
   onLongPress: () => void;
@@ -26,6 +26,12 @@ export function useLongPress({
       timeoutRef.current = null;
     }
   }, []);
+
+  useEffect(() => {
+    return () => {
+      clear();
+    };
+  }, [clear]);
 
   const onTouchStart = useCallback(() => {
     start();
