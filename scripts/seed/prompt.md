@@ -189,7 +189,7 @@ Create the following feeds:
 - **Purpose**: A homegroup that meets at the Cromwell home for meals, prayer, study, and community.
 - **Privacy**: `private`
 
-### Mere Christianity book study
+### Mere Christianity study
 
 - **Purpose**: A book club that is currently reading Mere Christianity by C.S. Lewis. They use this feed to plan meetups, to post questions about the book that they forgot to ask in-person, or post resources like further reading.
 - **Privacy**: `open`
