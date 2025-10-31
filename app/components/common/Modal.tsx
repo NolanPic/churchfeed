@@ -92,7 +92,7 @@ export default function Modal({
 
   // Handle keyboard navigation for tabs
   const handleTabKeyDown = useCallback(
-    (e: React.KeyboardEvent, tabId: string, index: number) => {
+    (e: React.KeyboardEvent, index: number) => {
       if (!tabs || !onTabChange) return;
 
       let targetIndex = index;
@@ -124,13 +124,13 @@ export default function Modal({
         // Focus the new tab
         setTimeout(() => {
           const tabButton = tabListRef.current?.querySelector(
-            `[data-tab-id="${targetTab.id}"]`,
+            `[data-tab-id="${targetTab.id}"]`
           ) as HTMLButtonElement;
           tabButton?.focus();
         }, 0);
       }
     },
-    [tabs, onTabChange],
+    [tabs, onTabChange]
   );
 
   const activeTab = tabs?.find((tab) => tab.id === activeTabId);
@@ -213,7 +213,7 @@ export default function Modal({
                     data-tab-id={tab.id}
                     className={`${styles.tab} ${isActive ? styles.active : ""}`}
                     onClick={() => onTabChange?.(tab.id)}
-                    onKeyDown={(e) => handleTabKeyDown(e, tab.id, index)}
+                    onKeyDown={(e) => handleTabKeyDown(e, index)}
                   >
                     {tab.label}
                   </button>
@@ -226,9 +226,7 @@ export default function Modal({
           role={tabs ? "tabpanel" : undefined}
           id={tabs ? tabPanelId : undefined}
           aria-labelledby={
-            tabs && activeTabId
-              ? `tab-${activeTabId}`
-              : undefined
+            tabs && activeTabId ? `tab-${activeTabId}` : undefined
           }
           tabIndex={tabs ? 0 : undefined}
         >
