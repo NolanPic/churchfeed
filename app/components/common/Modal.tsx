@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useCallback, useId } from "react";
+import { ReactNode, useEffect, useCallback, useId, useRef } from "react";
 import {
   motion,
   useAnimate,
@@ -16,14 +16,24 @@ import { useLockBodyScroll } from "@/app/hooks/useLockBodyScroll";
 interface ModalToolbarProps {
   onClose: () => void;
 }
+
+export interface ModalTab {
+  id: string;
+  label: string;
+  content: ReactNode;
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  children: ReactNode;
+  children?: ReactNode;
   ariaLabel?: string;
   dragToClose?: boolean;
   toolbar?: (props: ModalToolbarProps) => React.ReactNode;
+  tabs?: ModalTab[];
+  activeTabId?: string;
+  onTabChange?: (tabId: string) => void;
 }
 
 export default function Modal({
@@ -34,12 +44,16 @@ export default function Modal({
   ariaLabel,
   dragToClose = false,
   toolbar,
+  tabs,
+  activeTabId,
+  onTabChange,
 }: ModalProps) {
   const [scope, animate] = useAnimate();
   const y = useMotionValue(0);
   const dragControls = useDragControls();
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
   const doAnimateDragToCloseOnPhone = !isTabletOrUp && dragToClose;
+  const tabListRef = useRef<HTMLDivElement>(null);
 
   useLockBodyScroll(isOpen);
 
@@ -74,6 +88,53 @@ export default function Modal({
   }, [isOpen, animate, isTabletOrUp, y]);
 
   const titleId = useId();
+  const tabPanelId = useId();
+
+  // Handle keyboard navigation for tabs
+  const handleTabKeyDown = useCallback(
+    (e: React.KeyboardEvent, tabId: string, index: number) => {
+      if (!tabs || !onTabChange) return;
+
+      let targetIndex = index;
+
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          targetIndex = index > 0 ? index - 1 : tabs.length - 1;
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          targetIndex = index < tabs.length - 1 ? index + 1 : 0;
+          break;
+        case "Home":
+          e.preventDefault();
+          targetIndex = 0;
+          break;
+        case "End":
+          e.preventDefault();
+          targetIndex = tabs.length - 1;
+          break;
+        default:
+          return;
+      }
+
+      const targetTab = tabs[targetIndex];
+      if (targetTab) {
+        onTabChange(targetTab.id);
+        // Focus the new tab
+        setTimeout(() => {
+          const tabButton = tabListRef.current?.querySelector(
+            `[data-tab-id="${targetTab.id}"]`,
+          ) as HTMLButtonElement;
+          tabButton?.focus();
+        }, 0);
+      }
+    },
+    [tabs, onTabChange],
+  );
+
+  const activeTab = tabs?.find((tab) => tab.id === activeTabId);
+  const content = tabs ? activeTab?.content : children;
 
   const modal = isOpen ? (
     <motion.div
@@ -131,7 +192,48 @@ export default function Modal({
             <hr className={styles.titleSeparator} />
           </>
         )}
-        {children}
+        {tabs && tabs.length > 0 && (
+          <div className={styles.tabsContainer}>
+            <div className={styles.tabsFade} />
+            <div
+              ref={tabListRef}
+              role="tablist"
+              aria-label={title || "Modal tabs"}
+              className={styles.tabList}
+            >
+              {tabs.map((tab, index) => {
+                const isActive = tab.id === activeTabId;
+                return (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={tabPanelId}
+                    tabIndex={isActive ? 0 : -1}
+                    data-tab-id={tab.id}
+                    className={`${styles.tab} ${isActive ? styles.active : ""}`}
+                    onClick={() => onTabChange?.(tab.id)}
+                    onKeyDown={(e) => handleTabKeyDown(e, tab.id, index)}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <div
+          role={tabs ? "tabpanel" : undefined}
+          id={tabs ? tabPanelId : undefined}
+          aria-labelledby={
+            tabs && activeTabId
+              ? `tab-${activeTabId}`
+              : undefined
+          }
+          tabIndex={tabs ? 0 : undefined}
+        >
+          {content}
+        </div>
       </motion.div>
       {toolbar && (
         <div className={styles.toolbar}>
