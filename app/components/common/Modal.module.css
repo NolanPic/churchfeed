@@ -110,6 +110,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding-bottom: var(--spacing2);
+  padding-right: var(--spacing10);
 
   &::-webkit-scrollbar {
     display: none;
