@@ -1,9 +1,13 @@
 "use client";
 
-import { useId, forwardRef, useState, useRef, useEffect } from "react";
+import { useId, forwardRef, useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Select.module.css";
 import Icon from "./Icon";
+import {
+  validateSelectField,
+  SelectFieldValidationOptions,
+} from "@/validation";
 
 export interface SelectOption {
   value: string;
@@ -22,6 +26,8 @@ export interface SelectProps {
   placeholder?: string;
   prependToSelected?: string;
   className?: string;
+  validationConfig?: SelectFieldValidationOptions;
+  fieldName?: string;
 }
 
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(
@@ -38,6 +44,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
       placeholder = "Select an option",
       prependToSelected,
       className,
+      validationConfig,
+      fieldName,
       ...props
     },
     ref
@@ -45,6 +53,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [internalValue, setInternalValue] = useState(defaultValue || "");
+    const [internalError, setInternalError] = useState<string>("");
+    const [hasBlurred, setHasBlurred] = useState(false);
     const selectRef = useRef<HTMLButtonElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
@@ -58,13 +68,38 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const isControlled = value !== undefined;
     const currentValue = isControlled ? value : internalValue;
 
+    // Validation handler
+    const handleValidation = useCallback(
+      (val: string) => {
+        if (!validationConfig || !hasBlurred) return;
+
+        const name = fieldName || label || "This field";
+        const result = validateSelectField(val, validationConfig, name);
+
+        if (!result.valid && result.errors.length > 0) {
+          setInternalError(result.errors[0].message);
+        } else {
+          setInternalError("");
+        }
+      },
+      [validationConfig, fieldName, label, hasBlurred]
+    );
+
+    // Run validation when value changes (after first blur)
+    useEffect(() => {
+      if (hasBlurred) {
+        handleValidation(currentValue);
+      }
+    }, [currentValue, hasBlurred, handleValidation]);
+
     // Generate unique IDs for accessibility
     const generatedId = useId();
     const selectId = `select-${generatedId}`;
     const listboxId = `${selectId}-listbox`;
-    const errorId = error ? `${selectId}-error` : undefined;
+    const displayError = error || internalError;
+    const errorId = displayError ? `${selectId}-error` : undefined;
     const helperTextId = helperText ? `${selectId}-helper` : undefined;
-    const hasError = Boolean(error);
+    const hasError = Boolean(displayError);
     const selectedOption = options?.find(
       (option) => option.value === currentValue
     );
@@ -89,6 +124,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
         if (!clickedInsideTrigger && !clickedInsideMenu) {
           setIsOpen(false);
           setFocusedIndex(-1);
+          setHasBlurred(true); // Track blur for validation
         }
       };
 
@@ -254,15 +290,15 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             )}
         </div>
 
-        {helperText && !error && (
+        {helperText && !displayError && (
           <div id={helperTextId} className={styles.helperText}>
             {helperText}
           </div>
         )}
 
-        {error && (
+        {displayError && (
           <div id={errorId} className={styles.errorMessage} role="alert">
-            {error}
+            {displayError}
           </div>
         )}
       </div>
