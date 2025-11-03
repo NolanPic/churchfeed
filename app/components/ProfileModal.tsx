@@ -44,7 +44,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             <p>Change Photo</p>
           </div>
           <div className={styles.content}>
-            <form className={styles.form}>
+            <div className={styles.form}>
               <Input
                 label="Name"
                 value={name}
@@ -56,7 +56,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-            </form>
+            </div>
             <div className={styles.actionsDesktop}>
               <Button
                 type="submit"
