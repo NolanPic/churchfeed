@@ -45,6 +45,7 @@ const UserAvatarMenu = ({ openProfileModal }: UserAvatarMenuProps) => {
               </li>
               <li className={styles.userAvatarMenuItem}>
                 <button
+                  type="button"
                   onClick={() => {
                     signOut({
                       redirectUrl: "/",
