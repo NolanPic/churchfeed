@@ -8,10 +8,8 @@ import { usePathname } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import { useState } from "react";
-import Modal from "./common/Modal";
 import ProfileModal from "./ProfileModal";
 import Image from "next/image";
-import IconButton from "./common/IconButton";
 
 export default function OrganizationLayout({
   children,
