@@ -62,6 +62,7 @@ export default function ProfileModal({
                 label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled
               />
             </div>
             <div className={styles.actionsDesktop}>
