@@ -7,7 +7,14 @@ import { Input } from "./common/Input";
 import IconButton from "./common/IconButton";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 
-export default function ProfileModal({ onClose }: { onClose: () => void }) {
+export default function ProfileModal({ 
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+ 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const disableSave = name.trim() === "" || email.trim() === "";
@@ -23,7 +30,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal
       title="Profile"
-      isOpen={true}
+      isOpen={isOpen}
       onClose={onClose}
       toolbar={({ onClose }) => (
         <div className={styles.toolbarActions}>
