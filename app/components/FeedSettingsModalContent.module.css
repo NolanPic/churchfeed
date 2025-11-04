@@ -1,0 +1,33 @@
+.container {
+  padding: var(--spacing6);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.loading {
+  padding: var(--spacing8);
+  text-align: center;
+  color: var(--gray);
+}
+
+.error {
+  padding: var(--spacing8);
+  text-align: center;
+  color: var(--error);
+}
+
+.errorBanner {
+  margin-bottom: var(--spacing6);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing6);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--spacing4);
+}
