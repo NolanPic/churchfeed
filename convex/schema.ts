@@ -28,6 +28,7 @@ export default defineSchema({
   feeds: defineTable({
     ...defaultColumns,
     name: v.string(),
+    description: v.optional(v.string()),
     privacy: v.union(
       v.literal("public"),
       v.literal("private"),
