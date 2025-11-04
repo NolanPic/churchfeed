@@ -1,6 +1,14 @@
 "use client";
 
-import { useId, forwardRef, useState, useRef, useEffect, useCallback } from "react";
+import {
+  useId,
+  forwardRef,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useImperativeHandle,
+} from "react";
 import { createPortal } from "react-dom";
 import styles from "./Select.module.css";
 import Icon from "./Icon";
@@ -30,7 +38,12 @@ export interface SelectProps {
   fieldName?: string;
 }
 
-export const Select = forwardRef<HTMLButtonElement, SelectProps>(
+export interface SelectHandle {
+  validate: () => boolean;
+  getValue: () => string;
+}
+
+export const Select = forwardRef<SelectHandle, SelectProps>(
   (
     {
       label,
@@ -71,18 +84,43 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     // Validation handler
     const handleValidation = useCallback(
       (val: string) => {
-        if (!validationConfig || !hasBlurred) return;
+        if (!validationConfig || !hasBlurred) return true;
 
         const name = fieldName || label || "This field";
         const result = validateSelectField(val, validationConfig, name);
 
         if (!result.valid && result.errors.length > 0) {
           setInternalError(result.errors[0].message);
+          return false;
         } else {
           setInternalError("");
+          return true;
         }
       },
       [validationConfig, fieldName, label, hasBlurred]
+    );
+
+    // Expose validation method to parent via ref
+    useImperativeHandle(
+      ref,
+      () => ({
+        validate: () => {
+          setHasBlurred(true);
+          const name = fieldName || label || "This field";
+          if (!validationConfig) return true;
+
+          const result = validateSelectField(currentValue, validationConfig, name);
+          if (!result.valid && result.errors.length > 0) {
+            setInternalError(result.errors[0].message);
+            return false;
+          } else {
+            setInternalError("");
+            return true;
+          }
+        },
+        getValue: () => currentValue,
+      }),
+      [currentValue, validationConfig, fieldName, label]
     );
 
     // Run validation when value changes (after first blur)
@@ -228,7 +266,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
         <div className={styles.selectContainer} ref={containerRef}>
           <button
-            ref={ref || selectRef}
+            ref={selectRef}
             id={selectId}
             type="button"
             disabled={disabled}

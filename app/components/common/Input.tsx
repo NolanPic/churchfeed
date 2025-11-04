@@ -1,4 +1,11 @@
-import { useId, forwardRef, useState, useCallback } from "react";
+import {
+  useId,
+  forwardRef,
+  useState,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import styles from "./Input.module.css";
 import {
   validateTextField,
@@ -21,7 +28,13 @@ export interface InputProps
   fieldName?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export interface InputHandle {
+  validate: () => boolean;
+  getValue: () => string;
+  focus: () => void;
+}
+
+export const Input = forwardRef<InputHandle, InputProps>(
   (
     {
       label,
@@ -41,6 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const [internalError, setInternalError] = useState<string>("");
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // Generate unique IDs for accessibility
     const generatedId = useId();
@@ -51,7 +65,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     // Validation handler
     const handleValidation = useCallback(
       (value: string) => {
-        if (!validationConfig) return;
+        if (!validationConfig) return true;
 
         const name = fieldName || label;
         let result;
@@ -66,11 +80,27 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         if (!result.valid && result.errors.length > 0) {
           setInternalError(result.errors[0].message);
+          return false;
         } else {
           setInternalError("");
+          return true;
         }
       },
       [validationConfig, fieldName, label, type]
+    );
+
+    // Expose validation method to parent via ref
+    useImperativeHandle(
+      ref,
+      () => ({
+        validate: () => {
+          const value = inputRef.current?.value || "";
+          return handleValidation(value);
+        },
+        getValue: () => inputRef.current?.value || "",
+        focus: () => inputRef.current?.focus(),
+      }),
+      [handleValidation]
     );
 
     // Handle blur event
@@ -97,7 +127,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </label>
 
         <input
-          ref={ref}
+          ref={inputRef}
           id={inputId}
           type={type}
           placeholder={placeholder}
