@@ -12,6 +12,9 @@ import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import PostModalContent from "./PostModalContent";
+import FeedSettingsModalContent, {
+  FeedSettingsModalContentHandle,
+} from "./FeedSettingsModalContent";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
@@ -19,13 +22,19 @@ import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
 import PostEditorPhone from "./editor/phone/PostEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
   postIdSlug?: Id<"posts"> | null;
+  feedSettingsFeedIdSlug?: Id<"feeds"> | null;
 }
 
-export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
+export default function Feed({
+  feedIdSlug,
+  postIdSlug,
+  feedSettingsFeedIdSlug,
+}: FeedProps) {
   const itemsPerPage = 10;
   const {
     feedId,
@@ -35,10 +44,14 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   } = useContext(CurrentFeedAndPostContext);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const [isSelectingFeedForPost, setIsSelectingFeedForPost] = useState(false);
+  const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const searchParams = useSearchParams();
+  const router = useRouter();
   const feedWrapperRef = useRef<HTMLDivElement>(null);
+  const feedSettingsModalContentRef =
+    useRef<FeedSettingsModalContentHandle | null>(null);
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -141,6 +154,25 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     setIsSelectingFeedForPost(false);
   };
 
+  const handleCloseFeedSettings = () => {
+    // Check for unsaved changes via the component ref
+    const feedSettingsContent = feedSettingsModalContentRef.current;
+    const hasUnsavedChanges =
+      feedSettingsContent?.hasUnsavedChanges?.() ?? false;
+
+    if (hasUnsavedChanges) {
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave?"
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    // Navigate back to the feed
+    router.push(feedId ? `/feed/${feedId}` : `/`);
+  };
+
   const removeEditorQueryParam = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete("openEditor");
@@ -222,6 +254,32 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
         {openPostId && (
           <PostModalContent postId={openPostId} onClose={handleClosePost} />
         )}
+      </Modal>
+
+      <Modal
+        isOpen={!!feedSettingsFeedIdSlug}
+        onClose={handleCloseFeedSettings}
+        title="Feed Settings"
+        tabs={[
+          {
+            id: "settings",
+            label: "Settings",
+            content: feedSettingsFeedIdSlug ? (
+              <FeedSettingsModalContent
+                ref={feedSettingsModalContentRef}
+                feedId={feedSettingsFeedIdSlug}
+              />
+            ) : null,
+          },
+          {
+            id: "members",
+            label: "Members",
+            content: <div style={{ padding: "var(--spacing6)" }}>Members tab coming soon...</div>,
+          },
+        ]}
+        activeTabId={settingsActiveTab}
+        onTabChange={setSettingsActiveTab}
+      >
       </Modal>
     </>
   );
