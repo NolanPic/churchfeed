@@ -36,9 +36,12 @@ export default function Toolbar({
       return;
     }
 
-    auth.feed(feedId).hasRole("owner").then((result) => {
-      setIsFeedOwner(result.allowed);
-    });
+    auth
+      .feed(feedId)
+      .hasRole("owner")
+      .then((result) => {
+        setIsFeedOwner(result.allowed);
+      });
   }, [auth, feedId]);
 
   const showNewPostButton = !isNewPostOpen;
@@ -77,11 +80,13 @@ export default function Toolbar({
               />
             )}
 
-            {isFeedOwner && (
+            {isFeedOwner && feedId && (
               <IconButton
                 icon="toggles"
                 label="Feed settings"
                 className={styles.feedSettingsButton}
+                as="link"
+                href={`/feed/${feedId}/settings`}
               />
             )}
             {isAdmin && (
