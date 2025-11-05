@@ -1,0 +1,209 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing2);
+  width: 100%;
+  position: relative;
+}
+
+.label {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--white);
+  line-height: var(--spacing5);
+  transition: color 0.2s ease-in-out;
+}
+
+.label.disabled {
+  color: var(--light2);
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 38px;
+  padding: var(--spacing2) var(--spacing3);
+  border: 0;
+  border-bottom: 2px solid var(--light);
+  border-radius: 2px;
+  background-color: var(--mid2);
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  gap: var(--spacing2);
+}
+
+.container:focus-within {
+  border-color: var(--accent);
+}
+
+.container:hover:not(.disabled) {
+  border-color: var(--accent);
+}
+
+.container.disabled {
+  cursor: not-allowed;
+  background-color: var(--mid2);
+  border: 0;
+}
+
+.container.error {
+  border: 2px solid var(--warning);
+}
+
+.container.error:focus-within {
+  border-bottom: 2px solid var(--warning);
+}
+
+.inputWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing2);
+  flex: 1;
+  min-height: 34px;
+}
+
+.input {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--white);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: var(--spacing6);
+  padding: 0;
+  height: 30px;
+}
+
+.input::placeholder {
+  color: var(--light2);
+  font-weight: 400;
+}
+
+.input:disabled {
+  color: var(--light2);
+  cursor: not-allowed;
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing2);
+  padding: var(--spacing1) var(--spacing2);
+  background-color: var(--accent);
+  color: var(--mid);
+  border-radius: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: var(--spacing4);
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.tagText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mid);
+  transition: color 0.2s ease-in-out;
+  flex-shrink: 0;
+}
+
+.removeButton:hover:not(:disabled) {
+  color: var(--dark);
+}
+
+.removeButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.toggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--white);
+  transition: transform 0.2s ease-in-out;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.toggleButton:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.toggleButton:disabled {
+  cursor: not-allowed;
+  color: var(--light2);
+}
+
+.container:has([aria-expanded="true"]) .toggleButton {
+  transform: scaleY(-1);
+}
+
+.optionsList {
+  position: fixed;
+  z-index: 1000;
+  background-color: var(--mid2);
+  border-radius: 2px 2px 12px 12px;
+  box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+    -21px 16px 64px -36px rgba(0,0,0,0.25);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 250px;
+  overflow-y: auto;
+  margin-top: var(--spacing1);
+}
+
+.option {
+  padding: var(--spacing3) var(--spacing4);
+  cursor: pointer;
+  color: var(--white);
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: var(--spacing6);
+  transition: background-color 0.2s ease-in-out;
+  border: none;
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+.option:hover {
+  background-color: var(--mid);
+}
+
+.option.focused {
+  background-color: var(--mid);
+}
+
+.helperText {
+  font-size: var(--text-sm);
+  color: var(--white);
+  line-height: var(--spacing5);
+}
+
+.errorMessage {
+  font-size: var(--text-sm);
+  color: var(--warning);
+  line-height: var(--spacing5);
+  font-weight: 700;
+}
