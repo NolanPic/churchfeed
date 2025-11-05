@@ -5,10 +5,23 @@ import { createPortal } from "react-dom";
 import styles from "./MultiSelectComboBox.module.css";
 import Icon from "./Icon";
 
+// Utility function to merge refs
+function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]): React.RefCallback<T> {
+  return (value: T) => {
+    refs.forEach((ref) => {
+      if (typeof ref === "function") {
+        ref(value);
+      } else if (ref != null) {
+        (ref as React.MutableRefObject<T>).current = value;
+      }
+    });
+  };
+}
+
 export interface MultiSelectOption {
   text: string;
   value: string;
-  [key: string]: any; // Allow additional properties for extensibility
+  [key: string]: unknown; // Allow additional properties for extensibility
 }
 
 export interface MultiSelectComboBoxProps<T extends MultiSelectOption = MultiSelectOption> {
@@ -19,6 +32,7 @@ export interface MultiSelectComboBoxProps<T extends MultiSelectOption = MultiSel
   filter?: (option: T, searchTerm: string) => boolean;
   onChange?: (value: string, isDeselecting: boolean) => void;
   initialValues?: string[];
+  values?: string[]; // Controlled mode: if provided, component uses this instead of internal state
   disabled?: boolean;
   placeholder?: string;
   error?: string;
@@ -35,6 +49,7 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
     filter,
     onChange,
     initialValues = [],
+    values,
     disabled = false,
     placeholder = "Search...",
     error,
@@ -46,7 +61,7 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
 ) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedValues, setSelectedValues] = useState<string[]>(initialValues);
+    const [internalSelectedValues, setInternalSelectedValues] = useState<string[]>(initialValues);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -56,6 +71,10 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
       left: number;
       width: number;
     } | null>(null);
+
+    // Determine if component is controlled
+    const isControlled = values !== undefined;
+    const selectedValues = isControlled ? values : internalSelectedValues;
 
     // Generate unique IDs for accessibility
     const generatedId = useId();
@@ -199,8 +218,10 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
     };
 
     const handleOptionSelect = (option: T) => {
-      const newSelectedValues = [...selectedValues, option.value];
-      setSelectedValues(newSelectedValues);
+      if (!isControlled) {
+        const newSelectedValues = [...selectedValues, option.value];
+        setInternalSelectedValues(newSelectedValues);
+      }
       onChange?.(option.value, false);
       setSearchTerm("");
       setFocusedIndex(-1);
@@ -208,8 +229,10 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
     };
 
     const handleRemove = (value: string) => {
-      const newSelectedValues = selectedValues.filter((v) => v !== value);
-      setSelectedValues(newSelectedValues);
+      if (!isControlled) {
+        const newSelectedValues = selectedValues.filter((v) => v !== value);
+        setInternalSelectedValues(newSelectedValues);
+      }
       onChange?.(value, true);
       inputRef.current?.focus();
     };
@@ -276,7 +299,7 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
               </button>
             ))}
             <input
-              ref={ref || inputRef}
+              ref={mergeRefs(inputRef, ref)}
               id={comboboxId}
               type="text"
               role="combobox"
@@ -284,6 +307,11 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
               aria-haspopup="listbox"
               aria-controls={listboxId}
               aria-autocomplete="list"
+              aria-activedescendant={
+                isOpen && focusedIndex >= 0
+                  ? `${comboboxId}-option-${focusedIndex}`
+                  : undefined
+              }
               aria-describedby={
                 [errorId, helperTextId].filter(Boolean).join(" ") || undefined
               }
@@ -332,7 +360,7 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
                     key={option.value}
                     id={`${comboboxId}-option-${index}`}
                     role="option"
-                    aria-selected={false}
+                    aria-selected={index === focusedIndex}
                     className={`${styles.option} ${
                       index === focusedIndex ? styles.focused : ""
                     }`}
