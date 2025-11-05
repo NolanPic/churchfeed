@@ -95,12 +95,24 @@
   padding: var(--spacing1) var(--spacing2);
   background-color: var(--accent);
   color: var(--mid);
+  border: none;
   border-radius: 4px;
   font-size: var(--text-sm);
   font-weight: 700;
   line-height: var(--spacing4);
   white-space: nowrap;
   max-width: 200px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.tag:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 90%, var(--dark));
+}
+
+.tag:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .tagText {
@@ -108,26 +120,15 @@
   text-overflow: ellipsis;
 }
 
-.removeButton {
+.removeIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--mid);
-  transition: color 0.2s ease-in-out;
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
   flex-shrink: 0;
-}
-
-.removeButton:hover:not(:disabled) {
-  color: var(--dark);
-}
-
-.removeButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .toggleButton {

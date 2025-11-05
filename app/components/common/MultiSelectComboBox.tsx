@@ -258,20 +258,22 @@ function MultiSelectComboBoxInner<T extends MultiSelectOption = MultiSelectOptio
         >
           <div className={styles.inputWrapper}>
             {selectedOptions.map((option) => (
-              <div key={option.value} className={styles.tag}>
+              <button
+                key={option.value}
+                type="button"
+                className={styles.tag}
+                onClick={() => handleRemove(option.value)}
+                disabled={disabled}
+                aria-label={`Remove ${option.text}`}
+                title={option.text}
+              >
                 <span className={styles.tagText}>
                   {renderSelection ? renderSelection(option) : defaultRenderSelection(option)}
                 </span>
-                <button
-                  type="button"
-                  className={styles.removeButton}
-                  onClick={() => handleRemove(option.value)}
-                  disabled={disabled}
-                  aria-label={`Remove ${option.text}`}
-                >
-                  <Icon name="close" size={10} />
-                </button>
-              </div>
+                <span className={styles.removeIcon} aria-hidden="true">
+                  ×
+                </span>
+              </button>
             ))}
             <input
               ref={ref || inputRef}

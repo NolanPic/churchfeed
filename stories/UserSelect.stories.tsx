@@ -76,44 +76,6 @@ const sampleUsers: UserOption[] = [
   },
 ];
 
-const churchMembers: UserOption[] = [
-  {
-    _id: "pastor1" as any,
-    name: "Pastor Michael Thompson",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pastor",
-    text: "Pastor Michael Thompson",
-    value: "pastor1",
-  },
-  {
-    _id: "worship1" as any,
-    name: "Sarah Martinez - Worship Leader",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-    text: "Sarah Martinez - Worship Leader",
-    value: "worship1",
-  },
-  {
-    _id: "youth1" as any,
-    name: "David Kim - Youth Pastor",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
-    text: "David Kim - Youth Pastor",
-    value: "youth1",
-  },
-  {
-    _id: "elder1" as any,
-    name: "Elder James Anderson",
-    image: null,
-    text: "Elder James Anderson",
-    value: "elder1",
-  },
-  {
-    _id: "deacon1" as any,
-    name: "Deacon Rachel Stevens",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel",
-    text: "Deacon Rachel Stevens",
-    value: "deacon1",
-  },
-];
-
 const meta: Meta<typeof UserSelect> = {
   title: "Components/UserSelect",
   component: UserSelect,
@@ -168,15 +130,6 @@ export const WithInitialValues: Story = {
     users: sampleUsers,
     initialValues: ["user1", "user3", "user5"],
     placeholder: "Add more users...",
-  },
-};
-
-export const ChurchMembers: Story = {
-  args: {
-    label: "Select Ministry Team",
-    users: churchMembers,
-    placeholder: "Search members...",
-    helperText: "Select members to add to this ministry team",
   },
 };
 
@@ -275,114 +228,3 @@ export const ControlledExample: Story = {
   },
 };
 
-export const SearchBehavior: Story = {
-  render: () => (
-    <div style={{ width: "500px" }}>
-      <UserSelect
-        label="Search Priority Demo"
-        users={[
-          {
-            _id: "1" as any,
-            name: "Anna Anderson",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anna",
-            text: "Anna Anderson",
-            value: "1",
-          },
-          {
-            _id: "2" as any,
-            name: "BobAnna",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=BobAnna",
-            text: "Bob Anna",
-            value: "2",
-          },
-          {
-            _id: "3" as any,
-            name: "Annabelle Smith",
-            image: null,
-            text: "Annabelle Smith",
-            value: "3",
-          },
-          {
-            _id: "4" as any,
-            name: "Charlie Annaheim",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
-            text: "Charlie Annaheim",
-            value: "4",
-          },
-          {
-            _id: "5" as any,
-            name: "Diana Savannah",
-            image: null,
-            text: "Diana Savannah",
-            value: "5",
-          },
-        ]}
-        placeholder="Type 'anna'..."
-        helperText="Notice how names starting with 'Anna' appear first, followed by names containing 'anna'"
-      />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates search prioritization: prefix matches rank higher than substring matches",
-      },
-    },
-  },
-};
-
-export const AllStates: Story = {
-  render: () => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "2rem",
-        width: "500px",
-      }}
-    >
-      <UserSelect
-        label="Default State"
-        users={sampleUsers}
-        placeholder="Search users..."
-      />
-
-      <UserSelect
-        label="With Initial Selections"
-        users={churchMembers}
-        initialValues={["pastor1", "worship1"]}
-        placeholder="Add more..."
-      />
-
-      <UserSelect
-        label="With Helper Text"
-        users={sampleUsers}
-        placeholder="Add users..."
-        helperText="Select users to notify about this update"
-      />
-
-      <UserSelect
-        label="Error State"
-        users={sampleUsers}
-        placeholder="Select users..."
-        error="Please select at least one user"
-      />
-
-      <UserSelect
-        label="Disabled State"
-        users={sampleUsers}
-        initialValues={["user1", "user3"]}
-        placeholder="Cannot interact"
-        disabled
-      />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: "Shows all possible states of the UserSelect component",
-      },
-    },
-  },
-};

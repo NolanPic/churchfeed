@@ -222,61 +222,6 @@ export const CustomFilter: Story = {
   },
 };
 
-export const AllStates: Story = {
-  render: () => (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "2rem",
-        width: "400px",
-      }}
-    >
-      <MultiSelectComboBox
-        label="Default State"
-        options={sampleOptions}
-        placeholder="Search and select..."
-      />
-
-      <MultiSelectComboBox
-        label="With Initial Selections"
-        options={tagOptions}
-        initialValues={["react", "typescript"]}
-        placeholder="Search..."
-      />
-
-      <MultiSelectComboBox
-        label="With Helper Text"
-        options={sampleOptions}
-        placeholder="Search..."
-        helperText="Type to search and select multiple items"
-      />
-
-      <MultiSelectComboBox
-        label="Error State"
-        options={sampleOptions}
-        placeholder="Search..."
-        error="Please select at least two items"
-      />
-
-      <MultiSelectComboBox
-        label="Disabled State"
-        options={sampleOptions}
-        initialValues={["option1", "option2"]}
-        placeholder="Cannot interact"
-        disabled
-      />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      description: {
-        story: "Shows all possible states of the MultiSelectComboBox component",
-      },
-    },
-  },
-};
-
 export const SearchBehavior: Story = {
   render: () => (
     <div style={{ width: "400px" }}>
