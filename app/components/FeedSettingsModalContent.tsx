@@ -232,15 +232,15 @@ const FeedSettingsModalContent = forwardRef<
         <Input
           ref={descriptionRef}
           label="Description"
+          placeholder="Enter a brief description of what this feed is for."
           value={formData.description}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, description: e.target.value }))
           }
           validationConfig={{
-            maxLength: 600,
+            maxLength: 100,
           }}
           fieldName="Description"
-          helperText="A brief description of what this feed is for."
         />
 
         <Select
