@@ -1,0 +1,21 @@
+.userOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing3);
+  width: 100%;
+}
+
+.userSelection {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing2);
+}
+
+.userName {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
