@@ -119,6 +119,9 @@ export const Input = forwardRef<InputHandle, InputProps>(
     const displayError = error || internalError;
     const hasError = Boolean(displayError);
 
+    // Extract maxLength from validationConfig for HTML attribute
+    const maxLengthAttr = validationConfig?.maxLength;
+
     return (
       <div className={`${styles.inputWrapper} ${className || ""}`}>
         <label
@@ -135,6 +138,7 @@ export const Input = forwardRef<InputHandle, InputProps>(
           placeholder={placeholder}
           disabled={disabled}
           required={required}
+          maxLength={maxLengthAttr}
           aria-invalid={hasError}
           aria-describedby={
             [errorId, helperTextId].filter(Boolean).join(" ") || undefined
