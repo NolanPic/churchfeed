@@ -32,6 +32,7 @@ export interface InputHandle {
   validate: () => boolean;
   getValue: () => string;
   focus: () => void;
+  hasError: () => boolean;
 }
 
 export const Input = forwardRef<InputHandle, InputProps>(
@@ -99,8 +100,9 @@ export const Input = forwardRef<InputHandle, InputProps>(
         },
         getValue: () => inputRef.current?.value || "",
         focus: () => inputRef.current?.focus(),
+        hasError: () => !!internalError,
       }),
-      [handleValidation]
+      [handleValidation, internalError]
     );
 
     // Handle blur event

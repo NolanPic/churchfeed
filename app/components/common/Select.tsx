@@ -41,6 +41,7 @@ export interface SelectProps {
 export interface SelectHandle {
   validate: () => boolean;
   getValue: () => string;
+  hasError: () => boolean;
 }
 
 export const Select = forwardRef<SelectHandle, SelectProps>(
@@ -119,8 +120,9 @@ export const Select = forwardRef<SelectHandle, SelectProps>(
           }
         },
         getValue: () => currentValue,
+        hasError: () => !!internalError,
       }),
-      [currentValue, validationConfig, fieldName, label]
+      [currentValue, validationConfig, fieldName, label, internalError]
     );
 
     // Run validation when value changes (after first blur)

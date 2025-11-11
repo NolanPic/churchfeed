@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Input, InputHandle } from "./common/Input";
 import { Select, SelectHandle, SelectOption } from "./common/Select";
 import Button from "./common/Button";
+import Form from "./common/Form";
 import Hint from "./common/Hint";
 import { useOrganization } from "../context/OrganizationProvider";
 import styles from "./FeedSettingsModalContent.module.css";
@@ -66,10 +73,12 @@ const FeedSettingsModalContent = forwardRef<
   useEffect(() => {
     if (!feed) return;
 
-    const canPost =
-      feed.memberPermissions?.includes("post") ? "yes" : ("no" as const);
-    const canMessage =
-      feed.memberPermissions?.includes("message") ? "yes" : ("no" as const);
+    const canPost = feed.memberPermissions?.includes("post")
+      ? "yes"
+      : ("no" as const);
+    const canMessage = feed.memberPermissions?.includes("message")
+      ? "yes"
+      : ("no" as const);
 
     const data: FormData = {
       name: feed.name,
@@ -110,22 +119,8 @@ const FeedSettingsModalContent = forwardRef<
     [formData, initialData]
   );
 
-  // Validate all fields
-  const validateForm = (): boolean => {
-    const nameValid = nameRef.current?.validate() ?? true;
-    const descriptionValid = descriptionRef.current?.validate() ?? true;
-    const privacyValid = privacyRef.current?.validate() ?? true;
-
-    return nameValid && descriptionValid && privacyValid;
-  };
-
   // Handle form submission
   const handleSave = async () => {
-    // Validate all fields
-    if (!validateForm()) {
-      return;
-    }
-
     setError(null);
     setIsSaving(true);
 
@@ -141,7 +136,8 @@ const FeedSettingsModalContent = forwardRef<
         name: formData.name,
         description: formData.description || undefined,
         privacy: formData.privacy,
-        memberPermissions: memberPermissions.length > 0 ? memberPermissions : undefined,
+        memberPermissions:
+          memberPermissions.length > 0 ? memberPermissions : undefined,
       });
 
       // Update initial data to reflect saved state
@@ -153,7 +149,9 @@ const FeedSettingsModalContent = forwardRef<
         setShowSaved(false);
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save feed settings");
+      setError(
+        err instanceof Error ? err.message : "Failed to save feed settings"
+      );
     } finally {
       setIsSaving(false);
     }
@@ -161,9 +159,15 @@ const FeedSettingsModalContent = forwardRef<
 
   // Privacy options
   const privacyOptions: SelectOption[] = [
-    { value: "public", label: "Public" },
-    { value: "open", label: "Open" },
-    { value: "private", label: "Private" },
+    {
+      value: "public",
+      label: "Public - anyone can view, even if they're logged out",
+    },
+    {
+      value: "open",
+      label: "Open - logged in users can choose to join and view",
+    },
+    { value: "private", label: "Private - only invited users can view" },
   ];
 
   // Permission options
@@ -194,12 +198,21 @@ const FeedSettingsModalContent = forwardRef<
         </Hint>
       )}
 
-      <form
+      <Form
+        fields={[nameRef, descriptionRef, privacyRef]}
+        onSubmit={handleSave}
         className={styles.form}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSave();
-        }}
+        renderSubmit={({ hasErrors }) => (
+          <div className={styles.actions}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={hasErrors || isSaving || showSaved}
+            >
+              {showSaved ? "Saved!" : isSaving ? "Saving..." : "Save"}
+            </Button>
+          </div>
+        )}
       >
         <Input
           ref={nameRef}
@@ -227,6 +240,7 @@ const FeedSettingsModalContent = forwardRef<
             maxLength: 600,
           }}
           fieldName="Description"
+          helperText="A brief description of what this feed is for."
         />
 
         <Select
@@ -240,7 +254,7 @@ const FeedSettingsModalContent = forwardRef<
         />
 
         <Select
-          label="Members can post?"
+          label="Can members post?"
           options={yesNoOptions}
           value={formData.canPost}
           onChange={(value) =>
@@ -249,10 +263,11 @@ const FeedSettingsModalContent = forwardRef<
               canPost: value as "yes" | "no",
             }))
           }
+          helperText="Whether members of this feed can publish posts in it. Feed owners can post regardless."
         />
 
         <Select
-          label="Members can message?"
+          label="Can members message?"
           options={yesNoOptions}
           value={formData.canMessage}
           onChange={(value) =>
@@ -261,18 +276,9 @@ const FeedSettingsModalContent = forwardRef<
               canMessage: value as "yes" | "no",
             }))
           }
+          helperText="Whether members of this feed can send messages in posts. Feed owners can message regardless."
         />
-
-        <div className={styles.actions}>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isSaving || showSaved}
-          >
-            {showSaved ? "Saved!" : isSaving ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      </form>
+      </Form>
     </div>
   );
 });
