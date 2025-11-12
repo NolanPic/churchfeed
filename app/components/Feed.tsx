@@ -15,6 +15,7 @@ import PostModalContent from "./PostModalContent";
 import FeedSettingsModalContent, {
   FeedSettingsModalContentHandle,
 } from "./FeedSettingsModalContent";
+import FeedMembersTab from "./FeedMembersTab";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
@@ -274,7 +275,9 @@ export default function Feed({
           {
             id: "members",
             label: "Members",
-            content: <div style={{ padding: "var(--spacing6)" }}>Members tab coming soon...</div>,
+            content: feedSettingsFeedIdSlug ? (
+              <FeedMembersTab feedId={feedSettingsFeedIdSlug} />
+            ) : null,
           },
         ]}
         activeTabId={settingsActiveTab}
