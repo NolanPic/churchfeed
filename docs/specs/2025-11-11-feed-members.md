@@ -173,6 +173,67 @@ Now, for CardList, it should accept `renderCardHeader` and `renderCardBody` prop
 	- Remove - button to remove from feed. Uses a `confirm()` and then calls `removeMemberFromFeed` (body)
 - If the current owner viewing the list is the only owner, they should not be able to remove themselves from the feed, and the button should be disabled
 
+### Questions
+
+1. **Invite section layout**: How should the UserSelect and Invite button be arranged?
+   - Should they be on the same row (flexbox side by side)?
+   - Should they stack vertically?
+   - Should the UserSelect take full width with the button below/beside it?
+   - What spacing should be between the invite section and the member list?
+**Answer**: UserSelect takes full width and the button is beside it (flexbox).
+
+2. **Loading and disabled states**: For the Invite button:
+   - Should it show "Inviting..." when the mutation is running?
+   - Should it be disabled when no users are selected?
+   - Should the UserSelect be disabled while the mutation is running?
+**Answer**: Here are the states for the button/UserSelect:
+- When UserSelect is empty, button is disabled
+- When UserSelect has selection(s), button is enabled
+- While the mutation is running, button is disabled and reads, "Inviting..."
+- When the mutation finishes running, button is still disabled and says, "Invited!" for 2 seconds
+- When the mutation finishes, UserSelect should be cleared of its value
+- If an error occurs, use the `error` prop on UserSelect. The selections stay, and the button is enabled
+
+3. **Error handling**: When mutations fail (invite, change role, remove member):
+   - Should errors be displayed as alerts/confirms?
+   - Should there be an error banner at the top of the tab?
+   - Should errors appear inline near the relevant UI element?
+**Answer**: I described how user invites should error above. For everything else, there should be an error banner at the top of the tab. It should use the `<Hint>` component.
+
+4. **Success feedback**: After successfully inviting users:
+   - Should there be any success message/notification?
+   - Or is clearing the selection sufficient feedback?
+**Answer**: Answered above. Button will say "Invited!" for 2 seconds.
+
+5. **Role dropdown**:
+   - Should the dropdown show "Member" and "Owner" as labels?
+   - Should it be disabled while the mutation is running?
+   - Should there be a loading indicator when changing roles?
+   - Should the dropdown be disabled for the last owner?
+**Answer**: Yes, "Member" and "Owner" should be the two options. It should be disabled while running. No loading indicator. Yes, it should be disabled for the last owner. Also, if the mutation fails, it should go back to the last value.
+
+6. **Remove button**:
+   - What should the confirm() message say?
+   - Should it mention the user's name?
+   - For the last owner scenario, should the button be visually disabled or just not work?
+**Answer**: "Are you sure you want to remove {name} from {feed}?" For the last owner, yes, disable the button.
+
+7. **Member card body layout**: How should the elements in the card body be arranged?
+   - Should Email, Role, and Remove button all stack vertically?
+   - Or should Role and Remove button be on the same row with Email above?
+   - What spacing between elements?
+**Answer**: The user's avatar and name should be in the card header. The user's email should also appear in smaller text right below their name. The Role dropdown and Remove button should be side-by-side in the body with a little bit of spacing between.
+
+8. **Empty state**: If there are no members to display (edge case):
+   - Should CardList's default empty message be used?
+   - Or a custom message like "No members yet"?
+**Answer**: Use "No members yet! Invite some above."
+
+9. **Initial loading**: While `getFeedMembers` is loading:
+   - Should CardList's "Loading..." message be used?
+   - Or should the entire tab content be replaced with a loading indicator?
+**Answer**: Cardlist's "Loading..." is fine.
+
 ## Part 4: Roles
 There are some additional changes that need to be made depending on if the logged in user is a feed owner or just a member:
 - Feed owners see both the Settings and Members tabs
