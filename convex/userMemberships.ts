@@ -47,7 +47,7 @@ export const getFeedMembers = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const { orgId, feedId } = args;
+    const { orgId, feedId, paginationOpts } = args;
 
     const auth = await getUserAuth(ctx, orgId);
     auth.getUserOrThrow();
@@ -57,16 +57,15 @@ export const getFeedMembers = query({
       throw new Error("You do not have permission to view members of this feed");
     }
 
-    const results = await ctx.db
+    const allUserFeeds = await ctx.db
       .query("userFeeds")
       .withIndex("by_org_and_feed_and_user", (q) =>
         q.eq("orgId", orgId).eq("feedId", feedId)
       )
-      .order("desc")
-      .paginate(args.paginationOpts);
+      .collect();
 
     const membersWithDetails = await Promise.all(
-      results.page.map(async (userFeed) => {
+      allUserFeeds.map(async (userFeed) => {
         const user = await ctx.db.get(userFeed.userId);
         if (!user) {
           return null;
@@ -88,9 +87,27 @@ export const getFeedMembers = query({
       (member) => member !== null
     );
 
+    const sortedMembers = filteredMembers.sort((a, b) => {
+      // First sort by owner status
+      if (a.isOwner !== b.isOwner) {
+        return a.isOwner ? -1 : 1;
+      }
+      // Then sort by name
+      return a.name.localeCompare(b.name);
+    });
+
+    // Manual pagination
+    const { numItems, cursor } = paginationOpts;
+    const offset = cursor ? parseInt(cursor, 10) : 0;
+    const endIndex = offset + numItems;
+    const page = sortedMembers.slice(offset, endIndex);
+    const isDone = endIndex >= sortedMembers.length;
+    const continueCursor = isDone ? null : endIndex.toString();
+
     return {
-      ...results,
-      page: filteredMembers,
+      page,
+      isDone,
+      continueCursor,
     };
   },
 });
