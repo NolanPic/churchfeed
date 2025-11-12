@@ -74,14 +74,89 @@ We have a new feed settings modal (implemented in `FeedSettingsModalContent.tsx`
 11. **Error messages**: Are there any specific error message formats or conventions I should follow in the codebase? I see some functions throw `new Error(...)` with descriptive messages - should I follow that pattern?
 **Answer**: Follow the pattern you see in the rest of the codebase.
 
-## Part 2: Table implementation
-- Implement a reusable `<Table>` component. This will be used in many places throughout the app.
-- The component should work well with a convex query to display data
-- The component should work well with a paginated convex query (see https://docs.convex.dev/database/pagination)
-- The component should work well without a convex query
-- The component should work in an industry-standard way, while also being as simple as possible. It should do the bare minimum, and do it well
-- The table cells should support both text and other components (e.g. buttons, avatars, etc.)
-- The table should take mobile styling into consideration. Each row should be horizontally scrollable (individually) when it runs out of space, and have a fade on the right side that encourages scrolling
+## Part 2: Card list implementation
+- Implement reusable `<Card>` and `<CardList>` components. These will be used in multiple places throughout the app
+- The `<Card>` component should have a header and a body. It should follow industry standards for cards, but avoid complexity. It should be able to render text or other components in both the header and body
+- The `<CardList>` component should render `<Card>`s for all of the `data` items
+- `<CardList>` should work well with a convex query to display data
+- `<CardList>` should work well with a paginated convex query (see https://docs.convex.dev/database/pagination)
+- By default, the CardList should render as many cards on one row as it can fit
+- CardList should allow classes to be passed so that the default styles can be overwritten
+- Add usage examples to storybook. Keep them few, simple, and without overlap between them
+
+### Questions
+
+1. **Card visual design**: What should the Card component look like visually?
+   - Should it have a border? If so, what color?
+   - Should it have a background color? (e.g., `var(--mid)`, `var(--dark)`, transparent?)
+   - Should it have a border-radius? If so, should I use existing variables like `--border-radius-sm`?
+   - Should there be any shadow or elevation effect?
+   - What padding should the card have?
+**Answer**: It should use `--light` as a border, have a background of `--mid2`, and `--border-radius-lg`. It should have a slight box shadow effect (look at box shadows used elsewhere in the app). Choose some padding using a `--spacing{X}` variable, and I will adjust if needed.
+
+2. **Card header/body separation**: Should the header and body be visually distinct sections?
+   - Should there be a dividing line or border between them?
+   - Should they have different background colors?
+   - Or should they just be separated by spacing/padding?
+**Answer**: Have a small dividing line between them.
+
+3. **CardList layout specifics**: For "as many cards on one row as it can fit":
+   - Should I use CSS Grid with `auto-fit`/`auto-fill`?
+   - What should be the minimum card width?
+   - What should be the gap/spacing between cards?
+   - Should cards all be the same width in a row, or can they vary?
+**Answer**: It should use CSS Grid `auto-fit`/`auto-fill`, but be sure that the default class can be overridden by a `className` prop. The gap can be `--spacing4` to start. The cards should all have the same width, and that width should be the width of the largest card (based on its content).
+
+4. **CardList with pagination**: How should CardList handle paginated queries?
+   - Should it have a "Load More" button at the bottom (to call `loadMore()`)?
+   - Should it use infinite scroll like Feed.tsx does with IntersectionObserver?
+   - Or should pagination controls be handled outside of CardList (making CardList just render what's given)?
+**Answer**: It should use infinite scroll like `Feed.tsx`.
+
+5. **Loading and empty states**:
+   - Should CardList show skeleton/loading cards while `status === "LoadingFirstPage"`?
+   - Should CardList display an empty state message when there's no data?
+   - Or should these states be handled by the parent component?
+**Answer**: It can display "Loading..." and it should display an empty state message (can be a prop with a default value of "No data").
+
+6. **Card interactivity**:
+   - Should the entire Card be clickable (with an `onClick` prop)?
+   - Should Cards have hover states (e.g., transform, border color change)?
+   - Or should they be static containers with interactivity only from their child components?
+**Answer**: No `onClick` is needed. The border color can change to `--accent` on hover. Child components will offer interactivity.
+
+7. **Responsive behavior**:
+   - Should the number of cards per row change on mobile vs tablet/desktop?
+   - For example: 1 card per row on mobile, 2-3 on tablet, 3-4 on desktop?
+   - Or should it always just "fit as many as possible" regardless of screen size?
+**Answer**: The only rule is that it should only display 1 card per row on phones. Above that (e.g. at the `--tablet` custom media breakpoint and up) it should just fit as many as possible.
+
+8. **CardList data handling**:
+   - Should CardList accept a render function prop to customize how each card's content is rendered?
+   - For example: `renderCard={(item) => <Card>...</Card>}` or should the parent always pass pre-rendered cards as children?
+   - Should it accept raw data and handle the mapping internally, or receive already-rendered Card components?
+**Answer**: I will back up so I can answer this properly:
+
+First, the card component should be used like this:
+
+```tsx
+<Card>
+	<CardHeader>header stuff...</CardHeader>
+	<CardBody>body stuff...</CardBody>
+</Card>
+```
+
+The three components in the above example should all come from `Card.tsx`.
+
+Now, for CardList, it should accept `renderCardHeader` and `renderCardBody` props that will allow passing in the children for the `<CardHeader>` and `<CardBody>` components respectively.
+
+9. **Storybook examples**: What types of examples would be most useful?
+   - Simple card with text only?
+   - Card with mixed content (text, buttons, etc.)?
+   - CardList with non-paginated data?
+   - CardList with paginated data simulation?
+   - Different grid layouts?
+**Answer**: Card with mixed content and card with body content only. Card list with paginated data, and separate card list with custom grid layout using className prop.
 
 ## Part 3: Frontend
 - Remove the "Members tab coming soon..." text from the members tab
@@ -89,12 +164,13 @@ We have a new feed settings modal (implemented in `FeedSettingsModalContent.tsx`
 	- To select users, use the `<UserSelect>` component. It should get users with the `getUsersNotInFeed` query
 	- An Invite button that, when pressed, takes all of the selected user IDs and sends them to the `inviteUsersToFeed` mutation
 	- The user selection should clear after the mutation successfully runs
-- Add a table of users using the new `<Table>` component
+- Add a card list using of users using the new `<CardList>` component
 - For each user display:
-	- Avatar
-	- Name
-	- Role - dropdown (Member or Owner) (changing this immediately calls `changeMemberRole`)
-	- Remove - button to remove from feed. Uses a `confirm()` and then calls `removeMemberFromFeed`
+	- Avatar (should be in the header)
+	- Name (should be in the header)
+	- Email (body)
+	- Role - dropdown (Member or Owner) (changing this immediately calls `changeMemberRole`) (body)
+	- Remove - button to remove from feed. Uses a `confirm()` and then calls `removeMemberFromFeed` (body)
 - If the current owner viewing the list is the only owner, they should not be able to remove themselves from the feed, and the button should be disabled
 
 ## Part 4: Roles
