@@ -1,0 +1,27 @@
+.card {
+  background-color: var(--mid2);
+  border: 1px solid var(--light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 21px -16px 64px -36px rgba(0,0,0,0.25),
+              -21px 16px 64px -36px rgba(0,0,0,0.25);
+  transition: border-color 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+.cardHeader {
+  padding: var(--spacing6);
+  border-bottom: 1px solid var(--light);
+}
+
+.cardBody {
+  padding: var(--spacing6);
+}
+
+/* If Card has no header, CardBody should not have a border above it */
+.card:has(.cardBody:first-child) .cardBody {
+  border-top: none;
+}
