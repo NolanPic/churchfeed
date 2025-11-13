@@ -59,6 +59,5 @@
   width: 120px;
   display: flex;
   align-items: center;
-  font-size: var(--text-sm);
-  color: var(--light2);
+  font-size: var(--text-md);
 }
