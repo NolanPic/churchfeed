@@ -39,26 +39,24 @@ export function CardList<T extends { _id?: string }>({
   });
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries, observer) => {
-        intersectionCb.current?.(entries, observer);
-      },
-      {
-        rootMargin: "200px",
-      }
-    );
+    // Don't set up observer if there's no data or still loading
+    if (status === "LoadingFirstPage" || data.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      intersectionCb.current?.(entries, observer);
+    });
     if (endOfList.current) {
       observer.observe(endOfList.current);
     }
     return () => observer.disconnect();
-  }, []);
+  }, [status, data.length]);
 
-  // Loading state
   if (status === "LoadingFirstPage") {
     return <div className={styles.loading}>Loading...</div>;
   }
 
-  // Empty state
   if (data.length === 0) {
     return <div className={styles.empty}>{emptyMessage}</div>;
   }
@@ -68,7 +66,9 @@ export function CardList<T extends { _id?: string }>({
       <div className={className || styles.cardList}>
         {data.map((item, index) => (
           <Card key={item._id || index}>
-            {renderCardHeader && <CardHeader>{renderCardHeader(item)}</CardHeader>}
+            {renderCardHeader && (
+              <CardHeader>{renderCardHeader(item)}</CardHeader>
+            )}
             <CardBody>{renderCardBody(item)}</CardBody>
           </Card>
         ))}
