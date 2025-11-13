@@ -203,7 +203,7 @@ export const updateFeed = mutation({
       const descriptionValidation = validateTextField(
         description,
         {
-          maxLength: 600,
+          maxLength: 100,
         },
         "Description"
       );
