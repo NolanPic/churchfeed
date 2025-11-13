@@ -71,12 +71,10 @@ const FeedSettingsTab = forwardRef<FeedSettingsTabHandle, FeedSettingsTabProps>(
     useEffect(() => {
       if (!feed) return;
 
-      const canPost = feed.memberPermissions?.includes("post")
-        ? "yes"
-        : ("no" as const);
+      const canPost = feed.memberPermissions?.includes("post") ? "yes" : "no";
       const canMessage = feed.memberPermissions?.includes("message")
         ? "yes"
-        : ("no" as const);
+        : "no";
 
       const data: FormData = {
         name: feed.name,
