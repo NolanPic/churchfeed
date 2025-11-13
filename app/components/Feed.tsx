@@ -24,6 +24,7 @@ import Toolbar from "./toolbar/Toolbar";
 import PostEditorPhone from "./editor/phone/PostEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useUserAuth } from "@/auth/client/useUserAuth";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -46,6 +47,9 @@ export default function Feed({
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const [isSelectingFeedForPost, setIsSelectingFeedForPost] = useState(false);
   const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
+  const [isFeedOwner, setIsFeedOwner] = useState(false);
+  const [isFeedMember, setIsFeedMember] = useState(false);
+  const [auth] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const searchParams = useSearchParams();
@@ -189,6 +193,60 @@ export default function Feed({
     }
   }, [searchParams]);
 
+  // Check feed ownership and membership when the modal opens
+  useEffect(() => {
+    if (!auth || !feedSettingsFeedIdSlug) {
+      setIsFeedOwner(false);
+      setIsFeedMember(false);
+      setSettingsActiveTab("settings");
+      return;
+    }
+
+    // Check if user is an owner
+    auth
+      .feed(feedSettingsFeedIdSlug)
+      .hasRole("owner")
+      .then((result) => {
+        setIsFeedOwner(result.allowed);
+        // If user is not an owner, switch to members tab
+        if (!result.allowed) {
+          setSettingsActiveTab("members");
+        }
+      });
+
+    // Check if user is a member (includes owners)
+    auth
+      .feed(feedSettingsFeedIdSlug)
+      .hasRole("member")
+      .then((result) => {
+        setIsFeedMember(result.allowed);
+      });
+  }, [auth, feedSettingsFeedIdSlug]);
+
+  // Define modal tabs
+  const settingsTab = {
+    id: "settings",
+    label: "Settings",
+    content: feedSettingsFeedIdSlug ? (
+      <FeedSettingsModalContent
+        ref={feedSettingsModalContentRef}
+        feedId={feedSettingsFeedIdSlug}
+      />
+    ) : null,
+  };
+
+  const membersTab = {
+    id: "members",
+    label: "Members",
+    content: feedSettingsFeedIdSlug ? (
+      <FeedMembersTab feedId={feedSettingsFeedIdSlug} />
+    ) : null,
+  };
+
+  const modalTabs = isFeedOwner
+    ? [settingsTab, membersTab]
+    : [membersTab];
+
   return (
     <>
       <div className={styles.feedWrapper} ref={feedWrapperRef}>
@@ -260,26 +318,8 @@ export default function Feed({
       <Modal
         isOpen={!!feedSettingsFeedIdSlug}
         onClose={handleCloseFeedSettings}
-        title="Feed Settings"
-        tabs={[
-          {
-            id: "settings",
-            label: "Settings",
-            content: feedSettingsFeedIdSlug ? (
-              <FeedSettingsModalContent
-                ref={feedSettingsModalContentRef}
-                feedId={feedSettingsFeedIdSlug}
-              />
-            ) : null,
-          },
-          {
-            id: "members",
-            label: "Members",
-            content: feedSettingsFeedIdSlug ? (
-              <FeedMembersTab feedId={feedSettingsFeedIdSlug} />
-            ) : null,
-          },
-        ]}
+        title={isFeedOwner ? "Feed Settings" : "Members"}
+        tabs={modalTabs}
         activeTabId={settingsActiveTab}
         onTabChange={setSettingsActiveTab}
       >
