@@ -193,7 +193,11 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
         <div className={styles.inviteSection}>
           <UserSelect
             users={userOptions}
-            placeholder={`Select users to invite...`}
+            placeholder={
+              userOptions?.length
+                ? "Select users to invite..."
+                : "No more users to invite"
+            }
             values={selectedUserIds}
             onChange={(value, isDeselecting) => {
               if (isDeselecting) {
@@ -203,7 +207,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
               }
             }}
             error={inviteError || undefined}
-            disabled={isInviting}
+            disabled={isInviting || !userOptions || !userOptions.length}
           />
           <Button
             onClick={handleInvite}
