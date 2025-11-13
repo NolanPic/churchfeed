@@ -34,7 +34,8 @@
 
 .memberName {
   font-weight: 700;
-  font-size: var(--text-base);
+  font-size: var(--text-md);
+  font-family: var(--font-gentium-plus);
 }
 
 .memberEmail {
@@ -51,4 +52,13 @@
 .roleSelect {
   flex: 0 0 auto;
   width: 120px;
+}
+
+.roleLabel {
+  flex: 0 0 auto;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--light2);
 }

@@ -23,8 +23,8 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const orgId = org?._id as Id<"organizations">;
   const [auth] = useUserAuth();
   const currentUser = auth?.getUser();
+  const [isFeedOwner, setIsFeedOwner] = useState(false);
 
-  // Queries
   const feed = useQuery(api.feeds.getFeed, { orgId, feedId });
   const {
     results: members,
@@ -35,12 +35,12 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
     { orgId, feedId },
     { initialNumItems: 20 }
   );
-  const usersNotInFeed = useQuery(api.userMemberships.getUsersNotInFeed, {
-    orgId,
-    feedId,
-  });
+  // Only fetch users not in feed if user is an owner
+  const usersNotInFeed = useQuery(
+    api.userMemberships.getUsersNotInFeed,
+    isFeedOwner ? { orgId, feedId } : "skip"
+  );
 
-  // Mutations
   const inviteUsersToFeed = useMutation(api.userMemberships.inviteUsersToFeed);
   const removeMemberFromFeed = useMutation(
     api.userMemberships.removeMemberFromFeed
@@ -61,15 +61,13 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
     Set<Id<"users">>
   >(new Set());
 
-  // Determine if current user is the last owner
-  const currentUserIsLastOwner = Boolean(
+  const currentUserIsOnlyOwner = Boolean(
     members &&
       currentUser &&
       members.filter((m) => m.isOwner).length === 1 &&
       members.find((m) => m._id === currentUser._id)?.isOwner
   );
 
-  // Handle invite
   const handleInvite = async () => {
     if (selectedUserIds.length === 0) return;
 
@@ -97,7 +95,6 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
     }
   };
 
-  // Handle role change
   const handleRoleChange = async (userId: Id<"users">, newRole: string) => {
     setRoleChangesInProgress((prev) => new Set(prev).add(userId));
     setGeneralError(null);
@@ -120,13 +117,15 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
     }
   };
 
-  // Handle remove member
   const handleRemoveMember = async (userId: Id<"users">, userName: string) => {
     setGeneralError(null);
 
-    const confirmed = window.confirm(
-      `Are you sure you want to remove ${userName} from ${feed?.name || "this feed"}?`
-    );
+    const isCurrentUser = userId === currentUser?._id;
+    const confirmMessage = isCurrentUser
+      ? `Are you sure you want to leave ${feed?.name || "this feed"}?`
+      : `Are you sure you want to remove ${userName} from ${feed?.name || "this feed"}?`;
+
+    const confirmed = window.confirm(confirmMessage);
 
     if (!confirmed) return;
 
@@ -138,6 +137,21 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       );
     }
   };
+
+  // Check if current user is a feed owner
+  useEffect(() => {
+    if (!auth || !feedId) {
+      setIsFeedOwner(false);
+      return;
+    }
+
+    auth
+      .feed(feedId)
+      .hasRole("owner")
+      .then((result) => {
+        setIsFeedOwner(result.allowed);
+      });
+  }, [auth, feedId]);
 
   // Clear invite error when selection changes
   useEffect(() => {
@@ -173,37 +187,38 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
         </Hint>
       )}
 
-      <div className={styles.inviteSection}>
-        <UserSelect
-          users={userOptions}
-          placeholder={`Select users to invite...`}
-          values={selectedUserIds}
-          onChange={(value, isDeselecting) => {
-            if (isDeselecting) {
-              setSelectedUserIds((prev) => prev.filter((id) => id !== value));
-            } else {
-              setSelectedUserIds((prev) => [...prev, value]);
-            }
-          }}
-          error={inviteError || undefined}
-          disabled={isInviting}
-        />
-        <Button
-          onClick={handleInvite}
-          disabled={isInviteButtonDisabled}
-          variant="primary"
-          className={styles.inviteButton}
-        >
-          {inviteButtonText}
-        </Button>
-      </div>
+      {isFeedOwner && (
+        <div className={styles.inviteSection}>
+          <UserSelect
+            users={userOptions}
+            placeholder={`Select users to invite...`}
+            values={selectedUserIds}
+            onChange={(value, isDeselecting) => {
+              if (isDeselecting) {
+                setSelectedUserIds((prev) => prev.filter((id) => id !== value));
+              } else {
+                setSelectedUserIds((prev) => [...prev, value]);
+              }
+            }}
+            error={inviteError || undefined}
+            disabled={isInviting}
+          />
+          <Button
+            onClick={handleInvite}
+            disabled={isInviteButtonDisabled}
+            variant="primary"
+            className={styles.inviteButton}
+          >
+            {inviteButtonText}
+          </Button>
+        </div>
+      )}
 
       <CardList
         data={members || []}
         status={status === "LoadingMore" ? "CanLoadMore" : status}
         loadMore={loadMore}
-        emptyMessage="No members yet! Invite some above."
-        itemsPerPage={20}
+        itemsPerPage={8}
         renderCardHeader={(member) => (
           <div className={styles.memberHeader}>
             <UserAvatar user={member} size={56} />
@@ -214,28 +229,38 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
           </div>
         )}
         renderCardBody={(member) => {
-          const isLastOwner =
-            currentUserIsLastOwner && member._id === currentUser?._id;
+          const isThisMemberTheOnlyOwner =
+            currentUserIsOnlyOwner && member._id === currentUser?._id;
           const isRoleChanging = roleChangesInProgress.has(member._id);
+          const isThisMemberTheCurrentUser = member._id === currentUser?._id;
+          const showButton = isFeedOwner || isThisMemberTheCurrentUser;
 
           return (
             <div className={styles.memberActions}>
-              <Select
-                options={[
-                  { value: "Member", label: "Member" },
-                  { value: "Owner", label: "Owner" },
-                ]}
-                value={member.isOwner ? "Owner" : "Member"}
-                onChange={(value) => handleRoleChange(member._id, value)}
-                disabled={isLastOwner || isRoleChanging}
-                className={styles.roleSelect}
-              />
-              <Button
-                onClick={() => handleRemoveMember(member._id, member.name)}
-                disabled={isLastOwner}
-              >
-                Remove
-              </Button>
+              {isFeedOwner ? (
+                <Select
+                  options={[
+                    { value: "Member", label: "Member" },
+                    { value: "Owner", label: "Owner" },
+                  ]}
+                  value={member.isOwner ? "Owner" : "Member"}
+                  onChange={(value) => handleRoleChange(member._id, value)}
+                  disabled={isThisMemberTheOnlyOwner || isRoleChanging}
+                  className={styles.roleSelect}
+                />
+              ) : (
+                <div className={styles.roleLabel}>
+                  {member.isOwner ? "Feed owner" : "Feed member"}
+                </div>
+              )}
+              {showButton && (
+                <Button
+                  onClick={() => handleRemoveMember(member._id, member.name)}
+                  disabled={isThisMemberTheOnlyOwner}
+                >
+                  {isThisMemberTheCurrentUser ? "Leave" : "Remove"}
+                </Button>
+              )}
             </div>
           );
         }}
