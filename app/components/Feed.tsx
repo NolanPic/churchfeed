@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./Feed.module.css";
-import { usePaginatedQuery } from "convex/react";
+import { useQuery, usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -101,6 +101,8 @@ export default function Feed({
       initialNumItems: itemsPerPage,
     }
   );
+
+  const feed = useQuery(api.feeds.getFeed, feedId ? { orgId, feedId } : "skip");
 
   const vh = useViewportHeight();
   const endOfFeed = useRef<HTMLDivElement>(null);
@@ -310,15 +312,17 @@ export default function Feed({
         )}
       </Modal>
 
-      <Modal
-        isOpen={!!feedSettingsFeedIdSlug}
-        onClose={handleCloseFeedSettings}
-        title={isFeedOwner ? "Feed Settings" : "Members"}
-        tabs={modalTabs}
-        activeTabId={settingsActiveTab}
-        onTabChange={setSettingsActiveTab}
-        dragToClose
-      ></Modal>
+      {feed && (
+        <Modal
+          isOpen={!!feedSettingsFeedIdSlug}
+          onClose={handleCloseFeedSettings}
+          title={feed.name + (isFeedOwner ? " Settings" : " Members")}
+          tabs={modalTabs}
+          activeTabId={settingsActiveTab}
+          onTabChange={setSettingsActiveTab}
+          dragToClose
+        ></Modal>
+      )}
     </>
   );
 }
