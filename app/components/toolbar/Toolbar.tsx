@@ -25,22 +25,33 @@ export default function Toolbar({
   const [auth, { user }] = useUserAuth();
   const { feedId } = useContext(CurrentFeedAndPostContext);
   const [isFeedOwner, setIsFeedOwner] = useState(false);
+  const [isFeedMember, setIsFeedMember] = useState(false);
 
   const isSignedIn = auth !== null;
   const isAdmin = user?.role === "admin";
 
-  // Check feed ownership asynchronously
+  // Check feed ownership and membership asynchronously
   useEffect(() => {
     if (!auth || !feedId) {
       setIsFeedOwner(false);
+      setIsFeedMember(false);
       return;
     }
 
+    // Check if user is an owner
     auth
       .feed(feedId)
       .hasRole("owner")
       .then((result) => {
         setIsFeedOwner(result.allowed);
+      });
+
+    // Check if user is a member (includes owners)
+    auth
+      .feed(feedId)
+      .hasRole("member")
+      .then((result) => {
+        setIsFeedMember(result.allowed);
       });
   }, [auth, feedId]);
 
@@ -89,6 +100,15 @@ export default function Toolbar({
                 href={`/feed/${feedId}/settings`}
               />
             )}
+            {!isFeedOwner && isFeedMember && feedId && (
+              <IconButton
+                icon="users"
+                label="Members"
+                className={styles.feedMembersButton}
+                as="link"
+                href={`/feed/${feedId}/settings`}
+              />
+            )}
             {isAdmin && (
               <IconButton
                 icon="gear"
@@ -100,6 +120,7 @@ export default function Toolbar({
             <OverflowMenu
               showAdminSettings={isAdmin}
               showFeedSettings={isFeedOwner}
+              showFeedMembers={!isFeedOwner && isFeedMember}
             />
           </>
         )}

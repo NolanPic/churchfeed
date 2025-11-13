@@ -35,6 +35,10 @@
     display: var(--displayOnLaptop);
 }
 
+.feedMembersButton {
+    display: var(--displayOnLaptop);
+}
+
 .adminSettingsButton {
     display: var(--displayOnLaptop);
 }
