@@ -18,6 +18,8 @@ interface FeedMembersTabProps {
   feedId: Id<"feeds">;
 }
 
+const MEMBERS_PER_PAGE = 10;
+
 export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
@@ -33,7 +35,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
   } = usePaginatedQuery(
     api.userMemberships.getFeedMembers,
     { orgId, feedId },
-    { initialNumItems: 20 }
+    { initialNumItems: MEMBERS_PER_PAGE }
   );
   // Only fetch users not in feed if user is an owner
   const usersNotInFeed = useQuery(
@@ -218,7 +220,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
         data={members || []}
         status={status === "LoadingMore" ? "CanLoadMore" : status}
         loadMore={loadMore}
-        itemsPerPage={8}
+        itemsPerPage={MEMBERS_PER_PAGE}
         renderCardHeader={(member) => (
           <div className={styles.memberHeader}>
             <UserAvatar user={member} size={56} />
