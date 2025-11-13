@@ -171,6 +171,8 @@
   max-height: 250px;
   overflow-y: auto;
   margin-top: var(--spacing1);
+  border: 2px solid var(--light);
+  border-top: none;
 }
 
 .option {
