@@ -12,9 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import PostModalContent from "./PostModalContent";
-import FeedSettingsModalContent, {
-  FeedSettingsModalContentHandle,
-} from "./FeedSettingsModalContent";
+import FeedSettingsTab, { FeedSettingsTabHandle } from "./FeedSettingsTab";
 import FeedMembersTab from "./FeedMembersTab";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
@@ -55,8 +53,7 @@ export default function Feed({
   const searchParams = useSearchParams();
   const router = useRouter();
   const feedWrapperRef = useRef<HTMLDivElement>(null);
-  const feedSettingsModalContentRef =
-    useRef<FeedSettingsModalContentHandle | null>(null);
+  const feedSettingsTabRef = useRef<FeedSettingsTabHandle | null>(null);
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -161,7 +158,7 @@ export default function Feed({
 
   const handleCloseFeedSettings = () => {
     // Check for unsaved changes via the component ref
-    const feedSettingsContent = feedSettingsModalContentRef.current;
+    const feedSettingsContent = feedSettingsTabRef.current;
     const hasUnsavedChanges =
       feedSettingsContent?.hasUnsavedChanges?.() ?? false;
 
@@ -228,8 +225,8 @@ export default function Feed({
     id: "settings",
     label: "Settings",
     content: feedSettingsFeedIdSlug ? (
-      <FeedSettingsModalContent
-        ref={feedSettingsModalContentRef}
+      <FeedSettingsTab
+        ref={feedSettingsTabRef}
         feedId={feedSettingsFeedIdSlug}
       />
     ) : null,
