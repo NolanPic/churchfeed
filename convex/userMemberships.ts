@@ -102,7 +102,7 @@ export const getFeedMembers = query({
     const endIndex = offset + numItems;
     const page = sortedMembers.slice(offset, endIndex);
     const isDone = endIndex >= sortedMembers.length;
-    const continueCursor = isDone ? null : endIndex.toString();
+    const continueCursor = endIndex.toString();
 
     return {
       page,
