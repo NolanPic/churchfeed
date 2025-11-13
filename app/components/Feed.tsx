@@ -243,9 +243,7 @@ export default function Feed({
     ) : null,
   };
 
-  const modalTabs = isFeedOwner
-    ? [settingsTab, membersTab]
-    : [membersTab];
+  const modalTabs = isFeedOwner ? [settingsTab, membersTab] : [membersTab];
 
   return (
     <>
@@ -322,8 +320,8 @@ export default function Feed({
         tabs={modalTabs}
         activeTabId={settingsActiveTab}
         onTabChange={setSettingsActiveTab}
-      >
-      </Modal>
+        dragToClose
+      ></Modal>
     </>
   );
 }
