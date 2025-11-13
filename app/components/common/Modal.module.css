@@ -89,7 +89,6 @@
 .tabsContainer {
   position: relative;
   margin: 0 var(--modal-gutter) var(--spacing8);
-  overflow: hidden;
 }
 
 .tabsFade {
