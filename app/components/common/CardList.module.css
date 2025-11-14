@@ -9,7 +9,7 @@
   width: 100%;
 }
 
-@media (--tablet) {
+@media (min-width: 34.375rem) {
   .cardList {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
