@@ -100,9 +100,9 @@ export const Input = forwardRef<InputHandle, InputProps>(
         },
         getValue: () => inputRef.current?.value || "",
         focus: () => inputRef.current?.focus(),
-        hasError: () => !!internalError,
+        hasError: () => Boolean(error || internalError),
       }),
-      [handleValidation, internalError]
+      [handleValidation, error, internalError]
     );
 
     // Handle blur event
