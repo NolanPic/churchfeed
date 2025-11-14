@@ -144,8 +144,8 @@ export const Input = forwardRef<InputHandle, InputProps>(
             [errorId, helperTextId].filter(Boolean).join(" ") || undefined
           }
           className={`${styles.input} ${hasError ? styles.error : ""} ${disabled ? styles.disabled : ""}`}
-          onBlur={handleBlur}
           {...props}
+          onBlur={handleBlur}
         />
 
         {helperText && !displayError && (
