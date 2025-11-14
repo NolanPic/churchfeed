@@ -317,17 +317,21 @@ export default function Feed({
         )}
       </Modal>
 
-      {feed && (
-        <Modal
-          isOpen={!!feedSettingsFeedIdSlug}
-          onClose={handleCloseFeedSettings}
-          title={feed.name + (isFeedOwner ? " Settings" : " Members")}
-          tabs={modalTabs}
-          activeTabId={settingsActiveTab}
-          onTabChange={setSettingsActiveTab}
-          dragToClose
-        ></Modal>
-      )}
+      <Modal
+        isOpen={!!feedSettingsFeedIdSlug}
+        onClose={handleCloseFeedSettings}
+        title={
+          feed
+            ? feed.name + (isFeedOwner ? " Settings" : " Members")
+            : isFeedOwner
+              ? "Feed Settings"
+              : "Feed Members"
+        }
+        tabs={modalTabs}
+        activeTabId={settingsActiveTab}
+        onTabChange={setSettingsActiveTab}
+        dragToClose
+      ></Modal>
     </>
   );
 }
