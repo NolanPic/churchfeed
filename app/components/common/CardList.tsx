@@ -6,7 +6,7 @@ import styles from "./CardList.module.css";
 
 export interface CardListProps<T> {
   data: T[];
-  status: "LoadingFirstPage" | "CanLoadMore" | "Exhausted";
+  status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
   loadMore?: (numItems: number) => void;
   renderCardHeader?: (item: T) => ReactNode;
   renderCardBody: (item: T) => ReactNode;
@@ -29,7 +29,12 @@ export function CardList<T extends { _id?: string }>({
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-    if (entries[0].isIntersecting && status === "CanLoadMore" && loadMore) {
+    if (
+      entries[0] &&
+      entries[0].isIntersecting &&
+      status === "CanLoadMore" &&
+      loadMore
+    ) {
       loadMore(itemsPerPage);
     }
   };

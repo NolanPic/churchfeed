@@ -222,7 +222,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
 
       <CardList
         data={members || []}
-        status={status === "LoadingMore" ? "CanLoadMore" : status}
+        status={status}
         loadMore={loadMore}
         itemsPerPage={MEMBERS_PER_PAGE}
         renderCardHeader={(member) => (
