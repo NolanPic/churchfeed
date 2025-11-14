@@ -28,7 +28,10 @@ export function CardList<T extends { _id?: string }>({
   const endOfList = useRef<HTMLDivElement>(null);
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
-  const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+  const handleIntersection = (
+    entries: IntersectionObserverEntry[],
+    observer: IntersectionObserver
+  ) => {
     if (
       entries[0] &&
       entries[0].isIntersecting &&
@@ -44,8 +47,12 @@ export function CardList<T extends { _id?: string }>({
   });
 
   useEffect(() => {
-    // Don't set up observer if there's no data or still loading
-    if (status === "LoadingFirstPage" || data.length === 0) {
+    // Don't set up observer if there's no data, still loading, or exhausted
+    if (
+      status === "LoadingFirstPage" ||
+      status === "Exhausted" ||
+      data.length === 0
+    ) {
       return;
     }
 
