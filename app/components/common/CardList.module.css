@@ -1,0 +1,23 @@
+.cardListWrapper {
+  width: 100%;
+}
+
+.cardList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing6);
+  width: 100%;
+}
+
+@media (--tablet) {
+  .cardList {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+.loading,
+.empty {
+  padding: var(--spacing6);
+  text-align: center;
+  color: var(--light2);
+}

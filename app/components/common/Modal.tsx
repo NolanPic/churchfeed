@@ -192,7 +192,7 @@ export default function Modal({
             <hr className={styles.titleSeparator} />
           </>
         )}
-        {tabs && tabs.length > 0 && (
+        {tabs && tabs.length > 1 && (
           <div className={styles.tabsContainer}>
             <div className={styles.tabsFade} />
             <div

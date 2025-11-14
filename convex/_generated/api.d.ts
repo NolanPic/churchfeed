@@ -24,6 +24,7 @@ import type * as seed_storage from "../seed/storage.js";
 import type * as uploadAction from "../uploadAction.js";
 import type * as uploads from "../uploads.js";
 import type * as user from "../user.js";
+import type * as userMemberships from "../userMemberships.js";
 import type * as utils_postContentConverter from "../utils/postContentConverter.js";
 
 /**
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   uploadAction: typeof uploadAction;
   uploads: typeof uploads;
   user: typeof user;
+  userMemberships: typeof userMemberships;
   "utils/postContentConverter": typeof utils_postContentConverter;
 }>;
 export declare const api: FilterApi<
