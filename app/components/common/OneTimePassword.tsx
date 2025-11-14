@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { Input } from "./Input";
+import { Input, InputHandle } from "./Input";
 import styles from "./OneTimePassword.module.css";
 
 export interface OneTimePasswordProps {
@@ -28,7 +28,7 @@ export const OneTimePassword = forwardRef<
   OneTimePasswordProps
 >(({ slots = 5, error, onComplete, onChange, className }, ref) => {
   const [values, setValues] = useState<string[]>(Array(slots).fill(""));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<(InputHandle | null)[]>([]);
   const componentId = useId();
   const errorId = error ? `${componentId}-error` : undefined;
 

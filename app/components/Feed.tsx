@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./Feed.module.css";
-import { usePaginatedQuery } from "convex/react";
+import { useQuery, usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -12,6 +12,8 @@ import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
 import PostEditor from "./editor/PostEditor";
 import PostModalContent from "./PostModalContent";
+import FeedSettingsTab, { FeedSettingsTabHandle } from "./FeedSettingsTab";
+import FeedMembersTab from "./FeedMembersTab";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
 import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
@@ -19,13 +21,20 @@ import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
 import PostEditorPhone from "./editor/phone/PostEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useUserAuth } from "@/auth/client/useUserAuth";
+
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
   postIdSlug?: Id<"posts"> | null;
+  feedSettingsFeedIdSlug?: Id<"feeds"> | null;
 }
 
-export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
+export default function Feed({
+  feedIdSlug,
+  postIdSlug,
+  feedSettingsFeedIdSlug,
+}: FeedProps) {
   const itemsPerPage = 10;
   const {
     feedId,
@@ -35,10 +44,16 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
   } = useContext(CurrentFeedAndPostContext);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const [isSelectingFeedForPost, setIsSelectingFeedForPost] = useState(false);
+  const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
+  const [isFeedOwner, setIsFeedOwner] = useState(false);
+  const [isFeedMember, setIsFeedMember] = useState(false);
+  const [auth] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const searchParams = useSearchParams();
+  const router = useRouter();
   const feedWrapperRef = useRef<HTMLDivElement>(null);
+  const feedSettingsTabRef = useRef<FeedSettingsTabHandle | null>(null);
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
@@ -85,6 +100,13 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     {
       initialNumItems: itemsPerPage,
     }
+  );
+
+  const feed = useQuery(
+    api.feeds.getFeed,
+    feedSettingsFeedIdSlug && org
+      ? { orgId, feedId: feedSettingsFeedIdSlug }
+      : "skip"
   );
 
   const vh = useViewportHeight();
@@ -141,6 +163,25 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
     setIsSelectingFeedForPost(false);
   };
 
+  const handleCloseFeedSettings = () => {
+    // Check for unsaved changes via the component ref
+    const feedSettingsContent = feedSettingsTabRef.current;
+    const hasUnsavedChanges =
+      feedSettingsContent?.hasUnsavedChanges?.() ?? false;
+
+    if (hasUnsavedChanges) {
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave?"
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    // Navigate back to the feed
+    router.push(feedId ? `/feed/${feedId}` : `/`);
+  };
+
   const removeEditorQueryParam = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete("openEditor");
@@ -155,6 +196,58 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
       removeEditorQueryParam();
     }
   }, [searchParams]);
+
+  // Check feed ownership and membership when the modal opens
+  useEffect(() => {
+    if (!auth || !feedSettingsFeedIdSlug) {
+      setIsFeedOwner(false);
+      setIsFeedMember(false);
+      setSettingsActiveTab("settings");
+      return;
+    }
+
+    // Check if user is an owner
+    auth
+      .feed(feedSettingsFeedIdSlug)
+      .hasRole("owner")
+      .then((result) => {
+        setIsFeedOwner(result.allowed);
+        // If user is not an owner, switch to members tab
+        if (!result.allowed) {
+          setSettingsActiveTab("members");
+        }
+      });
+
+    // Check if user is a member (includes owners)
+    auth
+      .feed(feedSettingsFeedIdSlug)
+      .hasRole("member")
+      .then((result) => {
+        setIsFeedMember(result.allowed);
+      });
+  }, [auth, feedSettingsFeedIdSlug]);
+
+  // Define modal tabs
+  const settingsTab = {
+    id: "settings",
+    label: "Settings",
+    content: feedSettingsFeedIdSlug ? (
+      <FeedSettingsTab
+        ref={feedSettingsTabRef}
+        feedId={feedSettingsFeedIdSlug}
+      />
+    ) : null,
+  };
+
+  const membersTab = {
+    id: "members",
+    label: "Members",
+    content: feedSettingsFeedIdSlug ? (
+      <FeedMembersTab feedId={feedSettingsFeedIdSlug} />
+    ) : null,
+  };
+
+  const modalTabs = isFeedOwner ? [settingsTab, membersTab] : [membersTab];
 
   return (
     <>
@@ -223,6 +316,22 @@ export default function Feed({ feedIdSlug, postIdSlug }: FeedProps) {
           <PostModalContent postId={openPostId} onClose={handleClosePost} />
         )}
       </Modal>
+
+      <Modal
+        isOpen={!!feedSettingsFeedIdSlug}
+        onClose={handleCloseFeedSettings}
+        title={
+          feed
+            ? feed.name + (isFeedOwner ? " Settings" : " Members")
+            : isFeedOwner
+              ? "Feed Settings"
+              : "Feed Members"
+        }
+        tabs={modalTabs}
+        activeTabId={settingsActiveTab}
+        onTabChange={setSettingsActiveTab}
+        dragToClose
+      ></Modal>
     </>
   );
 }

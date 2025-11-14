@@ -1,8 +1,9 @@
-import { query, QueryCtx, internalQuery } from "./_generated/server";
+import { query, QueryCtx, internalQuery, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { getManyFrom, getAll } from 'convex-helpers/server/relationships';
 import { getUserAuth } from "@/auth/convex";
+import { validateTextField } from "@/validation";
 
 export const getUserFeeds = query({
   args: {
@@ -85,3 +86,144 @@ export const get = internalQuery({
   },
 });
 
+/**
+ * Get a feed by ID for users with access
+ * Returns feed if user is a member, owner, or if feed is public
+ */
+export const getFeed = query({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUser();
+
+    const feed = await ctx.db.get(feedId);
+    if (!feed) {
+      throw new Error("Feed not found");
+    }
+
+    if (feed.orgId !== orgId) {
+      throw new Error("Feed does not belong to this organization");
+    }
+
+    // Check if user has access to this feed
+    const isPublic = feed.privacy === "public";
+    let isMember = false;
+
+    if (user) {
+      const isMemberCheck = await auth.feed(feedId).hasRole("member");
+      isMember = isMemberCheck.allowed;
+    }
+
+    if (!isPublic && !isMember) {
+      throw new Error("You do not have access to this feed");
+    }
+
+    return feed;
+  },
+});
+
+/**
+ * Update a feed's settings
+ * Only admins and feed owners can update feeds
+ * Only admins can set privacy to "public"
+ */
+export const updateFeed = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    privacy: v.union(
+      v.literal("public"),
+      v.literal("private"),
+      v.literal("open")
+    ),
+    memberPermissions: v.optional(
+      v.array(v.union(v.literal("post"), v.literal("message")))
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId, name, description, privacy, memberPermissions } =
+      args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    auth.getUserOrThrow();
+
+    // Get the feed
+    const feed = await ctx.db.get(feedId);
+    if (!feed) {
+      throw new Error("Feed not found");
+    }
+
+    if (feed.orgId !== orgId) {
+      throw new Error("Feed does not belong to this organization");
+    }
+
+    // Check if user is admin or feed owner
+    const isAdminCheck = auth.hasRole("admin");
+    const isAdmin = isAdminCheck.allowed;
+    const isOwnerCheck = await auth.feed(feedId).hasRole("owner");
+    const isOwner = isOwnerCheck.allowed;
+
+    if (!isAdmin && !isOwner) {
+      throw new Error(
+        "You do not have permission to update this feed. Only admins and feed owners can update feed settings."
+      );
+    }
+
+    // Only admins can set privacy to "public"
+    if (privacy === "public" && !isAdmin) {
+      throw new Error(
+        "Only organization admins can set feed privacy to public."
+      );
+    }
+
+    // Validate name field
+    const nameValidation = validateTextField(
+      name,
+      {
+        required: true,
+        minLength: 4,
+        maxLength: 25,
+      },
+      "Name"
+    );
+
+    if (!nameValidation.valid) {
+      throw new Error(nameValidation.errors[0].message);
+    }
+
+    // Validate description field
+    if (description) {
+      const descriptionValidation = validateTextField(
+        description,
+        {
+          maxLength: 100,
+        },
+        "Description"
+      );
+
+      if (!descriptionValidation.valid) {
+        throw new Error(descriptionValidation.errors[0].message);
+      }
+    }
+
+    // Update the feed
+    await ctx.db.patch(feedId, {
+      name,
+      description,
+      privacy,
+      memberPermissions,
+      updatedAt: Date.now(),
+    });
+
+    // Return the updated feed
+    const updatedFeed = await ctx.db.get(feedId);
+    return updatedFeed;
+  },
+});

@@ -28,6 +28,7 @@ export default defineSchema({
   feeds: defineTable({
     ...defaultColumns,
     name: v.string(),
+    description: v.optional(v.string()),
     privacy: v.union(
       v.literal("public"),
       v.literal("private"),
@@ -44,7 +45,7 @@ export default defineSchema({
     feedId: v.id("feeds"),
     owner: v.boolean(),
   })
-  .index("by_user_and_feed_and_org", ["userId", "feedId", "orgId"])
+  .index("by_org_and_feed_and_user", ["orgId", "feedId", "userId"])
   .index("by_userId", ["userId"]),
   posts: defineTable({
     ...defaultColumns,

@@ -160,11 +160,11 @@ class FeedAuthContextImpl implements FeedAuthContext {
 
     const userFeed = await this.ctx.db
       .query("userFeeds")
-      .withIndex("by_user_and_feed_and_org", (q) =>
+      .withIndex("by_org_and_feed_and_user", (q) =>
         q
-          .eq("userId", this.user!.id)
-          .eq("feedId", this.feedId)
-          .eq("orgId", this.user!.orgId),
+        .eq("orgId", this.user!.orgId)
+        .eq("feedId", this.feedId)
+        .eq("userId", this.user!.id)
       )
       .first();
 
@@ -195,11 +195,11 @@ class FeedAuthContextImpl implements FeedAuthContext {
     // Get ownership status from userFeed
     const userFeed = await this.ctx.db
       .query("userFeeds")
-      .withIndex("by_user_and_feed_and_org", (q) =>
+      .withIndex("by_org_and_feed_and_user", (q) =>
         q
-          .eq("userId", this.user!.id)
-          .eq("feedId", this.feedId)
-          .eq("orgId", this.user!.orgId),
+        .eq("orgId", this.user!.orgId)
+        .eq("feedId", this.feedId)
+        .eq("userId", this.user!.id)
       )
       .first();
 
@@ -228,11 +228,11 @@ class FeedAuthContextImpl implements FeedAuthContext {
     // Get ownership status from userFeed
     const userFeed = await this.ctx.db
       .query("userFeeds")
-      .withIndex("by_user_and_feed_and_org", (q) =>
+      .withIndex("by_org_and_feed_and_user", (q) =>
         q
-          .eq("userId", this.user!.id)
+          .eq("orgId", this.user!.orgId)
           .eq("feedId", this.feedId)
-          .eq("orgId", this.user!.orgId),
+          .eq("userId", this.user!.id)
       )
       .first();
 
