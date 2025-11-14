@@ -76,11 +76,11 @@ You should research feed permissions/privacy in the codebase to get a full under
 - Add `description` (string, optional, max length 600 characters) to the feed schema
 - Implement backend Convex query for getting the feed for the frontend to display
 - Implement backend Convex mutation for saving the feed
-	- This should also update the `updatedAt` column in the `feeds` table
+  - This should also update the `updatedAt` column in the `feeds` table
 - Both the query and mutation should check that the user is an admin and that the feed belongs to the org that the user belongs to, otherwise throw
 - Validate the form fields using the validation module
-	- The Name field should be required and have a minimum length of 4 characters and a max of 25 characters
-	- The Description field should be optional and have a max of 600 characters
+  - The Name field should be required and have a minimum length of 4 characters and a max of 25 characters
+  - The Description field should be optional and have a max of 600 characters
 
 ### Questions
 
@@ -126,11 +126,11 @@ You should research feed permissions/privacy in the codebase to get a full under
 - The modal should have two tabs: Settings and Members. For now, Members will be empty
 - Use the `Input`, `Select` and `Button` components for the form
 - The form fields should validate based on the props given each field
-	- The Name field should be required and have a minimum length of 4 characters and a max of 25 characters
-	- The Description field should be optional and have a max of 600 characters
-	- The fields should validate both on blur and on submission. Submission should be blocked if there are any validation errors
+  - The Name field should be required and have a minimum length of 4 characters and a max of 25 characters
+  - The Description field should be optional and have a max of 600 characters
+  - The fields should validate both on blur and on submission. Submission should be blocked if there are any validation errors
 - When hitting the Save button, the button should be disabled until the Convex mutation finishes running
-	- The Save button should temporarily read, "Saved!" before changing back to its default state
+  - The Save button should temporarily read, "Saved!" before changing back to its default state
 
 ### Questions
 
