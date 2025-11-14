@@ -8,16 +8,16 @@ We have a new feed settings modal (implemented in `FeedSettingsModalContent.tsx`
 
 ## Part 1: Backend
 - Implement `getFeedMembers` convex query for getting the list of users for the feed (should be added to a new `userMemberships.ts`)
-	- Feed owners and feed members can call this
+  - Feed owners and feed members can call this
 - Implement `getUsersNotInFeed` convex query for getting users NOT in the feed (this will be used for the invite to feed function) and accept a `feedId`
-	- Only feed owners can call this
+  - Only feed owners can call this
 - Implement `inviteUsersToFeed` convex mutation for inviting a list of users to a feed (should accept an array of user IDs and a single feed ID)
-	- Only feed owners can call this
+  - Only feed owners can call this
 - Implement `removeMemberFromFeed` convex mutation for removing a user from a feed (single user ID)
-	- Only feed owners can call this, unless the user is removing themselves from the feed
-	- If no user ID is supplied, use the currently authed user
+  - Only feed owners can call this, unless the user is removing themselves from the feed
+  - If no user ID is supplied, use the currently authed user
 - Implement `changeMemberRole` convex mutation for changing member role (Member or Owner - determined by `owner` column in `userFeeds` table, see `schema.ts`)
-	- Only feed owners can call this
+  - Only feed owners can call this
 
 ## Questions
 
@@ -141,8 +141,8 @@ First, the card component should be used like this:
 
 ```tsx
 <Card>
-	<CardHeader>header stuff...</CardHeader>
-	<CardBody>body stuff...</CardBody>
+  <CardHeader>header stuff...</CardHeader>
+  <CardBody>body stuff...</CardBody>
 </Card>
 ```
 
@@ -161,16 +161,16 @@ Now, for CardList, it should accept `renderCardHeader` and `renderCardBody` prop
 ## Part 3: Frontend
 - Remove the "Members tab coming soon..." text from the members tab
 - Add an invite function at the top of the tab
-	- To select users, use the `<UserSelect>` component. It should get users with the `getUsersNotInFeed` query
-	- An Invite button that, when pressed, takes all of the selected user IDs and sends them to the `inviteUsersToFeed` mutation
-	- The user selection should clear after the mutation successfully runs
+  - To select users, use the `<UserSelect>` component. It should get users with the `getUsersNotInFeed` query
+  - An Invite button that, when pressed, takes all of the selected user IDs and sends them to the `inviteUsersToFeed` mutation
+  - The user selection should clear after the mutation successfully runs
 - Add a card list using of users using the new `<CardList>` component
 - For each user display:
-	- Avatar (should be in the header)
-	- Name (should be in the header)
-	- Email (body)
-	- Role - dropdown (Member or Owner) (changing this immediately calls `changeMemberRole`) (body)
-	- Remove - button to remove from feed. Uses a `confirm()` and then calls `removeMemberFromFeed` (body)
+  - Avatar (should be in the header)
+  - Name (should be in the header)
+  - Email (body)
+  - Role - dropdown (Member or Owner) (changing this immediately calls `changeMemberRole`) (body)
+  - Remove - button to remove from feed. Uses a `confirm()` and then calls `removeMemberFromFeed` (body)
 - If the current owner viewing the list is the only owner, they should not be able to remove themselves from the feed, and the button should be disabled
 
 ### Questions
