@@ -102,7 +102,12 @@ export default function Feed({
     }
   );
 
-  const feed = useQuery(api.feeds.getFeed, feedId ? { orgId, feedId } : "skip");
+  const feed = useQuery(
+    api.feeds.getFeed,
+    feedSettingsFeedIdSlug && org
+      ? { orgId, feedId: feedSettingsFeedIdSlug }
+      : "skip"
+  );
 
   const vh = useViewportHeight();
   const endOfFeed = useRef<HTMLDivElement>(null);
