@@ -155,13 +155,6 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
       });
   }, [auth, feedId]);
 
-  // Clear invite error when selection changes
-  useEffect(() => {
-    if (inviteError && selectedUserIds.length > 0) {
-      setInviteError(null);
-    }
-  }, [selectedUserIds, inviteError]);
-
   // Convert usersNotInFeed to UserOption format
   const userOptions: UserOption[] =
     usersNotInFeed?.map((user) => ({
@@ -200,6 +193,7 @@ export default function FeedMembersTab({ feedId }: FeedMembersTabProps) {
             }
             values={selectedUserIds}
             onChange={(value, isDeselecting) => {
+              setInviteError(null);
               if (isDeselecting) {
                 setSelectedUserIds((prev) => prev.filter((id) => id !== value));
               } else {
