@@ -39,10 +39,18 @@ export const uploadFile = httpAction(async (ctx, request) => {
     return jsonResponse({ error: "Missing orgId" }, 400);
   }
 
+  // Fetch organization host for CORS
+  const orgHost = await ctx.runQuery(
+    internal.organizations.getOrganizationHost,
+    { orgId }
+  );
+  const origin = orgHost ? `https://${orgHost}` : undefined;
+
   if (source !== "post" && source !== "message" && source !== "avatar" || typeof source !== "string") {
     return jsonResponse(
       { error: "Invalid source. Must be 'post', 'message', or 'avatar'" },
       400,
+      origin,
     );
   }
 
@@ -64,6 +72,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
     return jsonResponse(
       { error: authResult.reason || "Authentication failed" },
       authResult.allowed === false ? 403 : 401,
+      origin,
     );
   }
 
@@ -75,6 +84,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
       return jsonResponse(
         { error: "feedId is required for post/message uploads" },
         400,
+        origin,
       );
     }
 
@@ -95,6 +105,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
           error: reason || "Unauthorized to upload to this feed",
         },
         403,
+        origin,
       );
     }
   }
@@ -107,6 +118,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
     return jsonResponse(
       { error: `File validation failed: ${errorMessages}` },
       400,
+      origin,
     );
   }
 
@@ -117,6 +129,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
     return jsonResponse(
       { error: "Invalid file name: no extension found" },
       400,
+      origin,
     );
   }
 
@@ -131,6 +144,7 @@ export const uploadFile = httpAction(async (ctx, request) => {
         details: error instanceof Error ? error.message : "Unknown error",
       },
       500,
+      origin,
     );
   }
 
@@ -158,22 +172,22 @@ export const uploadFile = httpAction(async (ctx, request) => {
   // Get storage URL
   const url = await ctx.storage.getUrl(storageId);
   if (!url) {
-    return jsonResponse({ error: "Failed to get storage URL" }, 500);
+    return jsonResponse({ error: "Failed to get storage URL" }, 500, origin);
   }
 
   // Return successful response
   return jsonResponse({
     uploadId,
     url,
-  });
+  }, 200, origin);
 });
 
-function jsonResponse(data: unknown, status: number = 200): Response {
+function jsonResponse(data: unknown, status: number = 200, origin?: string): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": origin ?? "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
