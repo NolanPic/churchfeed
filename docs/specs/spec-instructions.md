@@ -2,7 +2,7 @@
 
 - I will ask you to implement one part of the spec at a time (e.g. "Part 1 - Database changes").
 - When you begin on a part, start with asking clarifying questions to ensure you understand the requirements. Be very rigorous in this, and make sure there are NO gaps in your understanding! You can even ask multiple rounds if needed.
-- Please ask your questions under a "## Questions" section under the current part (e.g. "Part 2 - Frontend") in the spec document.
+- Please ask your questions under a "## Questions" section under the current part (e.g. "Part 2 - Frontend") in the spec document. Include a "**Answer:** " line underneath each question where I can write my answer.
 - You may add as many follow-up questions underneath this "## Questions" section as needed to fully understand the requirements.
 - It is possible that there are inconsistencies or discrepancies in the requirements. It is your job to point these out and suggest improvements.
 - Be sure to fully understand the relevant parts of the codebase before you begin. If a relevant part of the codebase is unclear, please ask questions.

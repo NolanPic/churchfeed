@@ -17,6 +17,7 @@ import type * as auth_actionAuth from "../auth/actionAuth.js";
 import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
+import type * as notifications from "../notifications.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
 import type * as seed_seed from "../seed/seed.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   feeds: typeof feeds;
   http: typeof http;
   messages: typeof messages;
+  notifications: typeof notifications;
   organizations: typeof organizations;
   posts: typeof posts;
   "seed/seed": typeof seed_seed;
