@@ -4,9 +4,11 @@ import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
+import { useState, useEffect } from "react";
+import ProfileModal from "./ProfileModal";
 import Image from "next/image";
 
 export default function OrganizationLayout({
@@ -16,8 +18,16 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
+  const router = useRouter();
   const [auth] = useUserAuth();
   const isSignedIn = auth !== null;
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  useEffect(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    const isProfilePath = segments[0] === "profile" || segments.includes("profile");
+    setIsProfileModalOpen(isProfilePath);
+  }, [pathname]);
 
   if (org === null) {
     return (
@@ -33,7 +43,9 @@ export default function OrganizationLayout({
         <>
           {isSignedIn ? (
             <div className={styles.userAvatarMenu}>
-              <UserAvatarMenu />
+              <UserAvatarMenu
+                openProfileModal={() => setIsProfileModalOpen(true)}
+              />
             </div>
           ) : (
             <div className={styles.loginLink}>
@@ -64,6 +76,13 @@ export default function OrganizationLayout({
           {children}
         </motion.section>
       )}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => {
+          setIsProfileModalOpen(false);
+          router.back();
+        }}
+      />
     </>
   );
 }
