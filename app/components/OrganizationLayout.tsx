@@ -2,12 +2,18 @@
 
 import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import Image from "next/image";
+import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import NotificationsSidebar from "./NotificationsSidebar";
+import Icon from "./common/Icon";
 
 export default function OrganizationLayout({
   children,
@@ -18,6 +24,13 @@ export default function OrganizationLayout({
   const pathname = usePathname();
   const [auth] = useUserAuth();
   const isSignedIn = auth !== null;
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] = useState(false);
+
+  const orgId = org?._id as Id<"organizations">;
+  const unreadCount = useQuery(
+    api.notifications.getUnreadCount,
+    isSignedIn && orgId ? { orgId } : "skip"
+  );
 
   if (org === null) {
     return (
@@ -32,9 +45,22 @@ export default function OrganizationLayout({
       {pathname !== "/login" && (
         <>
           {isSignedIn ? (
-            <div className={styles.userAvatarMenu}>
-              <UserAvatarMenu />
-            </div>
+            <>
+              <button
+                type="button"
+                className={styles.notificationBellButton}
+                onClick={() => setIsNotificationsSidebarOpen(true)}
+                aria-label="Open notifications"
+              >
+                <Icon name="bell" size={24} />
+                {unreadCount !== undefined && unreadCount > 0 && (
+                  <span className={styles.badge}>{unreadCount}</span>
+                )}
+              </button>
+              <div className={styles.userAvatarMenu}>
+                <UserAvatarMenu />
+              </div>
+            </>
           ) : (
             <div className={styles.loginLink}>
               <Link href="/login">Sign in</Link>
@@ -64,6 +90,14 @@ export default function OrganizationLayout({
           {children}
         </motion.section>
       )}
+      <AnimatePresence>
+        {isNotificationsSidebarOpen && (
+          <NotificationsSidebar
+            isOpen={isNotificationsSidebarOpen}
+            onClose={() => setIsNotificationsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
