@@ -1,0 +1,162 @@
+/* Sidebar width variable for easy tweaking */
+:root {
+  --notifications-sidebar-width: 400px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  background-color: var(--dark);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (--tablet) {
+  .sidebar {
+    width: var(--notifications-sidebar-width);
+    border-right: 1px solid var(--mid);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing4);
+  border-bottom: 1px solid var(--mid);
+}
+
+.title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--white);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  padding: var(--spacing2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: var(--mid);
+}
+
+.clearAllButton {
+  margin: var(--spacing4);
+  margin-bottom: 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  text-align: right;
+  padding: var(--spacing2);
+  transition: opacity 0.2s;
+}
+
+.clearAllButton:hover {
+  opacity: 0.8;
+}
+
+.notificationsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing4);
+  padding-top: var(--spacing2);
+}
+
+.loading,
+.empty {
+  text-align: center;
+  padding: var(--spacing8);
+  color: var(--gray);
+  font-size: var(--text-sm);
+}
+
+.notificationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing3);
+  padding: var(--spacing4);
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s;
+  margin-bottom: var(--spacing2);
+}
+
+.notificationItem:hover {
+  background-color: var(--mid);
+}
+
+.notificationItem.unread {
+  background-color: rgba(from var(--accent) r g b / 0.1);
+}
+
+.notificationItem.unread:hover {
+  background-color: rgba(from var(--accent) r g b / 0.15);
+}
+
+.notificationContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing1);
+  min-width: 0;
+}
+
+.notificationTitle {
+  font-weight: 600;
+  color: var(--white);
+  font-size: var(--text-base);
+}
+
+.notificationBody {
+  color: var(--gray);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.unreadDot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-top: var(--spacing1);
+  transition: transform 0.2s;
+}
+
+.unreadDot:hover {
+  transform: scale(1.2);
+}
+
+.loadingMore {
+  text-align: center;
+  padding: var(--spacing4);
+  color: var(--gray);
+  font-size: var(--text-sm);
+}
