@@ -41,16 +41,19 @@ const notificationDataValidator = v.union(
 export type EnrichedNotification = Doc<"notifications"> & {
   title: string;
   body: string;
+  action: {
+    url: string;
+  };
 };
 
 /**
- * Helper function to generate notification text from notification data
+ * Helper function to create enriched notifications with title, body, and action URL
  * Returns default text if required entities no longer exist
  * @param ctx - Convex query context
  * @param notifications - Single notification or array of notifications
  * @returns Array of enriched notifications
  */
-async function getNotificationText(
+async function createEnrichedNotification(
   ctx: QueryCtx,
   notifications: Doc<"notifications"> | Doc<"notifications">[]
 ): Promise<EnrichedNotification[]> {
@@ -69,18 +72,15 @@ async function getNotificationText(
             const user = await ctx.db.get(typedData.userId);
             const feed = await ctx.db.get(typedData.feedId);
 
-            if (!user || !feed) {
-              return {
-                ...notification,
-                title: "New post",
-                body: "A new post was published",
-              };
-            }
-
             return {
               ...notification,
               title: "New post",
-              body: `${user.name} just published a post in ${feed.name}`,
+              body: user && feed
+                ? `${user.name} just published a post in ${feed.name}`
+                : "A new post was published",
+              action: {
+                url: `/post/${typedData.postId}`,
+              },
             };
           }
 
@@ -89,62 +89,47 @@ async function getNotificationText(
             const user = await ctx.db.get(typedData.userId);
             const feed = await ctx.db.get(typedData.feedId);
 
-            if (!user || !feed) {
-              return {
-                ...notification,
-                title: "New post in your feed",
-                body: "A new post was published in your feed",
-              };
-            }
-
             return {
               ...notification,
               title: "New post in your feed",
-              body: `${user.name} just published a post in your feed, ${feed.name}`,
+              body: user && feed
+                ? `${user.name} just published a post in your feed, ${feed.name}`
+                : "A new post was published in your feed",
+              action: {
+                url: `/post/${typedData.postId}`,
+              },
             };
           }
 
           case "new_message_in_post": {
             const typedData = data as { messageId: Id<"messages">; messageContent: string };
             const message = await ctx.db.get(typedData.messageId);
-
-            if (!message) {
-              return {
-                ...notification,
-                title: "New message",
-                body: "Someone responded in a post",
-              };
-            }
-
-            const sender = await ctx.db.get(message.senderId);
+            const sender = message ? await ctx.db.get(message.senderId) : null;
             const messageText = fromJSONToPlainText(typedData.messageContent, 100);
 
             return {
               ...notification,
               title: sender ? `${sender.name} responded in a post` : "Someone responded in a post",
               body: messageText || "New message",
+              action: {
+                url: message ? `/post/${message.postId}#${typedData.messageId}` : `/`,
+              },
             };
           }
 
           case "new_message_in_owned_post": {
             const typedData = data as { messageId: Id<"messages">; messageContent: string };
             const message = await ctx.db.get(typedData.messageId);
-
-            if (!message) {
-              return {
-                ...notification,
-                title: "New message in your post",
-                body: "Someone messaged in your post",
-              };
-            }
-
-            const sender = await ctx.db.get(message.senderId);
+            const sender = message ? await ctx.db.get(message.senderId) : null;
             const messageText = fromJSONToPlainText(typedData.messageContent, 100);
 
             return {
               ...notification,
               title: sender ? `${sender.name} messaged in your post` : "Someone messaged in your post",
               body: messageText || "New message",
+              action: {
+                url: message ? `/post/${message.postId}#${typedData.messageId}` : `/`,
+              },
             };
           }
 
@@ -153,18 +138,15 @@ async function getNotificationText(
             const user = await ctx.db.get(typedData.userId);
             const feed = await ctx.db.get(typedData.feedId);
 
-            if (!user || !feed) {
-              return {
-                ...notification,
-                title: "Someone joined your feed",
-                body: "A new member joined your feed",
-              };
-            }
-
             return {
               ...notification,
               title: "Someone joined your feed",
-              body: `${user.name} just joined ${feed.name}`,
+              body: user && feed
+                ? `${user.name} just joined ${feed.name}`
+                : "A new member joined your feed",
+              action: {
+                url: `/feed/${typedData.feedId}`,
+              },
             };
           }
 
@@ -173,18 +155,15 @@ async function getNotificationText(
             const user = await ctx.db.get(typedData.userId);
             const organization = await ctx.db.get(typedData.organizationId);
 
-            if (!user || !organization) {
-              return {
-                ...notification,
-                title: "New user requesting to join",
-                body: "Someone is requesting to join",
-              };
-            }
-
             return {
               ...notification,
               title: "New user requesting to join",
-              body: `${user.name} is requesting to join ${organization.name}`,
+              body: user && organization
+                ? `${user.name} is requesting to join ${organization.name}`
+                : "Someone is requesting to join",
+              action: {
+                url: `/admin/users?filter=needs_approval`,
+              },
             };
           }
 
@@ -193,6 +172,9 @@ async function getNotificationText(
               ...notification,
               title: "Notification",
               body: "",
+              action: {
+                url: `/`,
+              },
             };
         }
       } catch (error) {
@@ -201,6 +183,9 @@ async function getNotificationText(
           ...notification,
           title: "Notification",
           body: "",
+          action: {
+            url: `/`,
+          },
         };
       }
     })
@@ -265,8 +250,8 @@ export const getUserNotifications = query({
       .order("desc")
       .paginate(paginationOpts);
 
-    // Enrich notifications with title and body
-    const enrichedPage = await getNotificationText(ctx, result.page);
+    // Enrich notifications with title, body, and action URL
+    const enrichedPage = await createEnrichedNotification(ctx, result.page);
 
     return {
       ...result,
