@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -17,6 +17,8 @@ interface NotificationsSidebarProps {
   onClose: () => void;
 }
 
+type TabType = "all" | "unread";
+
 export default function NotificationsSidebar({
   isOpen,
   onClose,
@@ -26,6 +28,7 @@ export default function NotificationsSidebar({
   const router = useRouter();
   const endOfList = useRef<HTMLDivElement>(null);
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>("all");
 
   const itemsPerPage = 25;
 
@@ -37,6 +40,13 @@ export default function NotificationsSidebar({
 
   const markAsRead = useMutation(api.notifications.markNotificationAsRead);
   const clearAll = useMutation(api.notifications.clearNotifications);
+
+  // Filter notifications based on active tab
+  const filteredResults = useMemo(() => {
+    if (!results) return [];
+    if (activeTab === "all") return results;
+    return results.filter(notification => !notification.readAt);
+  }, [results, activeTab]);
 
   // IntersectionObserver for pagination
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
@@ -113,26 +123,47 @@ export default function NotificationsSidebar({
           </button>
         </div>
 
-        {results && results.length > 0 && (
-          <button
-            type="button"
-            className={styles.clearAllButton}
-            onClick={handleClearAll}
-          >
-            Clear all
-          </button>
-        )}
+        <div className={styles.tabsAndClearContainer}>
+          <div className={styles.tabs}>
+            <button
+              type="button"
+              className={`${styles.tab} ${activeTab === "all" ? styles.active : ""}`}
+              onClick={() => setActiveTab("all")}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              className={`${styles.tab} ${activeTab === "unread" ? styles.active : ""}`}
+              onClick={() => setActiveTab("unread")}
+            >
+              Unread
+            </button>
+          </div>
+
+          {results && results.length > 0 && (
+            <button
+              type="button"
+              className={styles.clearAllButton}
+              onClick={handleClearAll}
+            >
+              Clear all
+            </button>
+          )}
+        </div>
 
         <div className={styles.notificationsList}>
           {status === "LoadingFirstPage" && (
             <div className={styles.loading}>Loading notifications...</div>
           )}
 
-          {results && results.length === 0 && status !== "LoadingFirstPage" && (
-            <div className={styles.empty}>No notifications</div>
+          {filteredResults.length === 0 && status !== "LoadingFirstPage" && (
+            <div className={styles.empty}>
+              {activeTab === "unread" ? "No unread notifications" : "No notifications"}
+            </div>
           )}
 
-          {results && results.map((notification) => (
+          {filteredResults.map((notification) => (
             <button
               key={notification._id}
               type="button"

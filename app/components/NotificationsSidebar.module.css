@@ -27,13 +27,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing4);
+  padding: var(--spacing6);
   border-bottom: 1px solid var(--mid);
 }
 
 .title {
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
+  font-family: var(--font-gentium-plus);
   font-weight: 600;
+  font-style: italic;
   color: var(--white);
 }
 
@@ -54,15 +56,48 @@
   background-color: var(--mid);
 }
 
+.tabsAndClearContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing4);
+  padding-bottom: var(--spacing2);
+  border-bottom: 1px solid var(--mid);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--spacing2);
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  padding: var(--spacing2) var(--spacing3);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: var(--white);
+  background-color: rgba(from var(--white) r g b / 0.05);
+}
+
+.tab.active {
+  color: var(--white);
+  background-color: rgba(from var(--accent) r g b / 0.15);
+}
+
 .clearAllButton {
-  margin: var(--spacing4);
-  margin-bottom: 0;
   background: none;
   border: none;
   color: var(--accent);
   font-size: var(--text-sm);
   cursor: pointer;
-  text-align: right;
   padding: var(--spacing2);
   transition: opacity 0.2s;
 }

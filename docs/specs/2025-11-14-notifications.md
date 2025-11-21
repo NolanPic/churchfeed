@@ -34,7 +34,8 @@
 	- On mobile, the sidebar should take up the whole screen
 	- On desktop, the sidebar should be narrow and fixed to the left side of the screen
 		- It should use `<BackDrop>` so that the rest of the screen is dimmed, and clicking anywhere off of the sidebar closes it
-	- At the top of the sidebar should be a small "Clear all" text button (clicking this calls `clearNotifications`)
+	- At the top of the sidebar should be two tabs, "All" and "Unread". "All" should be default. When the user clicks "Unread", it should filter the notifications to just those that are unread
+	- Also at the top of the sidebar should be a small "Clear all" text button (clicking this calls `clearNotifications`)
 	- Under this the sidebar should render a list of notifications (coming from `getUserNotifications`). Each notification should display the `title` and `body`, as well as a small dot using `--accent` for its color that indicates whether the notification is read or not (if the dot is there, it means it's not read). The dot should display to the right of the notification text
 		- Use Convex pagination. When the user scrolls to the bottom of the notification sidebar, load the next "page"
 	- Clicking on a notification should take the user to the location that the notification is about. These are defined in `notification-types.md` under "Action" for each type
