@@ -117,11 +117,89 @@ When subscribing a user to web push notifications, a `PushSubscription` object i
 	- `deletePushSubscriptionsByUser` - accepts the `orgId` and gets the `userId` from the authed user. For now, this should delete all of a user's subscriptions
 	- `getPushSubscriptions` - gets a user's push subscriptions. Accepts `orgId` and gets the `userId` from the authed user
 
-## Part 3: Push notification frontend
+## Part 3: Add to homescreen instructions
+For iOS and Android, we want to show a prompt for logged-in users so that they can add the app to their homescreen.
+
+- The prompt should be its own component (`<InstallPrompt />`) and use a modal with a slide-to-close handle (the `<Modal>` component supports this)
+- It should show different instructions for iOS vs Android
+- For iOS, it should mention that adding the app to the user's homescreen will let them set up notifications
+- The component should detect if the user already has the web app installed (or are currently viewing in the installed app)
+- A "Done!" button should close the modal
+- A "No thanks" button should close the modal and set a local storage date stamp for 3 months in the future. The modal will not open again until the date stamp expires
+
+## Questions
+
+### Detection & Behavior
+
+1. For detecting if the user already has the web app installed, should I check `window.matchMedia('(display-mode: standalone)').matches` or is there a different method you prefer? Also, should the component detect this on every render, or just once on mount?
+**Answer:** That check will work. And please detect just once.
+
+2. When should the InstallPrompt automatically open? Should it:
+   - Open immediately when an authenticated user first visits the app (and hasn't dismissed it)?
+   - Open after some delay or specific user action?
+   - Never open automatically, only when explicitly triggered by something else?
+**Answer:** Open immediately.
+
+3. Should the InstallPrompt be shown on both mobile and desktop, or only on mobile devices? The spec mentions iOS and Android, but should we show it on desktop as well?
+**Answer:** Only on mobile devices.
+
+4. If a user is already viewing in the installed app (standalone mode), should the modal never show at all, or should it show with a success message like "You're already using the installed app"?
+**Answer:** It should never show at all.
+
+### Instructions Content
+
+5. What specific instructions should be shown for iOS? Should I include steps like:
+   - "Tap the Share button in Safari"
+   - "Scroll down and tap 'Add to Home Screen'"
+   - "Tap 'Add' in the top right"
+
+   Or do you want different/more detailed instructions?
+**Answer:** Include basic instructions like above, and I will edit them later if needed.
+
+6. What specific instructions should be shown for Android? Should I include steps like:
+   - "Tap the menu button (three dots)"
+   - "Tap 'Add to Home screen' or 'Install app'"
+
+   Or do you want different instructions?
+**Answer:** Same as iOS, basic instructions and I will edit later.
+
+7. Should the instructions include visual aids (icons, screenshots, or illustrations) or just text?
+**Answer:** It should include text and the share icon.
+
+### Technical Implementation
+
+8. Should I create a separate hook for managing the InstallPrompt state (like `useInstallPrompt()`) or should the logic live entirely within the component?
+**Answer:** Keep the logic in the component.
+
+9. For the localStorage key, should I use a specific naming pattern? For example: `cf_install_prompt_dismissed` or something else?
+**Answer:** `churchfeed_install_prompt_dismissed_until`
+
+10. Where should the InstallPrompt component be rendered? Should it be:
+    - In OrganizationLayout (so it appears on all authenticated pages)
+    - In the root layout
+    - Somewhere else?
+**Answer:** `OrganizationLayout`
+
+11. For OS detection, should I use `navigator.userAgent` or `navigator.platform`, or a combination? Also, should I handle other mobile platforms (like Windows Phone) or just iOS and Android?
+**Answer:** You can use `navigator.userAgent`. And this is only for iOS and Android.
+
+### Styling
+
+12. Should the modal have a title (like "Install ChurchFeed") or should the instructions be the only content?
+**Answer:** Yes, it can read "Install churchfeed" - use the modal's title prop.
+
+13. Should the "Done!" and "No thanks" buttons be styled as primary/secondary buttons, or some other way? Should they be in the modal toolbar or in the modal content?
+**Answer:** "Done!" should be primary, "No thanks" default. They can be in the modal toolbar.
+
+14. Should the instructions be formatted as numbered steps, bulleted list, or paragraphs?
+**Answer:** Numbered steps.
+
+
+## Part 4: Push notification frontend
 If a user does not have an existing web push notification subscription, we need to prompt them to subscribe. Additionally, we need to add a service worker that will handle showing notifications that it receives.
 
-- 
 
-## Part 4: Push notification backend
+
+## Part 5: Push notification backend
 The backend should only send notifications that the user wants to see. There is no frontend for the user to configure this yet, but the backend should support it.
 

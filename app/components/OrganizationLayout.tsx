@@ -14,6 +14,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import NotificationsSidebar from "./NotificationsSidebar";
 import Icon from "./common/Icon";
+import InstallPrompt from "./InstallPrompt";
 
 export default function OrganizationLayout({
   children,
@@ -98,6 +99,7 @@ export default function OrganizationLayout({
           />
         )}
       </AnimatePresence>
+      <InstallPrompt isAuthenticated={isSignedIn} />
     </>
   );
 }
