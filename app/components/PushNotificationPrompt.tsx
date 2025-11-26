@@ -36,7 +36,9 @@ export default function PushNotificationPrompt({
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
-  const createPushSubscription = useMutation(api.pushSubscriptions.createPushSubscription);
+  const createPushSubscription = useMutation(
+    api.pushSubscriptions.createPushSubscription,
+  );
 
   useEffect(() => {
     async function checkAndShowPrompt() {
@@ -130,7 +132,9 @@ export default function PushNotificationPrompt({
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        applicationServerKey: urlBase64ToUint8Array(
+          vapidPublicKey,
+        ) as BufferSource,
       });
 
       // Save subscription to database
