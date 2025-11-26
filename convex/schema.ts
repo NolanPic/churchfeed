@@ -128,5 +128,18 @@ export default defineSchema({
     ),
     readAt: v.optional(v.number()),
   })
-  .index("by_org_and_userId", ["orgId", "userId"])
+  .index("by_org_and_userId", ["orgId", "userId"]),
+  pushSubscriptions: defineTable({
+    ...defaultColumns,
+    userId: v.id("users"),
+    subscription: v.object({
+      endpoint: v.string(),
+      keys: v.object({
+        p256dh: v.string(),
+        auth: v.string(),
+      }),
+      expirationTime: v.union(v.number(), v.null()),
+    }),
+  })
+  .index("by_org_and_user", ["orgId", "userId"])
 });

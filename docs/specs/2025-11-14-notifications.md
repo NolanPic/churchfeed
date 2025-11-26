@@ -117,6 +117,23 @@ When subscribing a user to web push notifications, a `PushSubscription` object i
 	- `deletePushSubscriptionsByUser` - accepts the `orgId` and gets the `userId` from the authed user. For now, this should delete all of a user's subscriptions
 	- `getPushSubscriptions` - gets a user's push subscriptions. Accepts `orgId` and gets the `userId` from the authed user
 
+## Questions
+
+1. The `PushSubscription` object from the browser has the shape `{endpoint: string, keys: {p256dh: string, auth: string}, expirationTime: number | null}`. Should I store this as a single object field in the schema, or break it out into separate fields (`endpoint`, `p256dh`, `auth`, `expirationTime`)?
+**Answer:** Store the whole object in the field.
+
+2. Should `createPushSubscription` check if a subscription already exists for the user and update it, or should it always create a new one? Also, should there be a limit on how many subscriptions a user can have?
+**Answer:** It should always create a new one.
+
+3. Should the `pushSubscriptions` table have an index? If so, what should it be indexed by (e.g., `by_org_and_userId`)?
+**Answer:** Yes, include a `by_org_and_user` index.
+
+4. For `deletePushSubscriptionsByUser`, should this be a hard delete or should we have a `deletedAt` field for soft deletes?
+**Answer:** Hard delete.
+
+5. Should the mutations check for authentication using `getUserAuth()` like the notifications mutations do?
+**Answer:** Yes, use the same auth checks used in other mutations/queries.
+
 ## Part 3: Add to homescreen instructions
 For iOS and Android, we want to show a prompt for logged-in users so that they can add the app to their homescreen.
 
@@ -197,6 +214,11 @@ For iOS and Android, we want to show a prompt for logged-in users so that they c
 
 ## Part 4: Push notification frontend
 If a user does not have an existing web push notification subscription, we need to prompt them to subscribe. Additionally, we need to add a service worker that will handle showing notifications that it receives.
+
+- Create a new component, `<PushNotificationPrompt>`, with a similar UI to `<InstallPrompt>` (use the `<Modal>` component)
+- It should ask the user if they want to receive push notifications, then have two buttons, "Confirm", and "No thanks"
+- It should only show on mobile devices (iOS/Android)
+- It needs to handle subscribing to push, then saving the subscription to the `pushSubscriptions` table
 
 
 
