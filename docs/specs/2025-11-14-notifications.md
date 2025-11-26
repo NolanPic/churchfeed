@@ -219,8 +219,58 @@ If a user does not have an existing web push notification subscription, we need 
 - It should ask the user if they want to receive push notifications, then have two buttons, "Confirm", and "No thanks"
 - It should only show on mobile devices (iOS/Android)
 - It needs to handle subscribing to push, then saving the subscription to the `pushSubscriptions` table
+- Add a service worker (`public/sw.js` ) that will get registered by `<PushNotificationPrompt>` and will manage receiving and displaying incoming notifications
+- You can use https://nextjs.org/docs/app/guides/progressive-web-apps for reference for the above things, though be aware that there are some errors in their code examples
+- Add a test notification (can be triggered from the frontend) to confirm that it's working
 
+## Questions
 
+### Prompt Behavior
+
+1. When should the PushNotificationPrompt show? Should it:
+   - Show immediately after the user installs the app (triggered by InstallPrompt completion)?
+   - Show automatically when the user is in standalone mode and doesn't have a subscription?
+   - Show after some delay or on a specific page?
+**Answer:** It should show within the installed app only on iOS, or in both on Android. It should only show once the user is authenticated. It should check beforehand to see if there's an existing subscription, and only show if there isn't one.
+
+2. Should the PushNotificationPrompt check if the user already has a push subscription in the database before showing? Or should it check the browser's push subscription?
+**Answer:** It should check the browser's push subscription.
+
+3. If the user clicks "No thanks", should we store a dismissal timestamp like InstallPrompt does? If so, for how long (3 months, forever, etc.)?
+**Answer:** Yes, store a 1-month dismissal timestamp.
+
+4. Should the prompt only show when the app is in standalone mode, or also when viewing in the browser?
+**Answer:** In standalone mode on iOS, or either on Android.
+
+### Technical Implementation
+
+5. For the VAPID keys required for web push, where should these be stored? Environment variables? And should I generate them or do you have existing ones?
+**Answer:** Yes, they should be stored in `.env.local`. Please generate them using `npm install -g web-push` and `web-push generate-vapid-keys`
+
+6. When registering the service worker, should it be registered in the PushNotificationPrompt component, or in a more global location (like a useEffect in OrganizationLayout)?
+**Answer:** It can be in `OrganizationLayout`.
+
+7. For the service worker, should it handle any offline caching or other PWA features, or only push notifications?
+**Answer:** Only push notifications.
+
+8. What should the test notification say, and how should it be triggered? Should there be a button in the UI, or should I create a separate test page/component?
+**Answer:** Create a function on the window object, something like `window.__churchfeed.showNotification(title, body)`.
+
+9. Should the service worker display all notifications it receives, or should there be any filtering logic?
+**Answer:** It should check to ensure that there is content in the title and body of the push notification before displaying. If both are empty, it shouldn't display.
+
+### Error Handling
+
+10. What should happen if the user denies notification permissions at the browser level? Should we show an error message explaining how to re-enable them?
+**Answer:** Let's not worry about this for now.
+
+11. If the subscription fails to save to the database, should we unsubscribe from the browser push subscription?
+**Answer:** Yes.
+
+### iOS Considerations
+
+12. iOS Safari doesn't support the Push API in regular browser mode, only in installed PWAs (standalone mode). Should the prompt explain this to iOS users, or should we handle it differently?
+**Answer:** This is already explained in the `<InstallPrompt>`
 
 ## Part 5: Push notification backend
 The backend should only send notifications that the user wants to see. There is no frontend for the user to configure this yet, but the backend should support it.

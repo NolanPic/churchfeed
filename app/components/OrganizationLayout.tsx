@@ -8,13 +8,14 @@ import { usePathname } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import NotificationsSidebar from "./NotificationsSidebar";
 import Icon from "./common/Icon";
 import InstallPrompt from "./InstallPrompt";
+import PushNotificationPrompt from "./PushNotificationPrompt";
 
 export default function OrganizationLayout({
   children,
@@ -32,6 +33,39 @@ export default function OrganizationLayout({
     api.notifications.getUnreadCount,
     isSignedIn && orgId ? { orgId } : "skip"
   );
+
+  // Register service worker for push notifications
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+
+      // Create test notification function on window object
+      if (!window.__churchfeed) {
+        window.__churchfeed = {};
+      }
+
+      window.__churchfeed.showNotification = async (
+        title: string,
+        body: string
+      ) => {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification(title, {
+            body,
+            icon: "/logo.png",
+            badge: "/logo.png",
+          });
+          console.log("Test notification sent:", { title, body });
+        } catch (error) {
+          console.error("Failed to show notification:", error);
+        }
+      };
+    }
+  }, []);
 
   if (org === null) {
     return (
@@ -100,6 +134,7 @@ export default function OrganizationLayout({
         )}
       </AnimatePresence>
       <InstallPrompt isAuthenticated={isSignedIn} />
+      <PushNotificationPrompt isAuthenticated={isSignedIn} orgId={orgId} />
     </>
   );
 }

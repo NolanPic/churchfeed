@@ -1,0 +1,22 @@
+.content {
+  padding: var(--spacing12);
+}
+
+.description {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing8) 0;
+  color: var(--white);
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--spacing3);
+  justify-content: center;
+}
+
+.toolbarButton {
+  padding: var(--spacing8) var(--spacing10);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--text-md);
+}
