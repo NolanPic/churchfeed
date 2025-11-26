@@ -20,6 +20,7 @@ import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
 import type * as organizations from "../organizations.js";
 import type * as posts from "../posts.js";
+import type * as pushSubscriptions from "../pushSubscriptions.js";
 import type * as seed_seed from "../seed/seed.js";
 import type * as seed_storage from "../seed/storage.js";
 import type * as uploadAction from "../uploadAction.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   organizations: typeof organizations;
   posts: typeof posts;
+  pushSubscriptions: typeof pushSubscriptions;
   "seed/seed": typeof seed_seed;
   "seed/storage": typeof seed_storage;
   uploadAction: typeof uploadAction;
