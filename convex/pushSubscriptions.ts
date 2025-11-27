@@ -8,7 +8,6 @@ const pushSubscriptionValidator = v.object({
     p256dh: v.string(),
     auth: v.string(),
   }),
-  expirationTime: v.union(v.number(), v.null()),
 });
 
 /**
@@ -53,7 +52,7 @@ export const deletePushSubscriptionsByUser = mutation({
     const subscriptions = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_org_and_user", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id)
+        q.eq("orgId", orgId).eq("userId", user._id),
       )
       .collect();
 
@@ -85,7 +84,7 @@ export const getPushSubscriptions = query({
     const subscriptions = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_org_and_user", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id)
+        q.eq("orgId", orgId).eq("userId", user._id),
       )
       .collect();
 
