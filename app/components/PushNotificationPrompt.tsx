@@ -194,7 +194,7 @@ export default function PushNotificationPrompt({
             disabled={isSubscribing}
             className={styles.toolbarButton}
           >
-            No thanks
+            Later
           </Button>
         </div>
       </div>
