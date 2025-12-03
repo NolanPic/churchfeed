@@ -6,7 +6,7 @@ export function fromJSONToHTML(content: string) {
 
     // TODO: Remove when seeding script is updated
     // check if content is already HTML
-    if(content.startsWith("<p>")) {
+    if(content.startsWith("<")) {
         return content;
     }
 
@@ -45,7 +45,7 @@ export function fromJSONToHTML(content: string) {
 
 export function fromJSONToPlainText(content: string, maxLength?: number): string {
     // If content is already HTML, strip tags
-    if (content.startsWith("<p>")) {
+    if (content.startsWith("<")) {
         const text = content.replace(/<[^>]*>/g, '');
         return maxLength ? truncateText(text, maxLength) : text;
     }
