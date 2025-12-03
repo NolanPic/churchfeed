@@ -63,10 +63,17 @@ self.addEventListener("notificationclick", (event) => {
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // Check if there's already a window open
+        // Check if there's already a window open to the app
+        const targetUrl = new URL(urlToOpen, self.location.origin);
         for (let i = 0; i < clientList.length; i++) {
           const client = clientList[i];
-          if (client.url === urlToOpen && "focus" in client) {
+          const clientUrl = new URL(client.url);
+          // Match if the origins are the same (looser matching to handle query params)
+          if (clientUrl.origin === targetUrl.origin && "focus" in client) {
+            // Navigate to the target URL and focus
+            if (client.navigate) {
+              client.navigate(urlToOpen);
+            }
             return client.focus();
           }
         }
