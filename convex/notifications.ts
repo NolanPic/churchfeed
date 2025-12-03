@@ -283,7 +283,7 @@ export const getUnreadCount = query({
         q.eq("orgId", orgId).eq("userId", user._id)
       )
       .filter((q) => q.eq(q.field("readAt"), undefined))
-      .collect();
+      .take(100);
 
     return unreadNotifications.length;
   },
