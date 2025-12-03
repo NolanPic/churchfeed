@@ -339,7 +339,7 @@ export const clearNotifications = mutation({
         q.eq("orgId", orgId).eq("userId", user._id)
       )
       .filter((q) => q.eq(q.field("readAt"), undefined))
-      .collect();
+      .take(1000);
 
     const now = Date.now();
     for (const notification of notifications) {
