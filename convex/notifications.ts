@@ -342,11 +342,13 @@ export const clearNotifications = mutation({
       .take(1000);
 
     const now = Date.now();
-    for (const notification of notifications) {
-      await ctx.db.patch(notification._id, {
-        readAt: now,
-      });
-    }
+    await Promise.all(
+      notifications.map((notification) =>
+        ctx.db.patch(notification._id, {
+          readAt: now,
+        })
+      )
+    );
 
     return notifications.length;
   },
