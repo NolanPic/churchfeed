@@ -157,6 +157,7 @@ export default function PushNotificationPrompt({
       }
     } catch (error) {
       console.error("Error subscribing to push notifications:", error);
+      setIsOpen(false);
     } finally {
       setIsSubscribing(false);
     }
