@@ -1,8 +1,8 @@
 // service worker for push notifications
 
-self.addEventListener("install", () => {
+self.addEventListener("install", (event) => {
   console.log("Service Worker installing.");
-  self.skipWaiting();
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
