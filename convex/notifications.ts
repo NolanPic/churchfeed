@@ -7,21 +7,19 @@ import { fromJSONToPlainText } from "./utils/postContentConverter";
 
 const notificationTypeValidator = v.union(
   v.literal("new_post_in_member_feed"),
-  v.literal("new_post_in_owned_feed"),
   v.literal("new_message_in_post"),
-  v.literal("new_message_in_owned_post"),
   v.literal("new_feed_member"),
   v.literal("new_user_needs_approval")
 );
 
 const notificationDataValidator = v.union(
-  // new_post_in_member_feed & new_post_in_owned_feed
+  // new_post_in_member_feed
   v.object({
     userId: v.id("users"),
     feedId: v.id("feeds"),
     postId: v.id("posts"),
   }),
-  // new_message_in_post & new_message_in_owned_post
+  // new_message_in_post
   v.object({
     messageId: v.id("messages"),
     messageContent: v.string(),
@@ -51,18 +49,22 @@ export type EnrichedNotification = Doc<"notifications"> & {
  * Returns default text if required entities no longer exist
  * @param ctx - Convex query context
  * @param notifications - Single notification or array of notifications
+ * @param currentUserId - ID of the user viewing the notifications (to check ownership)
+ * @param orgId - Organization ID for querying userFeeds
  * @returns Array of enriched notifications
  */
 async function createEnrichedNotification(
   ctx: QueryCtx,
-  notifications: Doc<"notifications"> | Doc<"notifications">[]
+  notifications: Doc<"notifications"> | Doc<"notifications">[],
+  currentUserId: Id<"users">,
+  orgId: Id<"organizations">
 ): Promise<EnrichedNotification[]> {
   const notificationsArray = Array.isArray(notifications)
     ? notifications
     : [notifications];
 
   const enriched = await Promise.all(
-    notificationsArray.map(async (notification): Promise<EnrichedNotification> => {
+    notificationsArray.map(async (notification): Promise<EnrichedNotification | null> => {
       const { type, data } = notification;
 
       try {
@@ -72,29 +74,25 @@ async function createEnrichedNotification(
             const user = await ctx.db.get(typedData.userId);
             const feed = await ctx.db.get(typedData.feedId);
 
-            return {
-              ...notification,
-              title: "New post",
-              body: user && feed
-                ? `${user.name} just published a post in ${feed.name}`
-                : "A new post was published",
-              action: {
-                url: `/post/${typedData.postId}`,
-              },
-            };
-          }
-
-          case "new_post_in_owned_feed": {
-            const typedData = data as { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> };
-            const user = await ctx.db.get(typedData.userId);
-            const feed = await ctx.db.get(typedData.feedId);
+            // Check if the current user is the owner of the feed
+            const userFeed = await ctx.db
+              .query("userFeeds")
+              .withIndex("by_org_and_feed_and_user", (q) =>
+                q.eq("orgId", orgId).eq("feedId", typedData.feedId).eq("userId", currentUserId)
+              )
+              .first();
+            const isOwner = userFeed?.owner === true;
 
             return {
               ...notification,
-              title: "New post in your feed",
+              title: isOwner ? "New post in your feed" : "New post",
               body: user && feed
-                ? `${user.name} just published a post in your feed, ${feed.name}`
-                : "A new post was published in your feed",
+                ? isOwner
+                  ? `${user.name} just published a post in your feed, ${feed.name}`
+                  : `${user.name} just published a post in ${feed.name}`
+                : isOwner
+                  ? "A new post was published in your feed"
+                  : "A new post was published",
               action: {
                 url: `/post/${typedData.postId}`,
               },
@@ -107,25 +105,19 @@ async function createEnrichedNotification(
             const sender = message ? await ctx.db.get(message.senderId) : null;
             const messageText = fromJSONToPlainText(typedData.messageContent, 100);
 
-            return {
-              ...notification,
-              title: sender ? `${sender.name} responded in a post` : "Someone responded in a post",
-              body: messageText || "New message",
-              action: {
-                url: message ? `/post/${message.postId}#${typedData.messageId}` : `/`,
-              },
-            };
-          }
-
-          case "new_message_in_owned_post": {
-            const typedData = data as { messageId: Id<"messages">; messageContent: string };
-            const message = await ctx.db.get(typedData.messageId);
-            const sender = message ? await ctx.db.get(message.senderId) : null;
-            const messageText = fromJSONToPlainText(typedData.messageContent, 100);
+            // Check if the current user is the owner of the post
+            const post = message ? await ctx.db.get(message.postId) : null;
+            const isOwner = post?.posterId === currentUserId;
 
             return {
               ...notification,
-              title: sender ? `${sender.name} messaged in your post` : "Someone messaged in your post",
+              title: sender
+                ? isOwner
+                  ? `${sender.name} messaged in your post`
+                  : `${sender.name} responded in a post`
+                : isOwner
+                  ? "Someone messaged in your post"
+                  : "Someone responded in a post",
               body: messageText || "New message",
               action: {
                 url: message ? `/post/${message.postId}#${typedData.messageId}` : `/`,
@@ -167,31 +159,15 @@ async function createEnrichedNotification(
             };
           }
 
-          default:
-            return {
-              ...notification,
-              title: "Notification",
-              body: "",
-              action: {
-                url: `/`,
-              },
-            };
         }
       } catch (error) {
         console.error("Error enriching notification:", error);
-        return {
-          ...notification,
-          title: "Notification",
-          body: "",
-          action: {
-            url: `/`,
-          },
-        };
+        return null;
       }
     })
   );
 
-  return enriched;
+  return enriched.filter((n): n is EnrichedNotification => n !== null);
 }
 
 /**
@@ -251,7 +227,7 @@ export const getUserNotifications = query({
       .paginate(paginationOpts);
 
     // Enrich notifications with title, body, and action URL
-    const enrichedPage = await createEnrichedNotification(ctx, result.page);
+    const enrichedPage = await createEnrichedNotification(ctx, result.page, user._id, orgId);
 
     return {
       ...result,

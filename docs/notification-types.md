@@ -4,32 +4,17 @@ Notifications are available as push notifications and email, with the possibilit
 ## New post in feed
 **Trigger**: A new post is published in a feed that the user is a member of
 **Label**: `new_post_in_member_feed`
-**Push title**: "New post"
-**Push body**: "{name} just published a post in {feed}"
-**Action**: Navigates to `/post/{postId}`
-**Data**: `userId`, `feedId`, `postId`
-## New post in feed user owns
-**Trigger**: A new post is published in a feed that the user is an owner of
-**Label** `new_post_in_owned_feed`
-**Details**: This takes precedence over `new_post_in_member_feed` - they will not both be sent.
-**Push title**: "New post in your feed"
-**Push body**: "{name} just published a post in your feed, {feed}"
+**Details**: If the user is the owner of the feed, the title and body are customized accordingly.
+**Push title**: "New post" (or "New post in your feed" if the user owns the feed)
+**Push body**: "{name} just published a post in {feed}" (or "{name} just published a post in your feed, {feed}" if the user owns the feed)
 **Action**: Navigates to `/post/{postId}`
 **Data**: `userId`, `feedId`, `postId`
 
-## New message in post user has messaged in
+## New message in post
 **Trigger**:  A new message is sent in a post that the user has messaged in
 **Label**: `new_message_in_post`
-**Push title**: "{name} responded in a post"
-**Push body**: "{message contents}"
-**Action**: Navigates to `/post/{postId}/#{messageId}`
-**Data**: `messageId` and the post content (`post.content` is the source data, which then needs to be converted into HTML or plain text, for email and push respectively)
-
-## New message in user's post
-**Trigger**:  A new message is sent in a post that the user published
-**Label**: `new_message_in_owned_post`
-**Details**: This takes precedence over `new_message_in_post` - they will not both be sent.
-**Push title**: "{name} messaged in your post"
+**Details**: If the user is the owner of the post (the poster), the title is customized accordingly.
+**Push title**: "{name} responded in a post" (or "{name} messaged in your post" if the user owns the post)
 **Push body**: "{message contents}"
 **Action**: Navigates to `/post/{postId}/#{messageId}`
 **Data**: `messageId` and the message content (`message.content` is the source data, which then needs to be converted into HTML or plain text, for email and push respectively)

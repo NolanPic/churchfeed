@@ -94,20 +94,18 @@ export default defineSchema({
     userId: v.id("users"),
     type: v.union(
       v.literal("new_post_in_member_feed"),
-      v.literal("new_post_in_owned_feed"),
       v.literal("new_message_in_post"),
-      v.literal("new_message_in_owned_post"),
       v.literal("new_feed_member"),
       v.literal("new_user_needs_approval"),
     ),
     data: v.union(
-      // new_post_in_member_feed & new_post_in_owned_feed
+      // new_post_in_member_feed
       v.object({
         userId: v.id("users"),
         feedId: v.id("feeds"),
         postId: v.id("posts"),
       }),
-      // new_message_in_post & new_message_in_owned_post
+      // new_message_in_post
       v.object({
         messageId: v.id("messages"),
         messageContent: v.string(),
