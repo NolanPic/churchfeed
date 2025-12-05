@@ -5,6 +5,7 @@ import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToPlainText } from "./utils/postContentConverter";
 import { getAll } from "convex-helpers/server/relationships";
+import { internal } from "./_generated/api";
 import webpush from "web-push";
 
 const notificationTypeValidator = v.union(
@@ -549,5 +550,216 @@ async function getNotificationRecipients(
   } catch (error) {
     console.error("Error getting notification recipients:", error);
     return [];
+  }
+}
+
+/**
+ * Enqueue a notification to be sent to relevant users
+ * This schedules a batch send operation
+ */
+export const enqueueNotification = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    type: notificationTypeValidator,
+    data: notificationDataValidator,
+  },
+  handler: async (ctx, args) => {
+    const { orgId, type, data } = args;
+
+    // Get all users who should receive this notification
+    const recipients = await getNotificationRecipients(ctx, orgId, type, data);
+
+    if (recipients.length === 0) {
+      return { recipientCount: 0 };
+    }
+
+    // Schedule the batch send
+    await ctx.scheduler.runAfter(0, internal.notifications.sendNotificationBatch, {
+      orgId,
+      type,
+      data,
+      recipients,
+    });
+
+    return { recipientCount: recipients.length };
+  },
+});
+
+/**
+ * Send notifications to a batch of users
+ * Creates notification records and sends push/email notifications
+ */
+export const sendNotificationBatch = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    type: notificationTypeValidator,
+    data: notificationDataValidator,
+    recipients: v.array(
+      v.object({
+        userId: v.id("users"),
+        preferences: v.array(v.union(v.literal("push"), v.literal("email"))),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, type, data, recipients } = args;
+    const now = Date.now();
+
+    // Create notification records for each user
+    const notificationIds = await Promise.all(
+      recipients.map((recipient) =>
+        ctx.db.insert("notifications", {
+          orgId,
+          userId: recipient.userId,
+          type,
+          data,
+          updatedAt: now,
+        })
+      )
+    );
+
+    // Separate recipients by preference type
+    const pushRecipients = recipients.filter((r) =>
+      r.preferences.includes("push")
+    );
+    const emailRecipients = recipients.filter((r) =>
+      r.preferences.includes("email")
+    );
+
+    // Send push notifications
+    if (pushRecipients.length > 0) {
+      await sendPushNotifications(ctx, orgId, type, data, pushRecipients);
+    }
+
+    // Send email notifications (not implemented yet)
+    if (emailRecipients.length > 0) {
+      // await sendEmailNotifications(ctx, orgId, type, data, emailRecipients);
+      // Structure would be:
+      // 1. Call collectNotificationData to get shared data
+      // 2. For each recipient:
+      //    - Call generateNotificationText with user-specific data
+      //    - Format and send email with title, body, and action URL
+      // 3. Handle email sending errors gracefully (log and continue)
+      console.warn("Email notifications not implemented yet");
+    }
+
+    return { notificationIds, sentCount: recipients.length };
+  },
+});
+
+/**
+ * Send push notifications to recipients
+ */
+async function sendPushNotifications(
+  ctx: MutationCtx,
+  orgId: Id<"organizations">,
+  type: string,
+  data: any,
+  recipients: Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>
+) {
+  try {
+    // Create a temporary notification object for data collection
+    const tempNotification = {
+      orgId,
+      type,
+      data,
+      userId: "" as Id<"users">, // Placeholder
+      updatedAt: Date.now(),
+      _id: "" as Id<"notifications">, // Placeholder
+      _creationTime: Date.now(),
+    } as Doc<"notifications">;
+
+    // Collect shared notification data once
+    const collectedData = await collectNotificationData(ctx, tempNotification);
+    if (!collectedData) {
+      console.error("Failed to collect notification data");
+      return;
+    }
+
+    // For new_post_in_member_feed, gather userFeed data for all recipients
+    let userFeedMap = new Map<Id<"users">, Doc<"userFeeds"> | null>();
+    if (type === "new_post_in_member_feed" && collectedData.type === "new_post_in_member_feed") {
+      const { feedId } = collectedData;
+      const userFeeds = await ctx.db
+        .query("userFeeds")
+        .withIndex("by_org_and_feed_and_user", (q) =>
+          q.eq("orgId", orgId).eq("feedId", feedId)
+        )
+        .collect();
+
+      for (const userFeed of userFeeds) {
+        userFeedMap.set(userFeed.userId, userFeed);
+      }
+    }
+
+    // Configure web-push with VAPID keys
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+    if (!vapidPublicKey || !vapidPrivateKey) {
+      console.error("VAPID keys not configured");
+      return;
+    }
+
+    webpush.setVapidDetails(
+      "mailto:noreply@churchfeed.com",
+      vapidPublicKey,
+      vapidPrivateKey
+    );
+
+    // Send to each recipient
+    for (const recipient of recipients) {
+      try {
+        // Get user-specific userFeed data if needed
+        const userFeedData = userFeedMap.get(recipient.userId) ?? null;
+
+        // Generate personalized notification text
+        const enrichedNotification = generateNotificationText(
+          tempNotification,
+          collectedData,
+          recipient.userId,
+          userFeedData
+        );
+
+        if (!enrichedNotification) {
+          console.warn(`Could not generate notification text for user ${recipient.userId}`);
+          continue;
+        }
+
+        // Get user's push subscriptions
+        const subscriptions = await ctx.db
+          .query("pushSubscriptions")
+          .withIndex("by_org_and_user", (q) =>
+            q.eq("orgId", orgId).eq("userId", recipient.userId)
+          )
+          .collect();
+
+        // Send to each subscription
+        for (const sub of subscriptions) {
+          try {
+            const payload = JSON.stringify({
+              title: enrichedNotification.title,
+              body: enrichedNotification.body,
+              url: enrichedNotification.action.url,
+              notificationId: enrichedNotification._id,
+            });
+
+            await webpush.sendNotification(sub.subscription, payload);
+          } catch (error: any) {
+            // Delete subscription if it's no longer valid
+            if (error.statusCode === 404 || error.statusCode === 410) {
+              console.log(`Deleting invalid push subscription ${sub._id}`);
+              await ctx.db.delete(sub._id);
+            } else {
+              console.error(`Error sending push notification to subscription ${sub._id}:`, error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Error sending push notification to user ${recipient.userId}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error("Error in sendPushNotifications:", error);
   }
 }
