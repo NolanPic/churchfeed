@@ -16,6 +16,13 @@ export default defineSchema({
     clerkId: v.optional(v.string()),
     deactivatedAt: v.optional(v.number()),
     role: v.union(v.literal("admin"), v.literal("user")),
+    settings: v.optional(
+      v.object({
+        notifications: v.optional(
+          v.array(v.union(v.literal("push"), v.literal("email")))
+        ),
+      })
+    ),
   })
     .index("by_org", ["orgId"])
     .index("by_org_and_email", ["orgId", "email"])
@@ -107,6 +114,7 @@ export default defineSchema({
       }),
       // new_message_in_post
       v.object({
+        userId: v.id("users"),
         messageId: v.id("messages"),
         messageContent: v.string(),
       }),
