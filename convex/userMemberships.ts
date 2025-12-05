@@ -230,6 +230,16 @@ export const inviteUsersToFeed = mutation({
         owner: false,
         updatedAt: now,
       });
+
+      // Enqueue notification for feed owners
+      await ctx.runMutation(internal.notifications.enqueueNotification, {
+        orgId,
+        type: "new_feed_member",
+        data: {
+          userId,
+          feedId,
+        },
+      });
     }
 
     return { success: true, invitedCount: userIds.length };
