@@ -4,6 +4,7 @@ import { Id } from "./_generated/dataModel";
 import { getUserAuth } from "@/auth/convex";
 import { getStorageUrl } from "./uploads";
 import { paginationOptsValidator } from "convex/server";
+import { internal } from "./_generated/api";
 
 /**
  * Helper function to check if a user is the last owner of a feed
