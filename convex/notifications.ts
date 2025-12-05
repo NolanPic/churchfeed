@@ -1,9 +1,11 @@
-import { mutation, query, QueryCtx, internalMutation } from "./_generated/server";
+import { mutation, query, QueryCtx, internalMutation, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToPlainText } from "./utils/postContentConverter";
+import { getAll } from "convex-helpers/server/relationships";
+import webpush from "web-push";
 
 const notificationTypeValidator = v.union(
   v.literal("new_post_in_member_feed"),
@@ -424,3 +426,128 @@ export const clearNotifications = mutation({
     return notifications.length;
   },
 });
+
+/**
+ * Helper to convert user IDs to recipients with preferences
+ * Filters out deactivated users and users with no notification preferences set
+ */
+async function userIdsToRecipients(
+  ctx: QueryCtx,
+  userIds: Id<"users">[]
+): Promise<Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>> {
+  const users = await getAll(ctx.db, userIds);
+  const recipients: Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }> = [];
+
+  for (const user of users) {
+    if (user && !user.deactivatedAt) {
+      const preferences = user.settings?.notifications;
+      if (preferences && preferences.length > 0) {
+        recipients.push({ userId: user._id, preferences });
+      }
+    }
+  }
+
+  return recipients;
+}
+
+/**
+ * Get all users who should receive a notification based on type and data
+ * Returns users with their notification preferences
+ */
+async function getNotificationRecipients(
+  ctx: QueryCtx,
+  orgId: Id<"organizations">,
+  type: string,
+  data: any
+): Promise<Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>> {
+  try {
+    switch (type) {
+      case "new_post_in_member_feed": {
+        const { userId: posterId, feedId } = data as {
+          userId: Id<"users">;
+          feedId: Id<"feeds">;
+          postId: Id<"posts">;
+        };
+
+        // Get all members of the feed except the poster
+        const feedMembers = await ctx.db
+          .query("userFeeds")
+          .withIndex("by_org_and_feed_and_user", (q) =>
+            q.eq("orgId", orgId).eq("feedId", feedId)
+          )
+          .collect();
+
+        const userIds = feedMembers
+          .map((m) => m.userId)
+          .filter((id) => id !== posterId);
+
+        return await userIdsToRecipients(ctx, userIds);
+      }
+
+      case "new_message_in_post": {
+        const { userId: senderId, messageId } = data as {
+          userId: Id<"users">;
+          messageId: Id<"messages">;
+          messageContent: string;
+        };
+
+        const message = await ctx.db.get(messageId);
+        if (!message) return [];
+
+        const post = await ctx.db.get(message.postId);
+        if (!post) return [];
+
+        const recipientUserIds = new Set<Id<"users">>();
+
+        // Add post owner if not the sender
+        if (post.posterId !== senderId) {
+          recipientUserIds.add(post.posterId);
+        }
+
+        // Get all users who have previously messaged in this post
+        const messages = await ctx.db
+          .query("messages")
+          .withIndex("by_orgId_postId", (q) =>
+            q.eq("orgId", orgId).eq("postId", message.postId)
+          )
+          .collect();
+
+        for (const msg of messages) {
+          if (msg.senderId !== senderId) {
+            recipientUserIds.add(msg.senderId);
+          }
+        }
+
+        return await userIdsToRecipients(ctx, Array.from(recipientUserIds));
+      }
+
+      case "new_feed_member": {
+        const { userId: newMemberId, feedId } = data as {
+          userId: Id<"users">;
+          feedId: Id<"feeds">;
+        };
+
+        // Get all owners of the feed except the new member
+        const feedOwners = await ctx.db
+          .query("userFeeds")
+          .withIndex("by_org_and_feed_and_user", (q) =>
+            q.eq("orgId", orgId).eq("feedId", feedId)
+          )
+          .filter((q) => q.eq(q.field("owner"), true))
+          .collect();
+
+        const userIds = feedOwners
+          .map((o) => o.userId)
+          .filter((id) => id !== newMemberId);
+
+        return await userIdsToRecipients(ctx, userIds);
+      }
+
+      default:
+        return [];
+    }
+  } catch (error) {
+    console.error("Error getting notification recipients:", error);
+    return [];
+  }
+}
