@@ -44,130 +44,204 @@ export type EnrichedNotification = Doc<"notifications"> & {
   };
 };
 
+type CollectedNotificationData =
+  | {
+      type: "new_post_in_member_feed";
+      user: Doc<"users"> | null;
+      feed: Doc<"feeds"> | null;
+      postId: Id<"posts">;
+      feedId: Id<"feeds">;
+    }
+  | {
+      type: "new_message_in_post";
+      message: Doc<"messages"> | null;
+      sender: Doc<"users"> | null;
+      post: Doc<"posts"> | null;
+      messageText: string;
+      messageId: Id<"messages">;
+    }
+  | {
+      type: "new_feed_member";
+      user: Doc<"users"> | null;
+      feed: Doc<"feeds"> | null;
+      feedId: Id<"feeds">;
+    }
+  | {
+      type: "new_user_needs_approval";
+      user: Doc<"users"> | null;
+      organization: Doc<"organizations"> | null;
+    };
+
 /**
- * Helper function to create enriched notifications with title, body, and action URL
- * Returns default text if required entities no longer exist
- * @param ctx - Convex query context
- * @param notifications - Single notification or array of notifications
- * @param currentUserId - ID of the user viewing the notifications (to check ownership)
- * @param orgId - Organization ID for querying userFeeds
- * @returns Array of enriched notifications
+ * Collect all data needed for a notification (called once per notification)
+ * This fetches user names, feed names, etc. that are the same for all recipients
  */
-async function createEnrichedNotification(
+async function collectNotificationData(
   ctx: QueryCtx,
-  notifications: Doc<"notifications"> | Doc<"notifications">[],
-  currentUserId: Id<"users">,
-  orgId: Id<"organizations">
-): Promise<EnrichedNotification[]> {
-  const notificationsArray = Array.isArray(notifications)
-    ? notifications
-    : [notifications];
+  notification: Doc<"notifications">
+): Promise<CollectedNotificationData | null> {
+  const { type, data } = notification;
 
-  const enriched = await Promise.all(
-    notificationsArray.map(async (notification): Promise<EnrichedNotification | null> => {
-      const { type, data } = notification;
+  try {
+    switch (type) {
+      case "new_post_in_member_feed": {
+        const typedData = data as { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> };
+        const user = await ctx.db.get(typedData.userId);
+        const feed = await ctx.db.get(typedData.feedId);
 
-      try {
-        switch (type) {
-          case "new_post_in_member_feed": {
-            const typedData = data as { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> };
-            const user = await ctx.db.get(typedData.userId);
-            const feed = await ctx.db.get(typedData.feedId);
-
-            // Check if the current user is the owner of the feed
-            const userFeed = await ctx.db
-              .query("userFeeds")
-              .withIndex("by_org_and_feed_and_user", (q) =>
-                q.eq("orgId", orgId).eq("feedId", typedData.feedId).eq("userId", currentUserId)
-              )
-              .first();
-            const isOwner = userFeed?.owner === true;
-
-            return {
-              ...notification,
-              title: isOwner ? "New post in your feed" : "New post",
-              body: user && feed
-                ? isOwner
-                  ? `${user.name} just published a post in your feed, ${feed.name}`
-                  : `${user.name} just published a post in ${feed.name}`
-                : isOwner
-                  ? "A new post was published in your feed"
-                  : "A new post was published",
-              action: {
-                url: `/post/${typedData.postId}`,
-              },
-            };
-          }
-
-          case "new_message_in_post": {
-            const typedData = data as { messageId: Id<"messages">; messageContent: string };
-            const message = await ctx.db.get(typedData.messageId);
-            const sender = message ? await ctx.db.get(message.senderId) : null;
-            const messageText = fromJSONToPlainText(typedData.messageContent, 100);
-
-            // Check if the current user is the owner of the post
-            const post = message ? await ctx.db.get(message.postId) : null;
-            const isOwner = post?.posterId === currentUserId;
-
-            return {
-              ...notification,
-              title: sender
-                ? isOwner
-                  ? `${sender.name} messaged in your post`
-                  : `${sender.name} responded in a post`
-                : isOwner
-                  ? "Someone messaged in your post"
-                  : "Someone responded in a post",
-              body: messageText || "New message",
-              action: {
-                url: message ? `/post/${message.postId}#${typedData.messageId}` : `/`,
-              },
-            };
-          }
-
-          case "new_feed_member": {
-            const typedData = data as { userId: Id<"users">; feedId: Id<"feeds"> };
-            const user = await ctx.db.get(typedData.userId);
-            const feed = await ctx.db.get(typedData.feedId);
-
-            return {
-              ...notification,
-              title: "Someone joined your feed",
-              body: user && feed
-                ? `${user.name} just joined ${feed.name}`
-                : "A new member joined your feed",
-              action: {
-                url: `/feed/${typedData.feedId}`,
-              },
-            };
-          }
-
-          case "new_user_needs_approval": {
-            const typedData = data as { userId: Id<"users">; organizationId: Id<"organizations"> };
-            const user = await ctx.db.get(typedData.userId);
-            const organization = await ctx.db.get(typedData.organizationId);
-
-            return {
-              ...notification,
-              title: "New user requesting to join",
-              body: user && organization
-                ? `${user.name} is requesting to join ${organization.name}`
-                : "Someone is requesting to join",
-              action: {
-                url: `/admin/users?filter=needs_approval`,
-              },
-            };
-          }
-
-        }
-      } catch (error) {
-        console.error("Error enriching notification:", error);
-        return null;
+        return {
+          type: "new_post_in_member_feed",
+          user,
+          feed,
+          postId: typedData.postId,
+          feedId: typedData.feedId,
+        };
       }
-    })
-  );
 
-  return enriched.filter((n): n is EnrichedNotification => n !== null);
+      case "new_message_in_post": {
+        const typedData = data as { messageId: Id<"messages">; messageContent: string };
+        const message = await ctx.db.get(typedData.messageId);
+        const sender = message ? await ctx.db.get(message.senderId) : null;
+        const post = message ? await ctx.db.get(message.postId) : null;
+        const messageText = fromJSONToPlainText(typedData.messageContent, 100);
+
+        return {
+          type: "new_message_in_post",
+          message,
+          sender,
+          post,
+          messageText,
+          messageId: typedData.messageId,
+        };
+      }
+
+      case "new_feed_member": {
+        const typedData = data as { userId: Id<"users">; feedId: Id<"feeds"> };
+        const user = await ctx.db.get(typedData.userId);
+        const feed = await ctx.db.get(typedData.feedId);
+
+        return {
+          type: "new_feed_member",
+          user,
+          feed,
+          feedId: typedData.feedId,
+        };
+      }
+
+      case "new_user_needs_approval": {
+        const typedData = data as { userId: Id<"users">; organizationId: Id<"organizations"> };
+        const user = await ctx.db.get(typedData.userId);
+        const organization = await ctx.db.get(typedData.organizationId);
+
+        return {
+          type: "new_user_needs_approval",
+          user,
+          organization,
+        };
+      }
+    }
+  } catch (error) {
+    console.error("Error collecting notification data:", error);
+    return null;
+  }
+}
+
+/**
+ * Generate personalized notification text for a specific user
+ * Returns null if required entities are missing (which means notification should not be sent)
+ * @param notification - The notification record from the database
+ * @param collectedData - Data collected once for all recipients via collectNotificationData
+ * @param targetUserId - The user who will receive this notification (for personalization)
+ * @param userFeedData - Pre-fetched userFeed for ownership checks to avoid redundant queries when sending to multiple users
+ */
+function generateNotificationText(
+  notification: Doc<"notifications">,
+  collectedData: CollectedNotificationData,
+  targetUserId: Id<"users">,
+  userFeedData?: Doc<"userFeeds"> | null
+): EnrichedNotification | null {
+  try {
+    switch (collectedData.type) {
+      case "new_post_in_member_feed": {
+        const { user, feed, postId } = collectedData;
+
+        if (!user || !feed) {
+          return null;
+        }
+
+        const isOwner = userFeedData?.owner === true;
+
+        return {
+          ...notification,
+          title: isOwner ? "New post in your feed" : "New post",
+          body: isOwner
+            ? `${user.name} just published a post in your feed, ${feed.name}`
+            : `${user.name} just published a post in ${feed.name}`,
+          action: {
+            url: `/post/${postId}`,
+          },
+        };
+      }
+
+      case "new_message_in_post": {
+        const { sender, post, messageText, messageId } = collectedData;
+
+        if (!sender || !post) {
+          return null;
+        }
+
+        const isOwner = post.posterId === targetUserId;
+
+        return {
+          ...notification,
+          title: isOwner
+            ? `${sender.name} messaged in your post`
+            : `${sender.name} responded in a post`,
+          body: messageText || "New message",
+          action: {
+            url: `/post/${post._id}#${messageId}`,
+          },
+        };
+      }
+
+      case "new_feed_member": {
+        const { user, feed, feedId } = collectedData;
+
+        if (!user || !feed) {
+          return null;
+        }
+
+        return {
+          ...notification,
+          title: "Someone joined your feed",
+          body: `${user.name} just joined ${feed.name}`,
+          action: {
+            url: `/feed/${feedId}`,
+          },
+        };
+      }
+
+      case "new_user_needs_approval": {
+        const { user, organization } = collectedData;
+
+        if (!user || !organization) {
+          return null;
+        }
+
+        return {
+          ...notification,
+          title: "New user requesting to join",
+          body: `${user.name} is requesting to join ${organization.name}`,
+          action: {
+            url: `/admin/users?filter=needs_approval`,
+          },
+        };
+      }
+    }
+  } catch (error) {
+    console.error("Error generating notification text:", error);
+    return null;
+  }
 }
 
 /**
@@ -226,12 +300,32 @@ export const getUserNotifications = query({
       .order("desc")
       .paginate(paginationOpts);
 
-    // Enrich notifications with title, body, and action URL
-    const enrichedPage = await createEnrichedNotification(ctx, result.page, user._id, orgId);
+    const enrichedPage = await Promise.all(
+      result.page.map(async (notification) => {
+        const collectedData = await collectNotificationData(ctx, notification);
+        if (!collectedData) {
+          return null;
+        }
+
+        let userFeedData: Doc<"userFeeds"> | null = null;
+        if (collectedData.type === "new_post_in_member_feed") {
+          userFeedData = await ctx.db
+            .query("userFeeds")
+            .withIndex("by_org_and_feed_and_user", (q) =>
+              q.eq("orgId", orgId).eq("feedId", collectedData.feedId).eq("userId", user._id)
+            )
+            .first();
+        }
+
+        return generateNotificationText(notification, collectedData, user._id, userFeedData);
+      })
+    );
+
+    const filteredPage = enrichedPage.filter((n): n is EnrichedNotification => n !== null);
 
     return {
       ...result,
-      page: enrichedPage,
+      page: filteredPage,
     };
   },
 });
