@@ -5,7 +5,8 @@
 - Please ask your questions under a "## Questions" section under the current part (e.g. "Part 2 - Frontend") in the spec document. Include a "**Answer:** " line underneath each question where I can write my answer.
 - You may add as many follow-up questions underneath this "## Questions" section as needed to fully understand the requirements.
 - It is possible that there are inconsistencies or discrepancies in the requirements. It is your job to point these out and suggest improvements.
-- Be sure to fully understand the relevant parts of the codebase before you begin. If a relevant part of the codebase is unclear, please ask questions.
+- Before you begin coding, offer a critique of any problems you see in the plan (even with the clarifications you've made via questioning). This is an important step because it allows us to take a step back and make sure that this is actually a good plan.
+-  Be sure to fully understand the relevant parts of the codebase before you begin.
 - Once you begin coding, if a question comes up that you did not get an answer to previously, **do NOT guess at the answer or decide your own strategy**, just ask a question.
 - Try to understand the coding style that is already in the project and follow that, rather than bringing your own style.
 - Lint regularly

@@ -273,5 +273,162 @@ If a user does not have an existing web push notification subscription, we need 
 **Answer:** This is already explained in the `<InstallPrompt>`
 
 ## Part 5: Push notification backend
+
+#### Schema Changes
 The backend should only send notifications that the user wants to see. There is no frontend for the user to configure this yet, but the backend should support it.
 
+**Users table**: Add `settings` field
+```typescript
+settings: v.optional(v.object({
+  notifications: v.optional(v.array(v.union(
+    v.literal("push"),
+    v.literal("email")
+  )))
+}))
+```
+
+**Default behavior**:
+- If `settings` is `undefined`, `settings.notifications` is `undefined`, or `settings.notifications` is `[]`, treat as opted out
+- When creating new users, set `settings.notifications` to `["push", "email"]` by default
+- Existing users without `settings` will not receive notifications until they opt in
+
+### Enqueueing process
+When an action happens in the app (e.g. a user publishes a new post), we need to enqueue notifications to be sent to the users to whom the action is relevant.
+
+1. `enqueueNotification` is called with the notification type and associated data:
+ ```ts
+enqueueNotification(
+	ctx,
+	orgId,
+	type, // notification type
+	data  // notification data
+)
+```
+2. `enqueueNotification` gets a list of all users that the notification should be sent to, along with their notification preferences (an array that allows `["push", "email"]`).
+	1. This should be a separate function
+	2. Notification recipients by type:
+		- `new_post_in_member_feed`: All feed members except the poster
+		- `new_message_in_post`: Post owner + all users who previously messaged in the post, except the current sender
+		- `new_feed_member`: All feed owners except the new member
+3. `enqueueNotification` then uses a Convex scheduled function (https://docs.convex.dev/scheduling/scheduled-functions) to schedule sending the batch of notifications to the relevant users.  The scheduled function should do three things:
+	1. Create `notifications` for each of the users.
+	2. Call `sendPushNotifications` with the list of users who have `push` enabled.
+	3. Call `sendEmailNotifications` with the list of users who have `email` enabled.
+	4. **IMPORTANT NOTE**: We will implement email notifications later, so don't actually implement `sendEmailNotifications`. Instead, write commented-out code for how calling `sendEmailNotifications` *should* work,  then write a `console.warn("Not implemented")`.
+4. `sendPushNotifications` will call `notifications.collectNotificationData` in @convex/notifications.ts to get the notification data.
+5. The `new_post_in_member_feed` notification type requires `userFeed` data. `sendPushNotifications` should check for this type and gather all the `userFeed`s for all the users and store them in a map where the user ID is the key and the `userFeed` doc is the value. Only do this work if it's required.
+6. `sendPushNotifications` will then loop through each user who should receive the notification and:
+	1. Generate the final notification data with `generateNotificationText` (in @convex/notifications.ts), passing in the specific user's `userFeed` if this is a `new_post_in_member_feed`.
+	2. Look up the user's `pushSubscriptions` and, for each one, send the notification to the subscription endpoint.
+	3. If the response from the endpoint is a 404 or 410, we should delete that subscription from the database (**note**: don't delete *all* of the user's subscriptions--only that specific one).
+7. `sendPushNotifications` and `sendEmailNotification` should not be called if there are no users to be passed in to them.
+8. Notifications should always exclude the person who triggered it.
+9. Call `enqueueNotification` in the areas of the app that relate to notifications defined in @notification-types.md. Please confirm with me the places you intend to call this.
+
+## Questions
+
+### Schema Changes
+
+1. For the `settings.notifications` field - should this be added to the users table schema or is there a separate settings table? The spec mentions adding to "Users table" but I want to confirm I should modify the existing `users` table in schema.ts.
+**Answer:** It should be the `users` table.
+
+2. The default behavior says new users should NOT have any default and must explicitly opt in. Should the schema use `v.optional()` for both the `settings` object and `settings.notifications` array? Or should we use a different structure?
+**Answer:** `v.optional()` for both.
+
+### Notification Enqueueing
+
+3. For `enqueueNotification`, based on the notification types, I plan to call it in these locations:
+   - **new_post_in_member_feed**: In `convex/posts.ts` in the `createPost` mutation after a post is successfully created
+   - **new_message_in_post**: In `convex/messages.ts` in the `create` mutation after a message is successfully created
+   - **new_feed_member**: In `convex/userMemberships.ts` in the `inviteUsersToFeed` mutation after users are added to a feed
+   - **new_user_needs_approval**: This one I'm not sure about - where in the codebase do users register and need approval? Is this in the auth flow or a separate mutation?
+
+   Can you confirm these locations are correct and point me to where user registration/approval happens?
+**Answer:** Those are correct, and the user approval one can wait - there isn't a UI implemented for registration or approving users yet.
+
+4. For scheduled functions in Convex, should I use `scheduler.runAfter(0, ...)` to run immediately but asynchronously, or a different delay? The spec doesn't specify timing.
+**Answer:** Yes, use 0.
+
+5. The spec says "Get a list of all users that the notification should be sent to". For each notification type, should the logic be:
+   - **new_post_in_member_feed**: All members of the feed EXCEPT the user who posted
+   - **new_message_in_post**: All users who have previously messaged in that post EXCEPT the user who just sent the message
+   - **new_feed_member**: All owners of the feed EXCEPT the user who just joined
+   - **new_user_needs_approval**: All admin users in the organization
+
+   Is this correct?
+**Answer:** Yes, though don't worry about **new_user_needs_approval**.
+
+6. For **new_message_in_post**, should the post owner also receive notifications even if they haven't messaged in the post yet? The notification text suggests yes ("messaged in your post"), but I want to confirm.
+**Answer:** Yes.
+
+### Push Notification Implementation
+
+7. The spec mentions using web-push for sending push notifications. Should I add `web-push` as a dependency to package.json? If so, should it be a regular dependency or devDependency?
+**Answer:** Yes, add it as a regular dep.
+
+8. For sending push notifications, the web-push library requires the VAPID keys (which I see are already in .env.local). Should I read these from environment variables in the Convex backend? How do I access environment variables in Convex functions?
+**Answer:** Just read them as you normally would (`process.env.SOMEKEY`), and Convex will inject them at runtime.
+
+9. When sending push notifications via web-push, the notification payload needs a specific format. Should I send just the title and body, or should I also include data like the action URL, notification ID, etc. for the service worker to handle?
+**Answer:** Send the URL and notification ID as well, and the service worker can decide what to do with that information.
+
+10. The spec mentions deleting a push subscription if we get a 404 or 410 response. Should we also handle other error codes (like 401, 403) differently, or just log and continue for all other errors?
+**Answer:** Just log them.
+
+11. For `collectNotificationData` - this is already implemented in the existing code. Should I export it so it can be used in the push notification sending logic, or should I refactor to avoid duplication?
+**Answer:** Export please.
+
+12. For `generateNotificationText` - this is also already implemented. The spec says to call it in `sendPushNotifications` with the user's `userFeed` if needed. Should I export this function as well, or create a new function specifically for push notifications?
+**Answer:** Yes, export.
+
+### User Feed Data for new_post_in_member_feed
+
+13. The spec says "The `new_post_in_member_feed` notification type requires `userFeed` data" and to "gather all the `userFeed`s for all the users and store them in a map". Since each user who receives the notification is already a member of the feed (that's why they're receiving it), should I query the `userFeeds` table once to get all memberships for that feed, then filter to only the users who should receive notifications?
+**Answer:** That sounds reasonable, go ahead with that. The reason we need it is because `userFeeds` defines `isOwner`, which is needed for customizing the notification text.
+
+14. When creating the notification record for each user, should the notification data stored in the database be the same for all users (e.g., just `userId`, `feedId`, `postId`), and only the enriched text (title/body) be personalized when sending?
+**Answer:** Yes, the data should be the same for all users, while the text is personalized when sending (not stored in the DB).
+
+### General Architecture
+
+15. Should `enqueueNotification` be an internal mutation or a regular mutation? Since it will be called from other mutations, I'm thinking internal mutation makes sense.
+**Answer:** Yes, go with internal.
+
+16. For the scheduled function that sends notifications, should it be an internal mutation as well? What should I name it (e.g., `sendNotificationBatch`, `processNotifications`)?
+**Answer:** Yes, internal. It can be called `sendNotificationBatch`.
+
+17. The spec mentions `sendEmailNotifications` should be stubbed out with commented code. Should the structure mirror `sendPushNotifications` (loop through users, generate text, etc.) or just a simple placeholder?
+**Answer:** It should mirror `sendPushNotifications`.
+
+18. When calling `enqueueNotification`, should I pass in the full notification object as a `Doc<"notifications">`, or just the type and data? The spec shows `notification // Doc<"notifications">` but notifications haven't been created yet at the point of enqueueing.
+**Answer:** Hmm, you're right. Let's just pass in the type and data, but be sure it's all strongly typed. Also, please update the spec above to fix this issue.
+
+19. Should error handling in `sendPushNotifications` be graceful (log errors but continue sending to other users) or should it throw and stop the entire batch?
+**Answer:** Graceful.
+
+20. For the "get all users that the notification should be sent to" logic - should this be a separate helper function that takes the notification type and data and returns a list of user IDs with their preferences? Or should it be inline in `enqueueNotification`?
+**Answer:** It should be a separate function.
+
+## Implementation Notes
+
+### Schema Updates
+- Add `userId` field to `new_message_in_post` notification data (consistent with other notification types, avoids extra lookups)
+- Update the schema data union type to include this field
+
+### Notification Preferences Logic
+- `undefined` or `[]` in `settings.notifications` = opted out
+- When creating new users, set to `["push", "email"]` by default
+- Existing users without settings remain opted out until they configure preferences
+
+### Recipient Logic by Type
+- `new_post_in_member_feed`: All feed members except the poster
+- `new_message_in_post`: Post owner + all previous commenters, except current sender
+  - First message: post owner only
+  - Subsequent: post owner + all who previously commented
+- `new_feed_member`: All feed owners except the new member
+
+### Calling Locations
+- `new_post_in_member_feed`: `convex/posts.ts` → `createPost` mutation
+- `new_message_in_post`: `convex/messages.ts` → `create` mutation
+- `new_feed_member`: `convex/userMemberships.ts` → `inviteUsersToFeed` mutation
+- `new_user_needs_approval`: Deferred (no registration UI yet)
