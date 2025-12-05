@@ -1,4 +1,4 @@
-import { mutation, query, QueryCtx, internalMutation, MutationCtx } from "./_generated/server";
+import { mutation, query, QueryCtx, internalMutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserAuth } from "@/auth/convex";
@@ -6,7 +6,6 @@ import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToPlainText } from "./utils/postContentConverter";
 import { getAll } from "convex-helpers/server/relationships";
 import { internal } from "./_generated/api";
-import webpush from "web-push";
 
 const notificationTypeValidator = v.union(
   v.literal("new_post_in_member_feed"),
@@ -626,9 +625,14 @@ export const sendNotificationBatch = internalMutation({
       r.preferences.includes("email")
     );
 
-    // Send push notifications
+    // Send push notifications via Node.js action
     if (pushRecipients.length > 0) {
-      await sendPushNotifications(ctx, orgId, type, data, pushRecipients);
+      await ctx.scheduler.runAfter(0, internal.pushNotifications.sendPushNotifications, {
+        orgId,
+        type,
+        data,
+        recipients: pushRecipients,
+      });
     }
 
     // Send email notifications (not implemented yet)
@@ -648,16 +652,19 @@ export const sendNotificationBatch = internalMutation({
 });
 
 /**
- * Send push notifications to recipients
+ * Get notification data for push notification sending
+ * Returns enriched notification data for each recipient
  */
-async function sendPushNotifications(
-  ctx: MutationCtx,
-  orgId: Id<"organizations">,
-  type: string,
-  data: any,
-  recipients: Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>
-) {
-  try {
+export const getNotificationDataForPush = internalQuery({
+  args: {
+    orgId: v.id("organizations"),
+    type: v.string(),
+    data: v.any(),
+    recipientUserIds: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, type, data, recipientUserIds } = args;
+
     // Create a temporary notification object for data collection
     const tempNotification = {
       orgId,
@@ -672,8 +679,7 @@ async function sendPushNotifications(
     // Collect shared notification data once
     const collectedData = await collectNotificationData(ctx, tempNotification);
     if (!collectedData) {
-      console.error("Failed to collect notification data");
-      return;
+      return [];
     }
 
     // For new_post_in_member_feed, gather userFeed data for all recipients
@@ -692,74 +698,57 @@ async function sendPushNotifications(
       }
     }
 
-    // Configure web-push with VAPID keys
-    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-    const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+    // Generate personalized notification text for each recipient
+    const results = [];
+    for (const userId of recipientUserIds) {
+      const userFeedData = userFeedMap.get(userId) ?? null;
+      const enrichedNotification = generateNotificationText(
+        tempNotification,
+        collectedData,
+        userId,
+        userFeedData
+      );
 
-    if (!vapidPublicKey || !vapidPrivateKey) {
-      console.error("VAPID keys not configured");
-      return;
+      results.push({
+        userId,
+        enrichedNotification,
+      });
     }
 
-    webpush.setVapidDetails(
-      "mailto:noreply@churchfeed.com",
-      vapidPublicKey,
-      vapidPrivateKey
-    );
+    return results;
+  },
+});
 
-    // Send to each recipient
-    for (const recipient of recipients) {
-      try {
-        // Get user-specific userFeed data if needed
-        const userFeedData = userFeedMap.get(recipient.userId) ?? null;
+/**
+ * Get user's push subscriptions
+ */
+export const getUserPushSubscriptions = internalQuery({
+  args: {
+    orgId: v.id("organizations"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, userId } = args;
 
-        // Generate personalized notification text
-        const enrichedNotification = generateNotificationText(
-          tempNotification,
-          collectedData,
-          recipient.userId,
-          userFeedData
-        );
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .withIndex("by_org_and_user", (q) =>
+        q.eq("orgId", orgId).eq("userId", userId)
+      )
+      .collect();
 
-        if (!enrichedNotification) {
-          console.warn(`Could not generate notification text for user ${recipient.userId}`);
-          continue;
-        }
+    return subscriptions;
+  },
+});
 
-        // Get user's push subscriptions
-        const subscriptions = await ctx.db
-          .query("pushSubscriptions")
-          .withIndex("by_org_and_user", (q) =>
-            q.eq("orgId", orgId).eq("userId", recipient.userId)
-          )
-          .collect();
-
-        // Send to each subscription
-        for (const sub of subscriptions) {
-          try {
-            const payload = JSON.stringify({
-              title: enrichedNotification.title,
-              body: enrichedNotification.body,
-              url: enrichedNotification.action.url,
-              notificationId: enrichedNotification._id,
-            });
-
-            await webpush.sendNotification(sub.subscription, payload);
-          } catch (error: any) {
-            // Delete subscription if it's no longer valid
-            if (error.statusCode === 404 || error.statusCode === 410) {
-              console.log(`Deleting invalid push subscription ${sub._id}`);
-              await ctx.db.delete(sub._id);
-            } else {
-              console.error(`Error sending push notification to subscription ${sub._id}:`, error);
-            }
-          }
-        }
-      } catch (error) {
-        console.error(`Error sending push notification to user ${recipient.userId}:`, error);
-      }
-    }
-  } catch (error) {
-    console.error("Error in sendPushNotifications:", error);
-  }
-}
+/**
+ * Delete a push subscription
+ */
+export const deletePushSubscription = internalMutation({
+  args: {
+    subscriptionId: v.id("pushSubscriptions"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.subscriptionId);
+  },
+});
