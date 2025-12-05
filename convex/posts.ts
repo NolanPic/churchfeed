@@ -99,6 +99,17 @@ export const createPost = mutation({
       updatedAt: now,
     });
 
+    // Enqueue notification for feed members
+    await ctx.runMutation(internal.notifications.enqueueNotification, {
+      orgId,
+      type: "new_post_in_member_feed",
+      data: {
+        userId: user._id,
+        feedId,
+        postId,
+      },
+    });
+
     return postId;
   }
 });
