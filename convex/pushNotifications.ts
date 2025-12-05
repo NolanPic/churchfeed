@@ -3,6 +3,7 @@
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { notificationDataValidator, notificationTypeValidator } from "./notifications";
 import webpush from "web-push";
 
 /**
@@ -12,8 +13,8 @@ import webpush from "web-push";
 export const sendPushNotifications = internalAction({
   args: {
     orgId: v.id("organizations"),
-    type: v.string(),
-    data: v.any(),
+    type: notificationTypeValidator,
+    data: notificationDataValidator,
     recipients: v.array(
       v.object({
         userId: v.id("users"),

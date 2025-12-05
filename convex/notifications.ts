@@ -4,6 +4,7 @@ import {
   QueryCtx,
   internalMutation,
   internalQuery,
+  MutationCtx,
 } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
@@ -13,14 +14,16 @@ import { fromJSONToPlainText } from "./utils/postContentConverter";
 import { getAll } from "convex-helpers/server/relationships";
 import { internal } from "./_generated/api";
 
-const notificationTypeValidator = v.union(
+export const notificationTypeValidator = v.union(
   v.literal("new_post_in_member_feed"),
   v.literal("new_message_in_post"),
   v.literal("new_feed_member"),
   v.literal("new_user_needs_approval"),
 );
 
-const notificationDataValidator = v.union(
+export type NotificationType = "new_post_in_member_feed" | "new_message_in_post" | "new_feed_member" | "new_user_needs_approval";
+
+export const notificationDataValidator = v.union(
   // new_post_in_member_feed
   v.object({
     userId: v.id("users"),
@@ -482,6 +485,12 @@ async function userIdsToRecipients(
   return recipients;
 }
 
+type NotificationData =
+  | { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> }
+  | { userId: Id<"users">; messageId: Id<"messages">; messageContent: string }
+  | { userId: Id<"users">; feedId: Id<"feeds"> }
+  | { userId: Id<"users">; organizationId: Id<"organizations"> };
+
 /**
  * Get all users who should receive a notification based on type and data
  * Returns users with their notification preferences
@@ -489,8 +498,8 @@ async function userIdsToRecipients(
 async function getNotificationRecipients(
   ctx: QueryCtx,
   orgId: Id<"organizations">,
-  type: string,
-  data: any,
+  type: NotificationType,
+  data: NotificationData,
 ): Promise<
   Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>
 > {
@@ -591,10 +600,10 @@ async function getNotificationRecipients(
  * This schedules a batch send operation
  */
 export async function enqueueNotification(
-  ctx: QueryCtx & { scheduler: any },
+  ctx: MutationCtx,
   orgId: Id<"organizations">,
-  type: string,
-  data: any,
+  type: NotificationType,
+  data: NotificationData,
 ) {
   // Get all users who should receive this notification
   const recipients = await getNotificationRecipients(ctx, orgId, type, data);
@@ -696,8 +705,8 @@ export const sendNotificationBatch = internalMutation({
 export const getNotificationDataForPush = internalQuery({
   args: {
     orgId: v.id("organizations"),
-    type: v.string(),
-    data: v.any(),
+    type: notificationTypeValidator,
+    data: notificationDataValidator,
     recipientUserIds: v.array(v.id("users")),
   },
   handler: async (ctx, args) => {
