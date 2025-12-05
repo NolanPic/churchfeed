@@ -596,12 +596,8 @@ export async function enqueueNotification(
   type: string,
   data: any,
 ) {
-  console.log("Enqueuing notification:", { orgId, type, data });
-
   // Get all users who should receive this notification
   const recipients = await getNotificationRecipients(ctx, orgId, type, data);
-
-  console.log("NOTIFICATION RECIPIENTS:", recipients);
 
   if (recipients.length === 0) {
     return { recipientCount: 0 };

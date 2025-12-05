@@ -1,9 +1,8 @@
 "use node";
 
-import { action, internalAction } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
 import webpush from "web-push";
 
 /**
@@ -51,8 +50,6 @@ export const sendPushNotifications = internalAction({
           recipientUserIds: recipients.map((r) => r.userId),
         },
       );
-
-      console.log("notification data:", notificationDataList);
 
       let sent = 0;
       let failed = 0;

@@ -107,8 +107,6 @@ export const createPost = mutation({
       updatedAt: now,
     });
 
-    console.log("post created!", postId);
-
     // Enqueue notification for feed members
     await enqueueNotification(ctx, orgId, "new_post_in_member_feed", {
       userId: user._id,
