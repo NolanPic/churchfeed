@@ -99,6 +99,17 @@ export const create = mutation({
       updatedAt: now,
     });
 
+    // Enqueue notification for post owner and previous commenters
+    await ctx.runMutation(internal.notifications.enqueueNotification, {
+      orgId,
+      type: "new_message_in_post",
+      data: {
+        userId: user._id,
+        messageId,
+        messageContent: content,
+      },
+    });
+
     return messageId;
   },
 });
