@@ -21,6 +21,7 @@ const notificationDataValidator = v.union(
   }),
   // new_message_in_post
   v.object({
+    userId: v.id("users"),
     messageId: v.id("messages"),
     messageContent: v.string(),
   }),
@@ -76,7 +77,7 @@ type CollectedNotificationData =
  * Collect all data needed for a notification (called once per notification)
  * This fetches user names, feed names, etc. that are the same for all recipients
  */
-async function collectNotificationData(
+export async function collectNotificationData(
   ctx: QueryCtx,
   notification: Doc<"notifications">
 ): Promise<CollectedNotificationData | null> {
@@ -99,7 +100,7 @@ async function collectNotificationData(
       }
 
       case "new_message_in_post": {
-        const typedData = data as { messageId: Id<"messages">; messageContent: string };
+        const typedData = data as { userId: Id<"users">; messageId: Id<"messages">; messageContent: string };
         const message = await ctx.db.get(typedData.messageId);
         const sender = message ? await ctx.db.get(message.senderId) : null;
         const post = message ? await ctx.db.get(message.postId) : null;
@@ -154,7 +155,7 @@ async function collectNotificationData(
  * @param targetUserId - The user who will receive this notification (for personalization)
  * @param userFeedData - Pre-fetched userFeed for ownership checks to avoid redundant queries when sending to multiple users
  */
-function generateNotificationText(
+export function generateNotificationText(
   notification: Doc<"notifications">,
   collectedData: CollectedNotificationData,
   targetUserId: Id<"users">,
