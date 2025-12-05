@@ -5,6 +5,7 @@ import { getUserAuth } from "@/auth/convex";
 import { getStorageUrl } from "./uploads";
 import { paginationOptsValidator } from "convex/server";
 import { internal } from "./_generated/api";
+import { enqueueNotification } from "./notifications";
 
 /**
  * Helper function to check if a user is the last owner of a feed
@@ -233,13 +234,9 @@ export const inviteUsersToFeed = mutation({
       });
 
       // Enqueue notification for feed owners
-      await ctx.runMutation(internal.notifications.enqueueNotification, {
-        orgId,
-        type: "new_feed_member",
-        data: {
-          userId,
-          feedId,
-        },
+      await enqueueNotification(ctx, orgId, "new_feed_member", {
+        userId,
+        feedId,
       });
     }
 

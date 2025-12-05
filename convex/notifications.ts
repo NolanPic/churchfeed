@@ -1,4 +1,10 @@
-import { mutation, query, QueryCtx, internalMutation, internalQuery } from "./_generated/server";
+import {
+  mutation,
+  query,
+  QueryCtx,
+  internalMutation,
+  internalQuery,
+} from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 import { getUserAuth } from "@/auth/convex";
@@ -11,7 +17,7 @@ const notificationTypeValidator = v.union(
   v.literal("new_post_in_member_feed"),
   v.literal("new_message_in_post"),
   v.literal("new_feed_member"),
-  v.literal("new_user_needs_approval")
+  v.literal("new_user_needs_approval"),
 );
 
 const notificationDataValidator = v.union(
@@ -36,7 +42,7 @@ const notificationDataValidator = v.union(
   v.object({
     userId: v.id("users"),
     organizationId: v.id("organizations"),
-  })
+  }),
 );
 
 export type EnrichedNotification = Doc<"notifications"> & {
@@ -81,14 +87,18 @@ type CollectedNotificationData =
  */
 export async function collectNotificationData(
   ctx: QueryCtx,
-  notification: Doc<"notifications">
+  notification: Doc<"notifications">,
 ): Promise<CollectedNotificationData | null> {
   const { type, data } = notification;
 
   try {
     switch (type) {
       case "new_post_in_member_feed": {
-        const typedData = data as { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> };
+        const typedData = data as {
+          userId: Id<"users">;
+          feedId: Id<"feeds">;
+          postId: Id<"posts">;
+        };
         const user = await ctx.db.get(typedData.userId);
         const feed = await ctx.db.get(typedData.feedId);
 
@@ -102,7 +112,11 @@ export async function collectNotificationData(
       }
 
       case "new_message_in_post": {
-        const typedData = data as { userId: Id<"users">; messageId: Id<"messages">; messageContent: string };
+        const typedData = data as {
+          userId: Id<"users">;
+          messageId: Id<"messages">;
+          messageContent: string;
+        };
         const message = await ctx.db.get(typedData.messageId);
         const sender = message ? await ctx.db.get(message.senderId) : null;
         const post = message ? await ctx.db.get(message.postId) : null;
@@ -132,7 +146,10 @@ export async function collectNotificationData(
       }
 
       case "new_user_needs_approval": {
-        const typedData = data as { userId: Id<"users">; organizationId: Id<"organizations"> };
+        const typedData = data as {
+          userId: Id<"users">;
+          organizationId: Id<"organizations">;
+        };
         const user = await ctx.db.get(typedData.userId);
         const organization = await ctx.db.get(typedData.organizationId);
 
@@ -161,7 +178,7 @@ export function generateNotificationText(
   notification: Doc<"notifications">,
   collectedData: CollectedNotificationData,
   targetUserId: Id<"users">,
-  userFeedData?: Doc<"userFeeds"> | null
+  userFeedData?: Doc<"userFeeds"> | null,
 ): EnrichedNotification | null {
   try {
     switch (collectedData.type) {
@@ -298,7 +315,7 @@ export const getUserNotifications = query({
     const result = await ctx.db
       .query("notifications")
       .withIndex("by_org_and_userId", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id)
+        q.eq("orgId", orgId).eq("userId", user._id),
       )
       .order("desc")
       .paginate(paginationOpts);
@@ -315,16 +332,26 @@ export const getUserNotifications = query({
           userFeedData = await ctx.db
             .query("userFeeds")
             .withIndex("by_org_and_feed_and_user", (q) =>
-              q.eq("orgId", orgId).eq("feedId", collectedData.feedId).eq("userId", user._id)
+              q
+                .eq("orgId", orgId)
+                .eq("feedId", collectedData.feedId)
+                .eq("userId", user._id),
             )
             .first();
         }
 
-        return generateNotificationText(notification, collectedData, user._id, userFeedData);
-      })
+        return generateNotificationText(
+          notification,
+          collectedData,
+          user._id,
+          userFeedData,
+        );
+      }),
     );
 
-    const filteredPage = enrichedPage.filter((n): n is EnrichedNotification => n !== null);
+    const filteredPage = enrichedPage.filter(
+      (n): n is EnrichedNotification => n !== null,
+    );
 
     return {
       ...result,
@@ -353,7 +380,7 @@ export const getUnreadCount = query({
     const unreadNotifications = await ctx.db
       .query("notifications")
       .withIndex("by_org_and_userId", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id)
+        q.eq("orgId", orgId).eq("userId", user._id),
       )
       .filter((q) => q.eq(q.field("readAt"), undefined))
       .take(100);
@@ -409,7 +436,7 @@ export const clearNotifications = mutation({
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_org_and_userId", (q) =>
-        q.eq("orgId", orgId).eq("userId", user._id)
+        q.eq("orgId", orgId).eq("userId", user._id),
       )
       .filter((q) => q.eq(q.field("readAt"), undefined))
       .take(1000);
@@ -419,8 +446,8 @@ export const clearNotifications = mutation({
       notifications.map((notification) =>
         ctx.db.patch(notification._id, {
           readAt: now,
-        })
-      )
+        }),
+      ),
     );
 
     return notifications.length;
@@ -433,10 +460,15 @@ export const clearNotifications = mutation({
  */
 async function userIdsToRecipients(
   ctx: QueryCtx,
-  userIds: Id<"users">[]
-): Promise<Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>> {
+  userIds: Id<"users">[],
+): Promise<
+  Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>
+> {
   const users = await getAll(ctx.db, userIds);
-  const recipients: Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }> = [];
+  const recipients: Array<{
+    userId: Id<"users">;
+    preferences: Array<"push" | "email">;
+  }> = [];
 
   for (const user of users) {
     if (user && !user.deactivatedAt) {
@@ -458,8 +490,10 @@ async function getNotificationRecipients(
   ctx: QueryCtx,
   orgId: Id<"organizations">,
   type: string,
-  data: any
-): Promise<Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>> {
+  data: any,
+): Promise<
+  Array<{ userId: Id<"users">; preferences: Array<"push" | "email"> }>
+> {
   try {
     switch (type) {
       case "new_post_in_member_feed": {
@@ -473,7 +507,7 @@ async function getNotificationRecipients(
         const feedMembers = await ctx.db
           .query("userFeeds")
           .withIndex("by_org_and_feed_and_user", (q) =>
-            q.eq("orgId", orgId).eq("feedId", feedId)
+            q.eq("orgId", orgId).eq("feedId", feedId),
           )
           .collect();
 
@@ -508,7 +542,7 @@ async function getNotificationRecipients(
         const messages = await ctx.db
           .query("messages")
           .withIndex("by_orgId_postId", (q) =>
-            q.eq("orgId", orgId).eq("postId", message.postId)
+            q.eq("orgId", orgId).eq("postId", message.postId),
           )
           .collect();
 
@@ -531,7 +565,7 @@ async function getNotificationRecipients(
         const feedOwners = await ctx.db
           .query("userFeeds")
           .withIndex("by_org_and_feed_and_user", (q) =>
-            q.eq("orgId", orgId).eq("feedId", feedId)
+            q.eq("orgId", orgId).eq("feedId", feedId),
           )
           .filter((q) => q.eq(q.field("owner"), true))
           .collect();
@@ -556,33 +590,37 @@ async function getNotificationRecipients(
  * Enqueue a notification to be sent to relevant users
  * This schedules a batch send operation
  */
-export const enqueueNotification = internalMutation({
-  args: {
-    orgId: v.id("organizations"),
-    type: notificationTypeValidator,
-    data: notificationDataValidator,
-  },
-  handler: async (ctx, args) => {
-    const { orgId, type, data } = args;
+export async function enqueueNotification(
+  ctx: QueryCtx & { scheduler: any },
+  orgId: Id<"organizations">,
+  type: string,
+  data: any,
+) {
+  console.log("Enqueuing notification:", { orgId, type, data });
 
-    // Get all users who should receive this notification
-    const recipients = await getNotificationRecipients(ctx, orgId, type, data);
+  // Get all users who should receive this notification
+  const recipients = await getNotificationRecipients(ctx, orgId, type, data);
 
-    if (recipients.length === 0) {
-      return { recipientCount: 0 };
-    }
+  console.log("NOTIFICATION RECIPIENTS:", recipients);
 
-    // Schedule the batch send
-    await ctx.scheduler.runAfter(0, internal.notifications.sendNotificationBatch, {
+  if (recipients.length === 0) {
+    return { recipientCount: 0 };
+  }
+
+  // Schedule the batch send
+  await ctx.scheduler.runAfter(
+    0,
+    internal.notifications.sendNotificationBatch,
+    {
       orgId,
       type,
       data,
       recipients,
-    });
+    },
+  );
 
-    return { recipientCount: recipients.length };
-  },
-});
+  return { recipientCount: recipients.length };
+}
 
 /**
  * Send notifications to a batch of users
@@ -597,7 +635,7 @@ export const sendNotificationBatch = internalMutation({
       v.object({
         userId: v.id("users"),
         preferences: v.array(v.union(v.literal("push"), v.literal("email"))),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -613,26 +651,30 @@ export const sendNotificationBatch = internalMutation({
           type,
           data,
           updatedAt: now,
-        })
-      )
+        }),
+      ),
     );
 
     // Separate recipients by preference type
     const pushRecipients = recipients.filter((r) =>
-      r.preferences.includes("push")
+      r.preferences.includes("push"),
     );
     const emailRecipients = recipients.filter((r) =>
-      r.preferences.includes("email")
+      r.preferences.includes("email"),
     );
 
     // Send push notifications via Node.js action
     if (pushRecipients.length > 0) {
-      await ctx.scheduler.runAfter(0, internal.pushNotifications.sendPushNotifications, {
-        orgId,
-        type,
-        data,
-        recipients: pushRecipients,
-      });
+      await ctx.scheduler.runAfter(
+        0,
+        internal.pushNotifications.sendPushNotifications,
+        {
+          orgId,
+          type,
+          data,
+          recipients: pushRecipients,
+        },
+      );
     }
 
     // Send email notifications (not implemented yet)
@@ -684,12 +726,15 @@ export const getNotificationDataForPush = internalQuery({
 
     // For new_post_in_member_feed, gather userFeed data for all recipients
     let userFeedMap = new Map<Id<"users">, Doc<"userFeeds"> | null>();
-    if (type === "new_post_in_member_feed" && collectedData.type === "new_post_in_member_feed") {
+    if (
+      type === "new_post_in_member_feed" &&
+      collectedData.type === "new_post_in_member_feed"
+    ) {
       const { feedId } = collectedData;
       const userFeeds = await ctx.db
         .query("userFeeds")
         .withIndex("by_org_and_feed_and_user", (q) =>
-          q.eq("orgId", orgId).eq("feedId", feedId)
+          q.eq("orgId", orgId).eq("feedId", feedId),
         )
         .collect();
 
@@ -706,7 +751,7 @@ export const getNotificationDataForPush = internalQuery({
         tempNotification,
         collectedData,
         userId,
-        userFeedData
+        userFeedData,
       );
 
       results.push({
@@ -733,7 +778,7 @@ export const getUserPushSubscriptions = internalQuery({
     const subscriptions = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_org_and_user", (q) =>
-        q.eq("orgId", orgId).eq("userId", userId)
+        q.eq("orgId", orgId).eq("userId", userId),
       )
       .collect();
 

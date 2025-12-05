@@ -19,7 +19,7 @@ export const sendPushNotifications = internalAction({
       v.object({
         userId: v.id("users"),
         preferences: v.array(v.union(v.literal("push"), v.literal("email"))),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -36,9 +36,9 @@ export const sendPushNotifications = internalAction({
       }
 
       webpush.setVapidDetails(
-        "mailto:noreply@churchfeed.com",
+        "mailto:nolanpic@gmail.com",
         vapidPublicKey,
-        vapidPrivateKey
+        vapidPrivateKey,
       );
 
       // Get notification data for all recipients
@@ -49,8 +49,10 @@ export const sendPushNotifications = internalAction({
           type,
           data,
           recipientUserIds: recipients.map((r) => r.userId),
-        }
+        },
       );
+
+      console.log("notification data:", notificationDataList);
 
       let sent = 0;
       let failed = 0;
@@ -58,7 +60,9 @@ export const sendPushNotifications = internalAction({
       // Send to each recipient
       for (const notificationData of notificationDataList) {
         if (!notificationData.enrichedNotification) {
-          console.warn(`Could not generate notification text for user ${notificationData.userId}`);
+          console.warn(
+            `Could not generate notification text for user ${notificationData.userId}`,
+          );
           failed++;
           continue;
         }
@@ -70,7 +74,7 @@ export const sendPushNotifications = internalAction({
             {
               orgId,
               userId: notificationData.userId,
-            }
+            },
           );
 
           // Send to each subscription
@@ -91,16 +95,22 @@ export const sendPushNotifications = internalAction({
                 console.log(`Deleting invalid push subscription ${sub._id}`);
                 await ctx.runMutation(
                   internal.notifications.deletePushSubscription,
-                  { subscriptionId: sub._id }
+                  { subscriptionId: sub._id },
                 );
               } else {
-                console.error(`Error sending push notification to subscription ${sub._id}:`, error);
+                console.error(
+                  `Error sending push notification to subscription ${sub._id}:`,
+                  error,
+                );
               }
               failed++;
             }
           }
         } catch (error) {
-          console.error(`Error sending push notification to user ${notificationData.userId}:`, error);
+          console.error(
+            `Error sending push notification to user ${notificationData.userId}:`,
+            error,
+          );
           failed++;
         }
       }
