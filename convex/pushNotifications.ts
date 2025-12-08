@@ -3,7 +3,10 @@
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { notificationDataValidator, notificationTypeValidator } from "./notifications";
+import {
+  notificationDataValidator,
+  notificationTypeValidator,
+} from "./notifications";
 import webpush from "web-push";
 
 /**
@@ -87,9 +90,17 @@ export const sendPushNotifications = internalAction({
 
               await webpush.sendNotification(sub.subscription, payload);
               sent++;
-            } catch (error: any) {
+            } catch (error) {
               // Delete subscription if it's no longer valid
-              if (error.statusCode === 404 || error.statusCode === 410) {
+              const isInvalidSubscription =
+                error &&
+                typeof error === "object" &&
+                "statusCode" in error &&
+                (error.statusCode === 404 ||
+                  error.statusCode === 410 ||
+                  error.statusCode === 400);
+
+              if (isInvalidSubscription) {
                 console.log(`Deleting invalid push subscription ${sub._id}`);
                 await ctx.runMutation(
                   internal.notifications.deletePushSubscription,
