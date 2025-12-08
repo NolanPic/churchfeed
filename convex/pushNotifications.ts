@@ -32,14 +32,19 @@ export const sendPushNotifications = internalAction({
       // Configure web-push with VAPID keys
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+      const vapidContactEmail = process.env.VAPID_CONTACT_EMAIL;
 
       if (!vapidPublicKey || !vapidPrivateKey) {
         console.error("VAPID keys not configured");
         return { sent: 0, failed: 0 };
       }
 
+      if (!vapidContactEmail) {
+        console.error("VAPID contact email not configured");
+      }
+
       webpush.setVapidDetails(
-        "mailto:nolanpic@gmail.com",
+        `mailto:${vapidContactEmail}`,
         vapidPublicKey,
         vapidPrivateKey,
       );
