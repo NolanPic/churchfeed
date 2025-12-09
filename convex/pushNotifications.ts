@@ -89,8 +89,10 @@ export const sendPushNotifications = internalAction({
               const payload = JSON.stringify({
                 title: notificationData.enrichedNotification.title,
                 body: notificationData.enrichedNotification.body,
-                url: notificationData.enrichedNotification.action.url,
-                notificationId: notificationData.enrichedNotification._id,
+                data: {
+                  url: notificationData.enrichedNotification.action.url,
+                  notificationId: notificationData.enrichedNotification._id,
+                },
               });
 
               await webpush.sendNotification(sub.subscription, payload);
