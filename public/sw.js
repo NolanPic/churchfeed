@@ -56,15 +56,31 @@ self.addEventListener("notificationclick", (event) => {
   console.log("Notification clicked", event);
   event.notification.close();
 
-  // Navigate to the app or specific URL if provided
+  // Get URL and notification ID from notification data
   const urlToOpen = event.notification.data?.url || "/";
+  const notificationId = event.notification.data?.notificationId;
+
+  // If we have a notification ID, append it to the URL as a query parameter
+  let finalUrl = urlToOpen;
+  if (notificationId) {
+    try {
+      const url = new URL(urlToOpen, self.location.origin);
+      url.searchParams.set("notificationId", notificationId);
+      finalUrl = url.pathname + url.search + url.hash;
+    } catch (e) {
+      console.error("Error appending notificationId to URL:", e);
+      // Fall back to original URL if parsing fails
+    }
+  }
 
   event.waitUntil(
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
         // Check if there's already a window open to the app
-        const targetUrl = new URL(urlToOpen, self.location.origin);
+        const targetUrl = new URL(finalUrl, self.location.origin);
+
+        console.log("Navigating to:", targetUrl.href);
         for (let i = 0; i < clientList.length; i++) {
           const client = clientList[i];
           const clientUrl = new URL(client.url);
@@ -72,14 +88,14 @@ self.addEventListener("notificationclick", (event) => {
           if (clientUrl.origin === targetUrl.origin && "focus" in client) {
             // Navigate to the target URL and focus
             if (client.navigate) {
-              client.navigate(urlToOpen);
+              client.navigate(finalUrl);
             }
             return client.focus();
           }
         }
         // If no window is open, open a new one
         if (self.clients.openWindow) {
-          return self.clients.openWindow(urlToOpen);
+          return self.clients.openWindow(finalUrl);
         }
       }),
   );

@@ -16,6 +16,7 @@ import NotificationsSidebar from "./NotificationsSidebar";
 import Icon from "./common/Icon";
 import InstallPrompt from "./InstallPrompt";
 import PushNotificationPrompt from "./PushNotificationPrompt";
+import NotificationMarkAsRead from "./NotificationMarkAsRead";
 
 export default function OrganizationLayout({
   children,
@@ -77,6 +78,7 @@ export default function OrganizationLayout({
 
   return (
     <>
+      <NotificationMarkAsRead />
       {pathname !== "/login" && (
         <>
           {isSignedIn ? (
