@@ -87,6 +87,75 @@
   padding: var(--spacing4);
 }
 
+.tabsContainer {
+  position: relative;
+  margin: 0 var(--modal-gutter) var(--spacing8);
+}
+
+.tabsFade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(to right, transparent, rgb(from var(--mid) r g b / 0.6));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tabList {
+  display: flex;
+  gap: var(--spacing8);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: var(--spacing2);
+  padding-right: var(--spacing10);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tab {
+  position: relative;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-family: var(--font-lato);
+  font-size: 1rem;
+  font-weight: 400;
+  padding: var(--spacing2) 0;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+}
+
+.tab.active {
+  opacity: 1;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--white);
+  }
+}
+
 @media (--tablet) {
   .modal {
     padding: var(--spacing18);

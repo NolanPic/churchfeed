@@ -35,8 +35,35 @@
     display: var(--displayOnLaptop);
 }
 
+.feedMembersButton {
+    display: var(--displayOnLaptop);
+}
+
 .adminSettingsButton {
     display: var(--displayOnLaptop);
+}
+
+.notificationBellButton {
+    display: var(--displayOnLaptop);
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--accent);
+    color: var(--dark);
+    font-size: 0.625rem;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    pointer-events: none;
 }
 
 @media (--laptop) {

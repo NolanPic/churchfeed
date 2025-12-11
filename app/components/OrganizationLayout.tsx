@@ -2,7 +2,7 @@
 
 import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
@@ -10,6 +10,14 @@ import styles from "./OrganizationLayout.module.css";
 import { useState, useEffect } from "react";
 import ProfileModal from "./ProfileModal";
 import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import NotificationsSidebar from "./NotificationsSidebar";
+import Icon from "./common/Icon";
+import InstallPrompt from "./InstallPrompt";
+import PushNotificationPrompt from "./PushNotificationPrompt";
+import NotificationMarkAsRead from "./NotificationMarkAsRead";
 
 export default function OrganizationLayout({
   children,
@@ -25,9 +33,49 @@ export default function OrganizationLayout({
 
   useEffect(() => {
     const segments = (pathname ?? "").split("/").filter(Boolean);
-    const isProfilePath = segments[0] === "profile" || segments.includes("profile");
+    const isProfilePath =
+      segments[0] === "profile" || segments.includes("profile");
     setIsProfileModalOpen(isProfilePath);
   }, [pathname]);
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
+    useState(false);
+
+  const orgId = org?._id as Id<"organizations">;
+  const unreadCount = useQuery(
+    api.notifications.getUnreadCount,
+    isSignedIn && orgId ? { orgId } : "skip"
+  );
+
+  // Register service worker for push notifications
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
+
+      // Create test notification function on window object
+      if (!window.__churchfeed) {
+        window.__churchfeed = {};
+      }
+
+      window.__churchfeed.showNotification = async (
+        title: string,
+        body: string
+      ) => {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification(title, {
+            body,
+            icon: "/logo.png",
+            badge: "/logo.png",
+          });
+          console.log("Test notification sent:", { title, body });
+        } catch (error) {
+          console.error("Failed to show notification:", error);
+        }
+      };
+    }
+  }, []);
 
   if (org === null) {
     return (
@@ -39,14 +87,28 @@ export default function OrganizationLayout({
 
   return (
     <>
+      <NotificationMarkAsRead />
       {pathname !== "/login" && (
         <>
           {isSignedIn ? (
-            <div className={styles.userAvatarMenu}>
-              <UserAvatarMenu
-                openProfileModal={() => setIsProfileModalOpen(true)}
-              />
-            </div>
+            <>
+              <button
+                type="button"
+                className={styles.notificationBellButton}
+                onClick={() => setIsNotificationsSidebarOpen(true)}
+                aria-label="Open notifications"
+              >
+                <Icon name="bell" size={24} />
+                {unreadCount !== undefined && unreadCount > 0 && (
+                  <span className={styles.badge}>{unreadCount}</span>
+                )}
+              </button>
+              <div className={styles.userAvatarMenu}>
+                <UserAvatarMenu
+                  openProfileModal={() => setIsProfileModalOpen(true)}
+                />
+              </div>
+            </>
           ) : (
             <div className={styles.loginLink}>
               <Link href="/login">Sign in</Link>
@@ -83,6 +145,16 @@ export default function OrganizationLayout({
           router.back();
         }}
       />
+      <AnimatePresence>
+        {isNotificationsSidebarOpen && (
+          <NotificationsSidebar
+            isOpen={isNotificationsSidebarOpen}
+            onClose={() => setIsNotificationsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <InstallPrompt isAuthenticated={isSignedIn} />
+      <PushNotificationPrompt isAuthenticated={isSignedIn} orgId={orgId} />
     </>
   );
 }

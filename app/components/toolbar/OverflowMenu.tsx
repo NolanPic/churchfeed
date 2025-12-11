@@ -26,6 +26,7 @@ const OverflowMenuItem = ({ label, icon, href }: MenuItem) => {
 interface OverflowMenuProps {
   showAdminSettings: boolean;
   showFeedSettings: boolean;
+  showFeedMembers: boolean;
 }
 
 const ICON_SIZE = 24;
@@ -33,6 +34,7 @@ const ICON_SIZE = 24;
 export default function OverflowMenu({
   showAdminSettings,
   showFeedSettings,
+  showFeedMembers,
 }: OverflowMenuProps) {
   const [, { user }] = useUserAuth();
   const { feedId } = useContext(CurrentFeedAndPostContext);
@@ -47,6 +49,13 @@ export default function OverflowMenu({
         <OverflowMenuItem
           label="Feed settings"
           icon={<Icon name="toggles" size={ICON_SIZE} />}
+          href={`/feed/${feedId}/settings`}
+        />
+      )}
+      {showFeedMembers && !!feedId && (
+        <OverflowMenuItem
+          label="Members"
+          icon={<Icon name="users" size={ICON_SIZE} />}
           href={`/feed/${feedId}/settings`}
         />
       )}

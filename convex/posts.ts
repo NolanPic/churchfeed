@@ -7,12 +7,13 @@ import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
 import { internal } from "./_generated/api";
+import { enqueueNotification } from "./notifications";
 
 export const getUserPosts = query({
   args: {
     orgId: v.id("organizations"),
     selectedFeedId: v.optional(v.id("feeds")),
-    paginationOpts: paginationOptsValidator
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const { orgId, selectedFeedId } = args;
@@ -23,29 +24,30 @@ export const getUserPosts = query({
 
     let feeds: Doc<"feeds">[] = [...publicFeeds];
 
-    if(user) {
-      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+    if (user) {
+      const { feeds: feedsUserIsMemberOf } =
+        await getUserFeedsWithMembershipsHelper(ctx, user._id);
       feeds = feeds.concat(feedsUserIsMemberOf);
     }
 
-    if(selectedFeedId) {
-      feeds = feeds.filter(feed => feed._id === selectedFeedId);
+    if (selectedFeedId) {
+      feeds = feeds.filter((feed) => feed._id === selectedFeedId);
     }
 
-    let posts = await ctx.db
+    const posts = await ctx.db
       .query("posts")
-      .withIndex("by_org_and_postedAt", (q) =>
-        q.eq("orgId", orgId),
+      .withIndex("by_org_and_postedAt", (q) => q.eq("orgId", orgId))
+      .filter((q) =>
+        q.or(...feeds.map((feed) => q.eq(q.field("feedId"), feed._id))),
       )
-      .filter((q) => q.or(...feeds.map(feed => q.eq(q.field("feedId"), feed._id))))
       .order("desc")
       .paginate(args.paginationOpts);
 
     const feedMap = new Map<Id<"feeds">, Doc<"feeds">>();
-    for(const feed of feeds) {
+    for (const feed of feeds) {
       feedMap.set(feed._id, feed);
     }
-  
+
     const enrichedPosts = await Promise.all(
       posts.page.map(async (post) => {
         const author = await ctx.db.get(post.posterId);
@@ -57,19 +59,25 @@ export const getUserPosts = query({
           await ctx.db
             .query("messages")
             .withIndex("by_orgId_postId", (q) =>
-              q.eq("orgId", orgId).eq("postId", post._id)
+              q.eq("orgId", orgId).eq("postId", post._id),
             )
             .collect()
         ).length;
-        return { ...post, author: { ...author, image }, feed, content: fromJSONToHTML(post.content), messageCount };
-      })
+        return {
+          ...post,
+          author: { ...author, image },
+          feed,
+          content: fromJSONToHTML(post.content),
+          messageCount,
+        };
+      }),
     );
 
     return {
       ...posts,
-      page: enrichedPosts.filter((post) => post !== null)
+      page: enrichedPosts.filter((post) => post !== null),
     };
-  }
+  },
 });
 
 export const createPost = mutation({
@@ -99,8 +107,15 @@ export const createPost = mutation({
       updatedAt: now,
     });
 
+    // Enqueue notification for feed members
+    await enqueueNotification(ctx, orgId, "new_post_in_member_feed", {
+      userId: user._id,
+      feedId,
+      postId,
+    });
+
     return postId;
-  }
+  },
 });
 
 export const getById = query({
@@ -116,13 +131,16 @@ export const getById = query({
     const post = await ctx.db.get(postId);
     if (!post) throw new Error("Post not found");
     const feed = await ctx.db.get(post.feedId);
-    if(!feed) throw new Error("Feed not found");
+    if (!feed) throw new Error("Feed not found");
 
-    const isUserAMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+    const isUserAMemberOfThisFeedCheck = await auth
+      .feed(post.feedId)
+      .hasRole("member");
     const feedIsPublic = feed.privacy === "public";
-    const userCanViewThisPost = feedIsPublic || isUserAMemberOfThisFeedCheck.allowed;
+    const userCanViewThisPost =
+      feedIsPublic || isUserAMemberOfThisFeedCheck.allowed;
 
-    if(!userCanViewThisPost) {
+    if (!userCanViewThisPost) {
       throw new Error("User cannot view this post");
     }
 
@@ -167,17 +185,17 @@ export const deletePost = mutation({
     if (!canDelete) {
       throw new Error("You do not have permission to delete this post");
     }
-    
+
     // Get all messages for this post
     const messages = await ctx.db
       .query("messages")
       .withIndex("by_orgId_postId", (q) =>
-        q.eq("orgId", orgId).eq("postId", postId)
+        q.eq("orgId", orgId).eq("postId", postId),
       )
       .collect();
 
     // Delete all messages (which also deletes their uploads)
-    const messageIds = messages.map(m => m._id);
+    const messageIds = messages.map((m) => m._id);
     if (messageIds.length > 0) {
       await ctx.runMutation(internal.messages.deleteMessagesInternal, {
         orgId,

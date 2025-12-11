@@ -39,14 +39,14 @@ The following features are required before closed beta launch:
   - [ ] iframe embeds (for video, audio, etc.)
     - [ ] Limited to specific hosts
 - [x] User can choose which feed to post in
-- [ ] Owner can delete post
+- [x] Owner can delete post
 
 ### Messages
 
 - [x] Users can open a post and chat
 - [x] Newest messages are at the bottom
 - [x] Messages support text/images/mentions(later)
-- [ ] Owner can delete message
+- [x] Owner can delete message
 
 ### Feeds
 
@@ -54,6 +54,7 @@ The following features are required before closed beta launch:
 - [x] Private (no one can see it exists w/o being given access by admin)
 - [ ] Browse and join open feeds
 - [x] Read-only (feed members can only read contents, feed owners can post)
+- [ ] Member of feed can view other members/owners
 
 ### User Profile/Settings
 
@@ -74,22 +75,23 @@ The following features are required before closed beta launch:
 
 ### Admin
 
-- [ ] Able to delete any post or comment
+- [ ] Able to delete any post or comment by way of becoming a feed owner
 - [ ] Able to manage users in a list
   - [ ] Invite
-  - [ ] Approve users invited through link/QR code
+  - [ ] Approve users invited through link/QR code -> deferred until after closed beta
   - [ ] Deactivate
   - [ ] Change role
+  - [ ] View pending invitations/cancel an invitation
 - [ ] Able to manage feeds
   - [ ] Create
-  - [ ] Delete
+  - [ ] Archive
   - [ ] Make public/private/open
   - [ ] Able to see private feeds created by others and manage membership
 - [ ] Able to assign users to feeds (can assign user to feed(s) when inviting)
 
 ### Feed Owners
 
-- [ ] Able to delete any post or comment in feed they own
+- [x] Able to delete any post or message in feed they own
 - [ ] Able to invite existing users to feed
 - [ ] Able to invite new users to feed (when admin setting allows)
 

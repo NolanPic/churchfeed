@@ -5,6 +5,7 @@ import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+import { enqueueNotification } from "./notifications";
 
 export const getForPost = query({
   args: {
@@ -97,6 +98,13 @@ export const create = mutation({
       senderId: user._id,
       content,
       updatedAt: now,
+    });
+
+    // Enqueue notification for post owner and previous commenters
+    await enqueueNotification(ctx, orgId, "new_message_in_post", {
+      userId: user._id,
+      messageId,
+      messageContent: content,
     });
 
     return messageId;
