@@ -22,6 +22,7 @@ export const sendPushNotifications = internalAction({
       v.object({
         userId: v.id("users"),
         preferences: v.array(v.union(v.literal("push"), v.literal("email"))),
+        notificationId: v.id("notifications"),
       }),
     ),
   },
@@ -56,7 +57,10 @@ export const sendPushNotifications = internalAction({
           orgId,
           type,
           data,
-          recipientUserIds: recipients.map((r) => r.userId),
+          recipients: recipients.map((r) => ({
+            userId: r.userId,
+            notificationId: r.notificationId,
+          })),
         },
       );
 
@@ -91,7 +95,7 @@ export const sendPushNotifications = internalAction({
                 body: notificationData.enrichedNotification.body,
                 data: {
                   url: notificationData.enrichedNotification.action.url,
-                  notificationId: notificationData.enrichedNotification._id,
+                  notificationId: notificationData.notificationId,
                 },
               });
 

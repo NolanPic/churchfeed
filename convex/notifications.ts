@@ -21,7 +21,11 @@ export const notificationTypeValidator = v.union(
   v.literal("new_user_needs_approval"),
 );
 
-export type NotificationType = "new_post_in_member_feed" | "new_message_in_post" | "new_feed_member" | "new_user_needs_approval";
+export type NotificationType =
+  | "new_post_in_member_feed"
+  | "new_message_in_post"
+  | "new_feed_member"
+  | "new_user_needs_approval";
 
 export const notificationDataValidator = v.union(
   // new_post_in_member_feed
@@ -647,23 +651,29 @@ export const sendNotificationBatch = internalMutation({
     const { orgId, type, data, recipients } = args;
     const now = Date.now();
 
-    // Create notification records for each user
-    const notificationIds = await Promise.all(
-      recipients.map((recipient) =>
-        ctx.db.insert("notifications", {
+    // Create notification records for each user and map IDs directly
+    const recipientsWithNotificationIds = await Promise.all(
+      recipients.map(async (recipient) => {
+        const notificationId = await ctx.db.insert("notifications", {
           orgId,
           userId: recipient.userId,
           type,
           data,
           updatedAt: now,
-        }),
-      ),
+        });
+        return {
+          userId: recipient.userId,
+          preferences: recipient.preferences,
+          notificationId,
+        };
+      }),
     );
 
     // Separate recipients by preference type
-    const pushRecipients = recipients.filter((r) =>
+    const pushRecipients = recipientsWithNotificationIds.filter((r) =>
       r.preferences.includes("push"),
     );
+
     const emailRecipients = recipients.filter((r) =>
       r.preferences.includes("email"),
     );
@@ -694,7 +704,10 @@ export const sendNotificationBatch = internalMutation({
       console.warn("Email notifications not implemented yet");
     }
 
-    return { notificationIds, sentCount: recipients.length };
+    return {
+      notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+      sentCount: recipients.length,
+    };
   },
 });
 
@@ -707,19 +720,25 @@ export const getNotificationDataForPush = internalQuery({
     orgId: v.id("organizations"),
     type: notificationTypeValidator,
     data: notificationDataValidator,
-    recipientUserIds: v.array(v.id("users")),
+    recipients: v.array(
+      v.object({
+        userId: v.id("users"),
+        notificationId: v.id("notifications"),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
-    const { orgId, type, data, recipientUserIds } = args;
+    const { orgId, type, data, recipients } = args;
 
     // Create a temporary notification object for data collection
+    // Note: We still need this for collectNotificationData, but we'll use real IDs in results
     const tempNotification = {
       orgId,
       type,
       data,
-      userId: "" as Id<"users">, // Placeholder
+      userId: "" as Id<"users">,
       updatedAt: Date.now(),
-      _id: "" as Id<"notifications">, // Placeholder
+      _id: "" as Id<"notifications">,
       _creationTime: Date.now(),
     } as Doc<"notifications">;
 
@@ -730,7 +749,7 @@ export const getNotificationDataForPush = internalQuery({
     }
 
     // For new_post_in_member_feed, gather userFeed data for all recipients
-    let userFeedMap = new Map<Id<"users">, Doc<"userFeeds"> | null>();
+    const userFeedMap = new Map<Id<"users">, Doc<"userFeeds"> | null>();
     if (
       type === "new_post_in_member_feed" &&
       collectedData.type === "new_post_in_member_feed"
@@ -750,17 +769,19 @@ export const getNotificationDataForPush = internalQuery({
 
     // Generate personalized notification text for each recipient
     const results = [];
-    for (const userId of recipientUserIds) {
-      const userFeedData = userFeedMap.get(userId) ?? null;
+    for (const recipient of recipients) {
+      const userFeedData = userFeedMap.get(recipient.userId) ?? null;
       const enrichedNotification = generateNotificationText(
         tempNotification,
         collectedData,
-        userId,
+        recipient.userId,
         userFeedData,
       );
 
+      // Include the real notification ID in results
       results.push({
-        userId,
+        userId: recipient.userId,
+        notificationId: recipient.notificationId,
         enrichedNotification,
       });
     }
