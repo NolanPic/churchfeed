@@ -51,6 +51,10 @@ export const sendPushNotifications = internalAction({
         vapidPrivateKey,
       );
 
+      const webpushOptions = {
+        timeout: 10000, // 10s - set to prevent hanging requests
+      };
+
       // Get notification data for all recipients
       const notificationDataList = await ctx.runQuery(
         internal.notifications.getNotificationDataForPush,
@@ -100,7 +104,11 @@ export const sendPushNotifications = internalAction({
                 },
               });
 
-              await webpush.sendNotification(sub.subscription, payload);
+              await webpush.sendNotification(
+                sub.subscription,
+                payload,
+                webpushOptions,
+              );
               sent++;
             } catch (error) {
               // Delete subscription if it's no longer valid
