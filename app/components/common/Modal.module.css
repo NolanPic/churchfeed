@@ -31,6 +31,7 @@
 
 .title {
   position: relative;
+  font-size: 36px;
   margin: var(--spacing5) var(--modal-gutter) 0;
   font-family: var(--font-gentium-plus);
   font-style: italic;
@@ -40,7 +41,7 @@
 
 .titleSeparator {
   margin: var(--spacing4) auto var(--spacing12);
-  width: 210px;
+  width: 211px;
   height: 1px;
   border: none;
   background-color: var(--light);
@@ -161,6 +162,15 @@
     padding-top: var(--spacing24);
     margin-top: var(--spacing8);
     border-radius: var(--border-radius-lg);
+  }
+
+  .title {
+    font-size: var(--text-xxl);
+    text-align: left;
+  }
+
+  .titleSeparator {
+    width: 100%;
   }
 
   .handleBar_PhoneOnly {

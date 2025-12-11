@@ -4,11 +4,12 @@ import UserAvatarMenu from "./UserAvatarMenu";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { useOrganization } from "../context/OrganizationProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 import styles from "./OrganizationLayout.module.css";
-import Image from "next/image";
 import { useState, useEffect } from "react";
+import ProfileModal from "./ProfileModal";
+import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -25,9 +26,19 @@ export default function OrganizationLayout({
 }) {
   const org = useOrganization();
   const pathname = usePathname();
+  const router = useRouter();
   const [auth] = useUserAuth();
   const isSignedIn = auth !== null;
-  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  useEffect(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    const isProfilePath =
+      segments[0] === "profile" || segments.includes("profile");
+    setIsProfileModalOpen(isProfilePath);
+  }, [pathname]);
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
+    useState(false);
 
   const orgId = org?._id as Id<"organizations">;
   const unreadCount = useQuery(
@@ -38,11 +49,9 @@ export default function OrganizationLayout({
   // Register service worker for push notifications
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
+      navigator.serviceWorker.register("/sw.js").catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
 
       // Create test notification function on window object
       if (!window.__churchfeed) {
@@ -95,7 +104,9 @@ export default function OrganizationLayout({
                 )}
               </button>
               <div className={styles.userAvatarMenu}>
-                <UserAvatarMenu />
+                <UserAvatarMenu
+                  openProfileModal={() => setIsProfileModalOpen(true)}
+                />
               </div>
             </>
           ) : (
@@ -127,6 +138,13 @@ export default function OrganizationLayout({
           {children}
         </motion.section>
       )}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => {
+          setIsProfileModalOpen(false);
+          router.back();
+        }}
+      />
       <AnimatePresence>
         {isNotificationsSidebarOpen && (
           <NotificationsSidebar
