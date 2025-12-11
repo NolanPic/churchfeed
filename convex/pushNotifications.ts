@@ -37,12 +37,12 @@ export const sendPushNotifications = internalAction({
 
       if (!vapidPublicKey || !vapidPrivateKey) {
         console.error("VAPID keys not configured");
-        return { sent: 0, failed: 0 };
+        return { sent: 0, failed: recipients.length };
       }
 
       if (!vapidContactEmail) {
         console.error("VAPID contact email not configured");
-        return { sent: 0, failed: 0 };
+        return { sent: 0, failed: recipients.length };
       }
 
       webpush.setVapidDetails(
