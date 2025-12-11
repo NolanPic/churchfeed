@@ -1,0 +1,35 @@
+.content {
+  padding: 0 var(--spacing12);
+}
+
+.steps {
+  list-style: decimal;
+  padding-left: var(--spacing6);
+  margin: 0;
+  line-height: 1.8;
+  counter-reset: step-counter;
+  font-size: var(--text-md);
+}
+
+.steps li {
+  margin-bottom: var(--spacing4);
+  display: list-item;
+}
+
+.benefit {
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: var(--spacing4);
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--spacing3);
+  justify-content: center;
+}
+
+.toolbarButton {
+  padding: var(--spacing8) var(--spacing10);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--text-md);
+}

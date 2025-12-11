@@ -8,6 +8,12 @@ import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvi
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFloating, offset } from "@floating-ui/react-dom";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useOrganization } from "@/app/context/OrganizationProvider";
+import { Id } from "@/convex/_generated/dataModel";
+import NotificationsSidebar from "../NotificationsSidebar";
+import Icon from "../common/Icon";
 
 interface ToolbarProps {
   onNewPost: () => void;
@@ -26,9 +32,18 @@ export default function Toolbar({
   const { feedId } = useContext(CurrentFeedAndPostContext);
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [isFeedMember, setIsFeedMember] = useState(false);
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] = useState(false);
+
+  const org = useOrganization();
+  const orgId = org?._id as Id<"organizations">;
 
   const isSignedIn = auth !== null;
   const isAdmin = user?.role === "admin";
+
+  const unreadCount = useQuery(
+    api.notifications.getUnreadCount,
+    isSignedIn && orgId ? { orgId } : "skip"
+  );
 
   // Check feed ownership and membership asynchronously
   useEffect(() => {
@@ -90,6 +105,16 @@ export default function Toolbar({
                 onClick={onNewPost}
               />
             )}
+            <div className={styles.notificationBellButton}>
+              <IconButton
+                icon="bell"
+                ariaLabel="Notifications"
+                onClick={() => setIsNotificationsSidebarOpen(true)}
+              />
+              {unreadCount !== undefined && unreadCount > 0 && (
+                <span className={styles.badge}>{unreadCount}</span>
+              )}
+            </div>
 
             {isFeedOwner && feedId && (
               <IconButton
@@ -150,6 +175,15 @@ export default function Toolbar({
           </AnimatePresence>,
           document.body
         )}
+
+      <AnimatePresence>
+        {isNotificationsSidebarOpen && (
+          <NotificationsSidebar
+            isOpen={isNotificationsSidebarOpen}
+            onClose={() => setIsNotificationsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

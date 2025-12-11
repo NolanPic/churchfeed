@@ -94,3 +94,46 @@
     border-radius: var(--spacing1);
     color: var(--accent);
 }
+
+.notificationBellButton {
+    position: absolute;
+    top: var(--spacing9);
+    left: var(--spacing9);
+    background: none;
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    padding: var(--spacing2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s;
+}
+
+.notificationBellButton:hover {
+    background-color: rgba(from var(--white) r g b / 0.1);
+}
+
+.badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--accent);
+    color: var(--dark);
+    font-size: 0.625rem;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+@media (--tablet) {
+    .notificationBellButton {
+        display: none;
+    }
+}
