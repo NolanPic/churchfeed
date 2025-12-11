@@ -29,6 +29,7 @@ self.addEventListener("push", (event) => {
       };
     } catch (e) {
       console.error("Error parsing push notification data:", e);
+      notificationData.title = "New notification";
       notificationData.body = event.data.text();
     }
   }
