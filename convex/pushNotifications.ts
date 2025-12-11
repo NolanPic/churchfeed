@@ -42,6 +42,7 @@ export const sendPushNotifications = internalAction({
 
       if (!vapidContactEmail) {
         console.error("VAPID contact email not configured");
+        return { sent: 0, failed: 0 };
       }
 
       webpush.setVapidDetails(
