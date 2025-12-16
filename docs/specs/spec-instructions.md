@@ -1,13 +1,41 @@
-# How to implement a spec
+## Creating a Spec
 
-- I will ask you to implement one part of the spec at a time (e.g. "Part 1 - Database changes").
-- When you begin on a part, start with asking clarifying questions to ensure you understand the requirements. Be very rigorous in this, and make sure there are NO gaps in your understanding! You can even ask multiple rounds if needed.
-- Please ask your questions under a "## Questions" section under the current part (e.g. "Part 2 - Frontend") in the spec document. Include a "**Answer:** " line underneath each question where I can write my answer.
-- You may add as many follow-up questions underneath this "## Questions" section as needed to fully understand the requirements.
-- It is possible that there are inconsistencies or discrepancies in the requirements. It is your job to point these out and suggest improvements.
-- Before you begin coding, offer a critique of any problems you see in the plan (even with the clarifications you've made via questioning). This is an important step because it allows us to take a step back and make sure that this is actually a good plan.
--  Be sure to fully understand the relevant parts of the codebase before you begin.
-- Once you begin coding, if a question comes up that you did not get an answer to previously, **do NOT guess at the answer or decide your own strategy**, just ask a question.
-- Try to understand the coding style that is already in the project and follow that, rather than bringing your own style.
-- Lint regularly
-- Commit regularly. Do not commit in large chunks. Each commit should have one primary change, e.g. "Add new table to database schema", "Fix duplicates in feed", "Add new mutation for creating posts", etc.
+### File Structure
+- All specs live in `@/docs/specs/`, with one directory per spec
+- Each spec directory contains:
+  - `requirements.md` (starting point)
+  - `spec.md` (your deliverable)
+
+### Process
+1. **Work Part-by-Part**: `requirements.md` contains multiple Parts (e.g., "Part 1 - Database changes"). Complete one Part at a time, in order.
+
+2. **Ask Clarifying Questions First**: Before writing anything in `spec.md`, ask questions to ensure complete understanding of the current Part.
+   - Add a `## Questions` section under the current Part in `requirements.md`
+   - Format each question with `**Answer:**` underneath for responses
+   - Ask multiple rounds of questions if needed—leave NO gaps in understanding
+   - Be explicit about assumptions, edge cases, error handling, and integration points with existing code
+
+3. **Document Your Understanding**: Once all questions are answered, write that Part in `spec.md`.
+   - `spec.md` is a living document—you'll create and modify it as you progress through Parts
+   - The spec should contain similar content to the `requirements.md` doc, but clarified and expanded where needed. Keep it lean. Do not bloat it with code examples (unless it is "usage" examples of an api, which could be useful)
+
+4. **Final Critique**: After completing all Parts, create `spec-critique.md` with:
+   - Analysis of potential problems (architecture, security, performance, maintainability, best practices)
+   - Multiple options for addressing issues, always including "Do nothing - good as-is"
+   - Rate the severity of each issue (Critical/Major/Minor) and the effort required for each option (High/Medium/Low)
+   - If needed, based on my responses you will keep modifying the spec until we are happy with it.
+## Implementing a Spec
+
+### Before You Start
+- Read the `spec.md` file
+- **Wait for explicit approval** to begin implementation
+- Study the relevant codebase sections thoroughly
+- Identify the project's coding style and follow it (do not impose your own preferences)
+- Be choosy about leavings comments in code. Only leave a comment if it is a tricky part of the codebase or it explains *why* we have to do something. Avoid comments for sectioning code, obvious notes, etc.
+- Our stack consists of: Next.js with TypeScript, Convex, Clerk (authentication), and Motion (animation). We are using CSS modules.
+### During Implementation
+- **Lint and typecheck frequently**—run checks before each commit
+- **Commit atomically**: Each commit should represent one logical change
+  - ✓ Good: "Add user_preferences table to schema"
+  - ✗ Bad: "Update database, fix bugs, and add new feature"
+- If you deviate from the spec during implementation, document why in the commit message and note it for post-implementation review
