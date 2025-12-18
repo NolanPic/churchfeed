@@ -674,7 +674,7 @@ export const sendNotificationBatch = internalMutation({
       r.preferences.includes("push"),
     );
 
-    const emailRecipients = recipients.filter((r) =>
+    const emailRecipients = recipientsWithNotificationIds.filter((r) =>
       r.preferences.includes("email"),
     );
 
@@ -692,16 +692,53 @@ export const sendNotificationBatch = internalMutation({
       );
     }
 
-    // Send email notifications (not implemented yet)
+    // Send email notifications
     if (emailRecipients.length > 0) {
-      // await sendEmailNotifications(ctx, orgId, type, data, emailRecipients);
-      // Structure would be:
-      // 1. Call collectNotificationData to get shared data
-      // 2. For each recipient:
-      //    - Call generateNotificationText with user-specific data
-      //    - Format and send email with title, body, and action URL
-      // 3. Handle email sending errors gracefully (log and continue)
-      console.warn("Email notifications not implemented yet");
+      // Special handling for new_message_in_post with 15-minute delay
+      if (type === "new_message_in_post") {
+        const messageId = (data as { messageId: Id<"messages"> }).messageId;
+        const message = await ctx.db.get(messageId);
+        if (!message) {
+          console.error("Message not found for notification");
+          return {
+            notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+            sentCount: recipients.length,
+          };
+        }
+        const postId = message.postId;
+
+        // Check if email already scheduled for this post
+        const alreadyScheduled = await ctx.runQuery(
+          internal.emailNotifications.getScheduledMessageNotifications,
+          { postId }
+        );
+
+        if (alreadyScheduled.length === 0) {
+          // Schedule with 15-minute delay
+          await ctx.scheduler.runAfter(
+            15 * 60 * 1000,
+            internal.emailNotifications.sendEmailNotifications,
+            {
+              orgId,
+              type,
+              data,
+              recipients: emailRecipients,
+            },
+          );
+        }
+      } else {
+        // Send immediately for other notification types
+        await ctx.scheduler.runAfter(
+          0,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
+      }
     }
 
     return {

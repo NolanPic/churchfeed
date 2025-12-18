@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth_actionAuth from "../auth/actionAuth.js";
+import type * as emailNotifications from "../emailNotifications.js";
 import type * as feeds from "../feeds.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
@@ -40,6 +41,7 @@ import type * as utils_postContentConverter from "../utils/postContentConverter.
  */
 declare const fullApi: ApiFromModules<{
   "auth/actionAuth": typeof auth_actionAuth;
+  emailNotifications: typeof emailNotifications;
   feeds: typeof feeds;
   http: typeof http;
   messages: typeof messages;
