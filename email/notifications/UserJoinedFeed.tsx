@@ -25,7 +25,8 @@ export const UserJoinedFeed: React.FC<UserJoinedFeedProps> = ({
         {/* Large centered avatar */}
         <div
           style={{
-            textAlign: "center" as const,
+            display: "flex",
+            justifyContent: "center",
             marginBottom: "24px",
           }}
         >

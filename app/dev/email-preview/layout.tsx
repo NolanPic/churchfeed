@@ -20,7 +20,6 @@ export default function EmailPreviewLayout({
         minHeight: "100vh",
         backgroundColor: "#2D3250",
         overflow: "auto",
-        zIndex: 9999,
       }}
     >
       <div style={{ width: "100%", maxWidth: "600px" }}>{children}</div>
