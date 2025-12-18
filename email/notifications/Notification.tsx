@@ -26,8 +26,8 @@ export const Notification: React.FC<NotificationProps> = ({
           fontFamily="Gentium Plus"
           fallbackFontFamily="Georgia"
           webFont={{
-            url: "https://fonts.googleapis.com/css2?family=Gentium+Plus:ital@1&display=swap",
-            format: "woff2",
+            url: "/fonts/gentium-plus-italic.ttf",
+            format: "truetype",
           }}
           fontWeight={400}
           fontStyle="italic"
@@ -36,10 +36,20 @@ export const Notification: React.FC<NotificationProps> = ({
           fontFamily="Lato"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap",
-            format: "woff2",
+            url: "/fonts/lato-regular.ttf",
+            format: "truetype",
           }}
           fontWeight={400}
+          fontStyle="normal"
+        />
+        <Font
+          fontFamily="Lato"
+          fallbackFontFamily="Arial"
+          webFont={{
+            url: "/fonts/lato-bold.ttf",
+            format: "truetype",
+          }}
+          fontWeight={700}
           fontStyle="normal"
         />
       </Head>
