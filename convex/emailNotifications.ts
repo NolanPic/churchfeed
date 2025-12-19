@@ -67,24 +67,16 @@ export const sendEmailNotifications = internalAction({
         if (timeSinceLastMessage < fifteenMinutes) {
           const remainingWait = fifteenMinutes - timeSinceLastMessage;
 
-          // Check if already scheduled to avoid duplicates
-          const alreadyScheduled = await ctx.runQuery(
-            internal.emailNotifications.getScheduledMessageNotifications,
-            { postId },
+          await ctx.scheduler.runAfter(
+            remainingWait,
+            internal.emailNotifications.sendEmailNotifications,
+            {
+              orgId,
+              type,
+              data,
+              recipients,
+            },
           );
-
-          if (alreadyScheduled.length === 0) {
-            await ctx.scheduler.runAfter(
-              remainingWait,
-              internal.emailNotifications.sendEmailNotifications,
-              {
-                orgId,
-                type,
-                data,
-                recipients,
-              },
-            );
-          }
 
           return { sent: 0, failed: 0 };
         }
