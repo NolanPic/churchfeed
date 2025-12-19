@@ -1,18 +1,15 @@
 import { internalAction, internalQuery, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
-import { Id, Doc } from "./_generated/dataModel";
+import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import { Resend } from "resend";
-import { render } from "@react-email/render";
 import {
   notificationTypeValidator,
   notificationDataValidator,
 } from "./notifications";
 import { fromJSONToHTML } from "./utils/postContentConverter";
-import { NewPost } from "@/email/notifications/NewPost";
-import { NewMessages } from "@/email/notifications/NewMessages";
-import { UserJoinedFeed } from "@/email/notifications/UserJoinedFeed";
-import type { ReactElement } from "react";
+import { EmailData } from "./types/notifications";
+import renderEmailTemplate from "./renderEmailTemplate";
 
 /**
  * Send email notifications to recipients
@@ -33,7 +30,6 @@ export const sendEmailNotifications = internalAction({
   handler: async (ctx, args) => {
     const { orgId, type, data, recipients } = args;
 
-    // Configure Resend
     const resend = new Resend(process.env.RESEND_API_KEY);
     const fromEmail = process.env.RESEND_FROM_EMAIL;
 
@@ -120,10 +116,8 @@ export const sendEmailNotifications = internalAction({
       }
 
       try {
-        // Generate subject line
         const subject = generateSubjectLine(recipientData.emailData);
 
-        // Render email template
         let html: string;
         try {
           html = await renderEmailTemplate(recipientData.emailData);
@@ -133,7 +127,6 @@ export const sendEmailNotifications = internalAction({
           continue;
         }
 
-        // Send email
         await resend.emails.send({
           from: fromEmail,
           to: recipientData.recipientEmail,
@@ -470,78 +463,3 @@ function generateSubjectLine(emailData: EmailData): string {
       return "New notification from ChurchFeed";
   }
 }
-
-async function renderEmailTemplate(emailData: EmailData): Promise<string> {
-  let element: ReactElement;
-
-  switch (emailData.type) {
-    case "new_post_in_member_feed":
-      element = NewPost({
-        author: emailData.author,
-        authorImageUrl: emailData.authorImageUrl,
-        feed: emailData.feed,
-        postHtml: emailData.postHtml,
-        postId: emailData.postId,
-        notificationId: emailData.notificationId,
-      }) as ReactElement;
-      break;
-
-    case "new_message_in_post":
-      element = NewMessages({
-        messages: emailData.messages,
-        postId: emailData.postId,
-        postTitle: emailData.postTitle,
-        notificationId: emailData.notificationId,
-      }) as ReactElement;
-      break;
-
-    case "new_feed_member":
-      element = UserJoinedFeed({
-        author: emailData.author,
-        authorImageUrl: emailData.authorImageUrl,
-        feed: emailData.feed,
-        feedId: emailData.feedId,
-        notificationId: emailData.notificationId,
-      }) as ReactElement;
-      break;
-
-    default:
-      throw new Error(`Unknown email type: ${(emailData as EmailData).type}`);
-  }
-
-  return await render(element);
-}
-
-type EmailData =
-  | {
-      type: "new_post_in_member_feed";
-      author: Doc<"users">;
-      authorImageUrl: string | null;
-      feed: Doc<"feeds">;
-      postHtml: string;
-      postId: Id<"posts">;
-      notificationId: Id<"notifications">;
-      userOwnsFeed: boolean;
-    }
-  | {
-      type: "new_message_in_post";
-      messages: Array<{
-        message: Doc<"messages">;
-        author: Doc<"users">;
-        authorImageUrl: string | null;
-        messageHtml: string;
-      }>;
-      postId: Id<"posts">;
-      postTitle: string;
-      notificationId: Id<"notifications">;
-      userOwnsPost: boolean;
-      actorName: string;
-    }
-  | {
-      type: "new_feed_member";
-      author: Doc<"users">;
-      authorImageUrl: string | null;
-      feed: Doc<"feeds">;
-      feedId: Id<"feeds">;
-      notificationId: Id<"notifications">;
-    };
