@@ -616,17 +616,12 @@ export async function enqueueNotification(
     return { recipientCount: 0 };
   }
 
-  // Schedule the batch send
-  await ctx.scheduler.runAfter(
-    0,
-    internal.notifications.sendNotificationBatch,
-    {
-      orgId,
-      type,
-      data,
-      recipients,
-    },
-  );
+  await ctx.runMutation(internal.notifications.sendNotificationBatch, {
+    orgId,
+    type,
+    data,
+    recipients,
+  });
 
   return { recipientCount: recipients.length };
 }
@@ -701,7 +696,9 @@ export const sendNotificationBatch = internalMutation({
         if (!message) {
           console.error("Message not found for notification");
           return {
-            notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+            notificationIds: recipientsWithNotificationIds.map(
+              (r) => r.notificationId,
+            ),
             sentCount: recipients.length,
           };
         }
@@ -710,7 +707,7 @@ export const sendNotificationBatch = internalMutation({
         // Check if email already scheduled for this post
         const alreadyScheduled = await ctx.runQuery(
           internal.emailNotifications.getScheduledMessageNotifications,
-          { postId }
+          { postId },
         );
 
         if (alreadyScheduled.length === 0) {
@@ -742,7 +739,9 @@ export const sendNotificationBatch = internalMutation({
     }
 
     return {
-      notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+      notificationIds: recipientsWithNotificationIds.map(
+        (r) => r.notificationId,
+      ),
       sentCount: recipients.length,
     };
   },
