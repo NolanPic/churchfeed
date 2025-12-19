@@ -7,7 +7,7 @@ import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
 import { internal } from "./_generated/api";
-import { enqueueNotification } from "./notifications";
+import { sendNotifications } from "./notifications";
 
 export const getUserPosts = query({
   args: {
@@ -107,8 +107,8 @@ export const createPost = mutation({
       updatedAt: now,
     });
 
-    // Enqueue notification for feed members
-    await enqueueNotification(ctx, orgId, "new_post_in_member_feed", {
+    // Send notifications for feed members
+    await sendNotifications(ctx, orgId, "new_post_in_member_feed", {
       userId: user._id,
       feedId,
       postId,

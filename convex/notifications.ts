@@ -600,10 +600,10 @@ async function getNotificationRecipients(
 }
 
 /**
- * Enqueue a notification to be sent to relevant users
- * This schedules a batch send operation
+ * Schedules notifications to send to the relevant users
+ * after a specific action has taken place in the app
  */
-export async function enqueueNotification(
+export async function sendNotifications(
   ctx: MutationCtx,
   orgId: Id<"organizations">,
   type: NotificationType,
@@ -616,7 +616,7 @@ export async function enqueueNotification(
     return { recipientCount: 0 };
   }
 
-  await ctx.runMutation(internal.notifications.sendNotificationBatch, {
+  await ctx.runMutation(internal.notifications.scheduleNotifications, {
     orgId,
     type,
     data,
@@ -627,10 +627,10 @@ export async function enqueueNotification(
 }
 
 /**
- * Send notifications to a batch of users
+ * Schedules notifications to send to a batch of users
  * Creates notification records and sends push/email notifications
  */
-export const sendNotificationBatch = internalMutation({
+export const scheduleNotifications = internalMutation({
   args: {
     orgId: v.id("organizations"),
     type: notificationTypeValidator,
