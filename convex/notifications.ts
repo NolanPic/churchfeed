@@ -655,8 +655,6 @@ export const scheduleNotifications = internalMutation({
     const { orgId, type, data, recipients } = args;
     const now = Date.now();
 
-    console.log("notification data", data);
-
     // Create notification records for each user and map IDs directly
     const recipientsWithNotificationIds = await Promise.all(
       recipients.map(async (recipient) => {

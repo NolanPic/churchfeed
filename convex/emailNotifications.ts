@@ -270,13 +270,17 @@ export const getScheduledMessageNotifications = internalQuery({
   args: {
     postId: v.id("posts"),
   },
-  handler: async (ctx) => {
+  handler: async (ctx, args) => {
     const scheduled = await ctx.db.system
       .query("_scheduled_functions")
       .collect();
 
-    return scheduled.filter((sf) => {
-      if (sf.name !== "emailNotifications:sendEmailNotifications") {
+    const notificationScheduledForThisPost = scheduled.filter((sf) => {
+      if (sf.state.kind !== "pending") {
+        return false;
+      }
+
+      if (!sf.name.endsWith(":sendEmailNotifications")) {
         return false;
       }
 
@@ -284,13 +288,22 @@ export const getScheduledMessageNotifications = internalQuery({
         return false;
       }
 
+      // should have a message ID
       const messageId = sf.args?.[0]?.data?.messageId;
       if (!messageId) {
         return false;
       }
 
+      // message should belong to this post
+      const postIdOfMessage = sf.args?.[0].data?.postId;
+      if (!postIdOfMessage || postIdOfMessage !== args.postId) {
+        return false;
+      }
+
       return true;
     });
+
+    return notificationScheduledForThisPost;
   },
 });
 
