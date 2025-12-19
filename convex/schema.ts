@@ -19,9 +19,9 @@ export default defineSchema({
     settings: v.optional(
       v.object({
         notifications: v.optional(
-          v.array(v.union(v.literal("push"), v.literal("email")))
+          v.array(v.union(v.literal("push"), v.literal("email"))),
         ),
-      })
+      }),
     ),
   })
     .index("by_org", ["orgId"])
@@ -116,6 +116,7 @@ export default defineSchema({
       v.object({
         userId: v.id("users"),
         messageId: v.id("messages"),
+        postId: v.id("posts"),
         messageContent: v.string(),
       }),
       // new_feed_member

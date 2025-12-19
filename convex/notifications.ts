@@ -38,6 +38,7 @@ export const notificationDataValidator = v.union(
   v.object({
     userId: v.id("users"),
     messageId: v.id("messages"),
+    postId: v.id("posts"),
     messageContent: v.string(),
   }),
   // new_feed_member
@@ -75,6 +76,7 @@ type CollectedNotificationData =
       post: Doc<"posts"> | null;
       messageText: string;
       messageId: Id<"messages">;
+      postId: Id<"posts">;
     }
   | {
       type: "new_feed_member";
@@ -122,6 +124,7 @@ export async function collectNotificationData(
         const typedData = data as {
           userId: Id<"users">;
           messageId: Id<"messages">;
+          postId: Id<"posts">;
           messageContent: string;
         };
         const message = await ctx.db.get(typedData.messageId);
@@ -136,6 +139,7 @@ export async function collectNotificationData(
           post,
           messageText,
           messageId: typedData.messageId,
+          postId: typedData.postId,
         };
       }
 
@@ -491,7 +495,12 @@ async function userIdsToRecipients(
 
 type NotificationData =
   | { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> }
-  | { userId: Id<"users">; messageId: Id<"messages">; messageContent: string }
+  | {
+      userId: Id<"users">;
+      messageId: Id<"messages">;
+      messageContent: string;
+      postId: Id<"posts">;
+    }
   | { userId: Id<"users">; feedId: Id<"feeds"> }
   | { userId: Id<"users">; organizationId: Id<"organizations"> };
 
@@ -646,6 +655,8 @@ export const scheduleNotifications = internalMutation({
     const { orgId, type, data, recipients } = args;
     const now = Date.now();
 
+    console.log("notification data", data);
+
     // Create notification records for each user and map IDs directly
     const recipientsWithNotificationIds = await Promise.all(
       recipients.map(async (recipient) => {
@@ -673,7 +684,7 @@ export const scheduleNotifications = internalMutation({
       r.preferences.includes("email"),
     );
 
-    // Send push notifications via Node.js action
+    // Send push notifications
     if (pushRecipients.length > 0) {
       await ctx.scheduler.runAfter(
         0,

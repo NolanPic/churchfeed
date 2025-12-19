@@ -107,6 +107,7 @@ export const create = mutation({
     await sendNotifications(ctx, orgId, "new_message_in_post", {
       userId: user._id,
       messageId,
+      postId,
       messageContent: content,
     });
 
