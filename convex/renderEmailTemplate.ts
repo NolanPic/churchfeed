@@ -21,6 +21,7 @@ export default async function renderEmailTemplate(
         postHtml: emailData.postHtml,
         postId: emailData.postId,
         notificationId: emailData.notificationId,
+        orgHost: emailData.orgHost,
       }) as ReactElement;
       break;
 
@@ -30,6 +31,7 @@ export default async function renderEmailTemplate(
         postId: emailData.postId,
         postTitle: emailData.postTitle,
         notificationId: emailData.notificationId,
+        orgHost: emailData.orgHost,
       }) as ReactElement;
       break;
 
@@ -40,6 +42,7 @@ export default async function renderEmailTemplate(
         feed: emailData.feed,
         feedId: emailData.feedId,
         notificationId: emailData.notificationId,
+        orgHost: emailData.orgHost,
       }) as ReactElement;
       break;
 

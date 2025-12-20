@@ -12,6 +12,7 @@ interface NewPostProps {
   postHtml: string;
   postId: Id<"posts">;
   notificationId: Id<"notifications">;
+  orgHost: string;
 }
 
 export const NewPost: React.FC<NewPostProps> = ({
@@ -20,11 +21,13 @@ export const NewPost: React.FC<NewPostProps> = ({
   feed,
   postHtml,
   postId,
+  notificationId,
+  orgHost,
 }) => {
   // Note: postHtml should already be sanitized before being passed to this template
 
   return (
-    <Notification title={`New post from ${author.name}`}>
+    <Notification title={`New post from ${author.name}`} orgHost={orgHost}>
       <Section>
         {/* Author info */}
         <div
@@ -35,9 +38,7 @@ export const NewPost: React.FC<NewPostProps> = ({
             marginBottom: "20px",
           }}
         >
-          {authorImageUrl && (
-            <Avatar imageUrl={authorImageUrl} size={34} />
-          )}
+          {authorImageUrl && <Avatar imageUrl={authorImageUrl} size={34} />}
           <Text
             style={{
               margin: 0,
@@ -48,7 +49,7 @@ export const NewPost: React.FC<NewPostProps> = ({
           >
             {author.name} in{" "}
             <Link
-              href={`/feed/${feed._id}`}
+              href={`https://${orgHost}/feed/${feed._id}`}
               style={{
                 color: "#F6B17A",
                 textDecoration: "none",
@@ -73,8 +74,12 @@ export const NewPost: React.FC<NewPostProps> = ({
         />
 
         {/* Action button */}
-        <div style={{ textAlign: "center" as const }}>
-          <Button url={`/post/${postId}`}>View post</Button>
+        <div style={{ textAlign: "center" }}>
+          <Button
+            url={`https://${orgHost}/post/${postId}?notificationId=${notificationId}`}
+          >
+            View post
+          </Button>
         </div>
       </Section>
     </Notification>

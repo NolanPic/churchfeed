@@ -13,11 +13,13 @@ import React from "react";
 interface NotificationProps {
   title: string;
   children: React.ReactNode;
+  orgHost: string;
 }
 
 export const Notification: React.FC<NotificationProps> = ({
   title,
   children,
+  orgHost,
 }) => {
   return (
     <Html>
@@ -141,7 +143,7 @@ export const Notification: React.FC<NotificationProps> = ({
               }}
             >
               <Link
-                href="/profile"
+                href={`https://${orgHost}/profile`}
                 style={{
                   color: "#F6B17A",
                   textDecoration: "none",

@@ -17,6 +17,7 @@ interface NewMessagesProps {
   postId: Id<"posts">;
   postTitle: string;
   notificationId: Id<"notifications">;
+  orgHost: string;
 }
 
 export const NewMessages: React.FC<NewMessagesProps> = ({
@@ -24,9 +25,10 @@ export const NewMessages: React.FC<NewMessagesProps> = ({
   postId,
   postTitle,
   notificationId,
+  orgHost,
 }) => {
   return (
-    <Notification title={`New messages in ${postTitle}`}>
+    <Notification title={`New messages in ${postTitle}`} orgHost={orgHost}>
       <Section>
         {/* Messages */}
         {messages.map((msg, index) => {
@@ -88,7 +90,7 @@ export const NewMessages: React.FC<NewMessagesProps> = ({
 
         {/* Action button */}
         <div style={{ textAlign: "center" as const }}>
-          <Button url={`/post/${postId}#${notificationId}`}>
+          <Button url={`https://${orgHost}/post/${postId}?notificationId=${notificationId}`}>
             View messages
           </Button>
         </div>

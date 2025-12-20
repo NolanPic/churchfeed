@@ -10,6 +10,7 @@ export type EmailData =
       postId: Id<"posts">;
       notificationId: Id<"notifications">;
       userOwnsFeed: boolean;
+      orgHost: string;
     }
   | {
       type: "new_message_in_post";
@@ -24,6 +25,7 @@ export type EmailData =
       notificationId: Id<"notifications">;
       userOwnsPost: boolean;
       actorName: string;
+      orgHost: string;
     }
   | {
       type: "new_feed_member";
@@ -32,4 +34,5 @@ export type EmailData =
       feed: Doc<"feeds">;
       feedId: Id<"feeds">;
       notificationId: Id<"notifications">;
+      orgHost: string;
     };

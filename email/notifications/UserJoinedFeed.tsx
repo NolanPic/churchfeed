@@ -11,6 +11,7 @@ interface UserJoinedFeedProps {
   feed: Doc<"feeds">;
   feedId: Id<"feeds">;
   notificationId: Id<"notifications">;
+  orgHost: string;
 }
 
 export const UserJoinedFeed: React.FC<UserJoinedFeedProps> = ({
@@ -18,9 +19,11 @@ export const UserJoinedFeed: React.FC<UserJoinedFeedProps> = ({
   authorImageUrl,
   feed,
   feedId,
+  notificationId,
+  orgHost,
 }) => {
   return (
-    <Notification title={`${author.name} joined your feed`}>
+    <Notification title={`${author.name} joined your feed`} orgHost={orgHost}>
       <Section>
         {/* Large centered avatar */}
         <div
@@ -64,7 +67,7 @@ export const UserJoinedFeed: React.FC<UserJoinedFeedProps> = ({
 
         {/* Action button */}
         <div style={{ textAlign: "center" as const }}>
-          <Button url={`/feed/${feedId}`}>View feed</Button>
+          <Button url={`https://${orgHost}/feed/${feedId}?notificationId=${notificationId}`}>View feed</Button>
         </div>
       </Section>
     </Notification>

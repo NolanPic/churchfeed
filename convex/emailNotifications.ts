@@ -155,6 +155,18 @@ export const getNotificationDataForEmail = internalQuery({
   handler: async (ctx, args) => {
     const { orgId, type, data, recipients } = args;
 
+    // Fetch organization to get host for email links
+    const org = await ctx.db.get(orgId);
+    if (!org) {
+      console.error("Organization not found");
+      return recipients.map((recipient) => ({
+        userId: recipient.userId,
+        recipientEmail: null,
+        notificationId: recipient.notificationId,
+        emailData: null,
+      }));
+    }
+
     const results = [];
 
     for (const recipient of recipients) {
@@ -184,6 +196,7 @@ export const getNotificationDataForEmail = internalQuery({
               },
               recipient.userId,
               recipient.notificationId,
+              org.host,
             );
             break;
           }
@@ -199,6 +212,7 @@ export const getNotificationDataForEmail = internalQuery({
               },
               recipient.userId,
               recipient.notificationId,
+              org.host,
             );
             break;
           }
@@ -210,6 +224,7 @@ export const getNotificationDataForEmail = internalQuery({
               data as { userId: Id<"users">; feedId: Id<"feeds"> },
               recipient.userId,
               recipient.notificationId,
+              org.host,
             );
             break;
           }
@@ -315,6 +330,7 @@ async function getNewPostEmailData(
   data: { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> },
   recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
+  orgHost: string,
 ): Promise<EmailData | null> {
   const author = await ctx.db.get(data.userId);
   const feed = await ctx.db.get(data.feedId);
@@ -351,6 +367,7 @@ async function getNewPostEmailData(
     postId: data.postId,
     notificationId,
     userOwnsFeed: userFeed?.owner ?? false,
+    orgHost,
   };
 }
 
@@ -364,6 +381,7 @@ async function getNewMessageEmailData(
   },
   recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
+  orgHost: string,
 ): Promise<EmailData | null> {
   const message = await ctx.db.get(data.messageId);
   if (!message) {
@@ -414,6 +432,7 @@ async function getNewMessageEmailData(
     notificationId,
     userOwnsPost,
     actorName: mostRecentAuthor?.name || "Someone",
+    orgHost,
   };
 }
 
@@ -423,6 +442,7 @@ async function getNewFeedMemberEmailData(
   data: { userId: Id<"users">; feedId: Id<"feeds"> },
   recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
+  orgHost: string,
 ): Promise<EmailData | null> {
   const author = await ctx.db.get(data.userId);
   const feed = await ctx.db.get(data.feedId);
@@ -444,6 +464,7 @@ async function getNewFeedMemberEmailData(
     feed,
     feedId: data.feedId,
     notificationId,
+    orgHost,
   };
 }
 
