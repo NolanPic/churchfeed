@@ -719,19 +719,22 @@ export const scheduleNotifications = internalMutation({
           { postId },
         );
 
-        if (alreadyScheduled.length === 0) {
-          // Schedule with 15-minute delay
-          await ctx.scheduler.runAfter(
-            15 * 60 * 1000,
-            internal.emailNotifications.sendEmailNotifications,
-            {
-              orgId,
-              type,
-              data,
-              recipients: emailRecipients,
-            },
-          );
-        }
+        // Cancel any scheduled notifications
+        alreadyScheduled.forEach(async ({ _id }) => {
+          await ctx.scheduler.cancel(_id);
+        });
+
+        // Schedule with 15-minute delay
+        await ctx.scheduler.runAfter(
+          15 * 60 * 1000,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
       } else {
         // Send immediately for other notification types
         await ctx.scheduler.runAfter(
