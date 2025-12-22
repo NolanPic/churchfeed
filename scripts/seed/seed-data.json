@@ -6,52 +6,52 @@
       "orgHost": "kingscross.churchfeed.dev",
       "users": [
         {
-          "email": "pastor@kingscross.church",
+          "email": "pastor@churchplace.app",
           "name": "David Cromwell",
           "image": "man2.jpg"
         },
         {
-          "email": "emma@kingscross.church",
+          "email": "emma@churchplace.app",
           "name": "Emma Richardson",
           "image": "woman1.jpg"
         },
         {
-          "email": "tom@kingscross.church",
+          "email": "tom@churchplace.app",
           "name": "Tom Henderson",
           "image": "man3.jpg"
         },
         {
-          "email": "sarah@kingscross.church",
+          "email": "sarah@churchplace.app",
           "name": "Sarah Martinez",
           "image": "woman3.jpg"
         },
         {
-          "email": "james@kingscross.church",
+          "email": "james@churchplace.app",
           "name": "James Park",
           "image": "man4.jpg"
         },
         {
-          "email": "lisa@kingscross.church",
+          "email": "lisa@churchplace.app",
           "name": "Lisa Chen",
           "image": "woman4.jpg"
         },
         {
-          "email": "mike@kingscross.church",
+          "email": "mike@churchplace.app",
           "name": "Mike Thompson",
           "image": "man5.jpg"
         },
         {
-          "email": "rachel@kingscross.church",
+          "email": "rachel@churchplace.app",
           "name": "Rachel Johnson",
           "image": "woman5.jpg"
         },
         {
-          "email": "ben@kingscross.church",
+          "email": "ben@churchplace.app",
           "name": "Ben Walker",
           "image": "man6.jpg"
         },
         {
-          "email": "anna@kingscross.church",
+          "email": "anna@churchplace.app",
           "name": "Anna Cromwell",
           "image": "woman2.jpg"
         },
@@ -358,9 +358,7 @@
           },
           "feedIndex": 0,
           "userIndex": 0,
-          "images": [
-            "front-of-church-in-snow-storm_stay-safe.avif"
-          ],
+          "images": ["front-of-church-in-snow-storm_stay-safe.avif"],
           "postedAt": 1757777248284
         },
         {
@@ -478,9 +476,7 @@
           },
           "feedIndex": 0,
           "userIndex": 9,
-          "images": [
-            "outdoor-potluck-in-the-city.avif"
-          ],
+          "images": ["outdoor-potluck-in-the-city.avif"],
           "postedAt": 1760146048284
         },
         {
@@ -519,9 +515,7 @@
           },
           "feedIndex": 0,
           "userIndex": 0,
-          "images": [
-            "new-stained-glass-window-in-sanctuary-completed.avif"
-          ],
+          "images": ["new-stained-glass-window-in-sanctuary-completed.avif"],
           "postedAt": 1760322448284
         },
         {
@@ -787,9 +781,7 @@
           },
           "feedIndex": 2,
           "userIndex": 3,
-          "images": [
-            "mere-christianity-cs-lewis.webp"
-          ],
+          "images": ["mere-christianity-cs-lewis.webp"],
           "postedAt": 1758317248285
         },
         {
@@ -1068,9 +1060,7 @@
           },
           "feedIndex": 3,
           "userIndex": 2,
-          "images": [
-            "people-working-in-yard_successful-work-party.avif"
-          ],
+          "images": ["people-working-in-yard_successful-work-party.avif"],
           "postedAt": 1756895248285
         },
         {
@@ -1166,9 +1156,7 @@
           },
           "feedIndex": 3,
           "userIndex": 2,
-          "images": [
-            "basement-floor-project-near-completion.avif"
-          ],
+          "images": ["basement-floor-project-near-completion.avif"],
           "postedAt": 1760009248285
         },
         {
@@ -1410,9 +1398,7 @@
           },
           "feedIndex": 4,
           "userIndex": 1,
-          "images": [
-            "person-getting-coffee-at-coffee-bar.avif"
-          ],
+          "images": ["person-getting-coffee-at-coffee-bar.avif"],
           "postedAt": 1761676048285
         },
         {
@@ -1470,9 +1456,7 @@
           },
           "feedIndex": 5,
           "userIndex": 4,
-          "images": [
-            "oyster-dome-hike.jpeg"
-          ],
+          "images": ["oyster-dome-hike.jpeg"],
           "postedAt": 1757809648285
         },
         {
@@ -1530,9 +1514,7 @@
           },
           "feedIndex": 5,
           "userIndex": 4,
-          "images": [
-            "chain-lakes-hike_fall-colors.jpeg"
-          ],
+          "images": ["chain-lakes-hike_fall-colors.jpeg"],
           "postedAt": 1759141648285
         },
         {
@@ -1647,9 +1629,7 @@
           },
           "feedIndex": 6,
           "userIndex": 6,
-          "images": [
-            "new-soundboard-is-setup.jpg"
-          ],
+          "images": ["new-soundboard-is-setup.jpg"],
           "postedAt": 1759267648285
         },
         {
@@ -1698,9 +1678,7 @@
           },
           "feedIndex": 6,
           "userIndex": 6,
-          "images": [
-            "new-nord-keyboard-for-worship-team.avif"
-          ],
+          "images": ["new-nord-keyboard-for-worship-team.avif"],
           "postedAt": 1760326048285
         },
         {
