@@ -40,18 +40,7 @@ export const sendEmailNotifications = internalAction({
 
     // Conversation lull detection for message notifications
     if (type === "new_message_in_post") {
-      const messageId = (data as { messageId: Id<"messages"> }).messageId;
-      const message = await ctx.runQuery(
-        internal.emailNotifications.getMessage,
-        { messageId },
-      );
-
-      if (!message) {
-        console.error("Message not found for notification");
-        return { sent: 0, failed: recipients.length };
-      }
-
-      const postId = message.postId;
+      const postId = (data as { postId: Id<"posts"> }).postId;
 
       // Check for conversation lull
       const lastMessage = await ctx.runQuery(

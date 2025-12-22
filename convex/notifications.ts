@@ -700,18 +700,7 @@ export const scheduleNotifications = internalMutation({
     if (emailRecipients.length > 0) {
       // Special handling for new_message_in_post with 15-minute delay
       if (type === "new_message_in_post") {
-        const messageId = (data as { messageId: Id<"messages"> }).messageId;
-        const message = await ctx.db.get(messageId);
-        if (!message) {
-          console.error("Message not found for notification");
-          return {
-            notificationIds: recipientsWithNotificationIds.map(
-              (r) => r.notificationId,
-            ),
-            sentCount: recipients.length,
-          };
-        }
-        const postId = message.postId;
+        const postId = (data as { postId: Id<"posts"> }).postId;
 
         // Check if email already scheduled for this post
         const alreadyScheduled = await ctx.runQuery(
