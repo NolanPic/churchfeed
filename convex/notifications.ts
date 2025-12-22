@@ -719,10 +719,11 @@ export const scheduleNotifications = internalMutation({
           { postId },
         );
 
-        // Cancel any scheduled notifications
-        alreadyScheduled.forEach(async ({ _id }) => {
-          await ctx.scheduler.cancel(_id);
-        });
+        await Promise.all(
+          alreadyScheduled.map(({ _id }) => {
+            ctx.scheduler.cancel(_id);
+          }),
+        );
 
         // Schedule with 15-minute delay
         await ctx.scheduler.runAfter(
