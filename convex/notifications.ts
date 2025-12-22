@@ -38,6 +38,7 @@ export const notificationDataValidator = v.union(
   v.object({
     userId: v.id("users"),
     messageId: v.id("messages"),
+    postId: v.id("posts"),
     messageContent: v.string(),
   }),
   // new_feed_member
@@ -75,6 +76,7 @@ type CollectedNotificationData =
       post: Doc<"posts"> | null;
       messageText: string;
       messageId: Id<"messages">;
+      postId: Id<"posts">;
     }
   | {
       type: "new_feed_member";
@@ -122,6 +124,7 @@ export async function collectNotificationData(
         const typedData = data as {
           userId: Id<"users">;
           messageId: Id<"messages">;
+          postId: Id<"posts">;
           messageContent: string;
         };
         const message = await ctx.db.get(typedData.messageId);
@@ -136,6 +139,7 @@ export async function collectNotificationData(
           post,
           messageText,
           messageId: typedData.messageId,
+          postId: typedData.postId,
         };
       }
 
@@ -491,7 +495,12 @@ async function userIdsToRecipients(
 
 type NotificationData =
   | { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> }
-  | { userId: Id<"users">; messageId: Id<"messages">; messageContent: string }
+  | {
+      userId: Id<"users">;
+      messageId: Id<"messages">;
+      messageContent: string;
+      postId: Id<"posts">;
+    }
   | { userId: Id<"users">; feedId: Id<"feeds"> }
   | { userId: Id<"users">; organizationId: Id<"organizations"> };
 
@@ -600,10 +609,10 @@ async function getNotificationRecipients(
 }
 
 /**
- * Enqueue a notification to be sent to relevant users
- * This schedules a batch send operation
+ * Schedules notifications to send to the relevant users
+ * after a specific action has taken place in the app
  */
-export async function enqueueNotification(
+export async function sendNotifications(
   ctx: MutationCtx,
   orgId: Id<"organizations">,
   type: NotificationType,
@@ -616,26 +625,21 @@ export async function enqueueNotification(
     return { recipientCount: 0 };
   }
 
-  // Schedule the batch send
-  await ctx.scheduler.runAfter(
-    0,
-    internal.notifications.sendNotificationBatch,
-    {
-      orgId,
-      type,
-      data,
-      recipients,
-    },
-  );
+  await ctx.runMutation(internal.notifications.scheduleNotifications, {
+    orgId,
+    type,
+    data,
+    recipients,
+  });
 
   return { recipientCount: recipients.length };
 }
 
 /**
- * Send notifications to a batch of users
+ * Schedules notifications to send to a batch of users
  * Creates notification records and sends push/email notifications
  */
-export const sendNotificationBatch = internalMutation({
+export const scheduleNotifications = internalMutation({
   args: {
     orgId: v.id("organizations"),
     type: notificationTypeValidator,
@@ -674,11 +678,11 @@ export const sendNotificationBatch = internalMutation({
       r.preferences.includes("push"),
     );
 
-    const emailRecipients = recipients.filter((r) =>
+    const emailRecipients = recipientsWithNotificationIds.filter((r) =>
       r.preferences.includes("email"),
     );
 
-    // Send push notifications via Node.js action
+    // Send push notifications
     if (pushRecipients.length > 0) {
       await ctx.scheduler.runAfter(
         0,
@@ -692,20 +696,54 @@ export const sendNotificationBatch = internalMutation({
       );
     }
 
-    // Send email notifications (not implemented yet)
+    // Send email notifications
     if (emailRecipients.length > 0) {
-      // await sendEmailNotifications(ctx, orgId, type, data, emailRecipients);
-      // Structure would be:
-      // 1. Call collectNotificationData to get shared data
-      // 2. For each recipient:
-      //    - Call generateNotificationText with user-specific data
-      //    - Format and send email with title, body, and action URL
-      // 3. Handle email sending errors gracefully (log and continue)
-      console.warn("Email notifications not implemented yet");
+      // Special handling for new_message_in_post with 15-minute delay
+      if (type === "new_message_in_post") {
+        const postId = (data as { postId: Id<"posts"> }).postId;
+
+        // Check if email already scheduled for this post
+        const alreadyScheduled = await ctx.runQuery(
+          internal.emailNotifications.getScheduledMessageNotifications,
+          { postId },
+        );
+
+        await Promise.all(
+          alreadyScheduled.map(({ _id }) => {
+            ctx.scheduler.cancel(_id);
+          }),
+        );
+
+        // Schedule with 15-minute delay
+        await ctx.scheduler.runAfter(
+          15 * 60 * 1000,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
+      } else {
+        // Send immediately for other notification types
+        await ctx.scheduler.runAfter(
+          0,
+          internal.emailNotifications.sendEmailNotifications,
+          {
+            orgId,
+            type,
+            data,
+            recipients: emailRecipients,
+          },
+        );
+      }
     }
 
     return {
-      notificationIds: recipientsWithNotificationIds.map((r) => r.notificationId),
+      notificationIds: recipientsWithNotificationIds.map(
+        (r) => r.notificationId,
+      ),
       sentCount: recipients.length,
     };
   },

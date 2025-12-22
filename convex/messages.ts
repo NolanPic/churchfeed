@@ -5,7 +5,7 @@ import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { enqueueNotification } from "./notifications";
+import { sendNotifications } from "./notifications";
 
 export const getForPost = query({
   args: {
@@ -16,20 +16,23 @@ export const getForPost = query({
     const { orgId, postId } = args;
 
     const post = await ctx.db.get(postId);
-    if(!post) {
+    if (!post) {
       throw new Error("Post not found");
     }
 
     const feed = await ctx.db.get(post.feedId);
-    if(!feed) {
+    if (!feed) {
       throw new Error("Feed not found");
     }
 
     const auth = await getUserAuth(ctx, orgId);
-    
-    const isUserMemberOfThisFeedCheck = await auth.feed(post.feedId).hasRole("member");
+
+    const isUserMemberOfThisFeedCheck = await auth
+      .feed(post.feedId)
+      .hasRole("member");
     const feedIsPublic = feed.privacy === "public";
-    const userCanViewThisPost = feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
+    const userCanViewThisPost =
+      feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
 
     if (!userCanViewThisPost) {
       throw new Error("User cannot view this post or its messages");
@@ -38,7 +41,7 @@ export const getForPost = query({
     const rawMessages = await ctx.db
       .query("messages")
       .filter((q) =>
-        q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("postId"), postId))
+        q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("postId"), postId)),
       )
       .collect();
 
@@ -57,7 +60,7 @@ export const getForPost = query({
           sender: { _id: sender._id, name: sender.name, image },
           content: fromJSONToHTML(message.content),
         };
-      })
+      }),
     );
 
     return enriched.filter((m) => m !== null);
@@ -100,10 +103,11 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    // Enqueue notification for post owner and previous commenters
-    await enqueueNotification(ctx, orgId, "new_message_in_post", {
+    // Send notifications for post owner and previous commenters
+    await sendNotifications(ctx, orgId, "new_message_in_post", {
       userId: user._id,
       messageId,
+      postId,
       messageContent: content,
     });
 
@@ -180,14 +184,14 @@ export const deleteMessage = mutation({
       throw new Error("You do not have permission to delete this message");
     }
 
-    const deletedIds = await ctx.runMutation(internal.messages.deleteMessagesInternal, {
-      orgId,
-      messageIds: [messageId],
-    });
+    const deletedIds = await ctx.runMutation(
+      internal.messages.deleteMessagesInternal,
+      {
+        orgId,
+        messageIds: [messageId],
+      },
+    );
 
     return deletedIds[0];
   },
 });
-
-
-
