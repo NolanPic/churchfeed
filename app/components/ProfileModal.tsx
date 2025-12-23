@@ -6,6 +6,8 @@ import UserAvatar from "./UserAvatar";
 import { Input } from "./common/Input";
 import IconButton from "./common/IconButton";
 import { useUserAuth } from "@/auth/client/useUserAuth";
+import { Id } from "@/convex/_generated/dataModel";
+import { useImageUpload } from "./editor/hooks/useImageUpload";
 
 export default function ProfileModal({ 
   isOpen,
@@ -26,6 +28,53 @@ export default function ProfileModal({
       setEmail(user.email || "");
     }
   }, [user]);
+
+  function UseAvatarUploader() {
+    const [userId, setUserId] =useState <Id<"users"> | null>(null);
+    
+    const {imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
+      source: "avatar",
+      sourceId: userId,
+    });
+
+    const handleFileChange =async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        await uploadImage(file);
+        console.log("Upload successful");
+      } catch (err) {
+        console.error ("Upload failed:", err);
+      }
+    };
+    
+console.log(imageUrl, previewUrl)
+
+      return (
+    <div>
+      <input
+        type="file"
+        accept="image/jpeg,image/png"
+        onChange={handleFileChange}
+        disabled={isUploading}
+      />
+
+      {isUploading && <p>Is Uploading</p>}
+      {error && <p style={{ color: "red" }}>{error.message}</p>}
+
+
+      {(previewUrl || imageUrl) && (
+        <img
+          src={imageUrl || previewUrl}
+          alt="Avatar"
+          style={{ width: 100, height: 100, objectFit: "cover" }}
+        />
+      )}
+    </div>
+  );
+}
+  
 
   return (
     <Modal
@@ -48,6 +97,7 @@ export default function ProfileModal({
         <div className={styles.contentContainer}>
           <div className={styles.avatarContainer}>
             {user && <UserAvatar user={user} size={100} />}
+            <UseAvatarUploader />
             <p>Change Photo</p>
           </div>
           <div className={styles.content}>

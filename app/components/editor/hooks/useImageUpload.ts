@@ -207,11 +207,13 @@ export function useImageUpload(
     [source, sourceId, feedIdForPostsAndMessages, org, getToken],
   );
 
-  return {
+  const returnObject ={
     imageUrl,
     previewUrl,
     isUploading,
     error,
     uploadImage,
   };
+  console.log("return object log", returnObject)
+  return returnObject
 }
