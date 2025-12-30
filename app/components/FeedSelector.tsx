@@ -12,6 +12,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToTop } from "@/app/hooks/useScrollToTop";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
+import { useUserAuth } from "@/auth/client/useUserAuth";
+import CurrentlyViewingOpenFeedCard from "./feeds/CurrentlyViewingOpenFeedCard";
+import OpenFeedsBrowser from "./feeds/OpenFeedsBrowser";
 
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
@@ -30,13 +33,33 @@ export default function FeedSelector({
   );
   const org = useOrganization();
   const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
+  const [isBrowserOpen, setIsBrowserOpen] = useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
+  const [auth] = useUserAuth();
 
   const feeds =
     useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
 
+  // Fetch user's feed memberships
+  const userFeedsData = useQuery(
+    api.feeds.getUserFeedsWithMemberships,
+    org ? { orgId: org._id } : "skip"
+  );
+  const userFeeds = userFeedsData?.userFeeds || [];
+
+  // Get current feed details if viewing a non-member feed
+  const currentFeed = useQuery(
+    api.feeds.getFeed,
+    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
+  );
+
   if (!org) return null;
+
+  // Check if user is viewing a feed they are not a member of
+  const userFeedIds = new Set(userFeeds.map((uf) => uf.feedId));
+  const isViewingNonMemberFeed =
+    selectedFeedId && !userFeedIds.has(selectedFeedId);
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
@@ -101,6 +124,14 @@ export default function FeedSelector({
                   </h2>
                 </li>
               )}
+              {!chooseFeedForNewPost && isViewingNonMemberFeed && currentFeed && (
+                <li className={styles.viewingOpenFeedCard}>
+                  <CurrentlyViewingOpenFeedCard
+                    feedTitle={currentFeed.name}
+                    feedId={selectedFeedId!}
+                  />
+                </li>
+              )}
               {!chooseFeedForNewPost && (
                 <li
                   key="all"
@@ -131,9 +162,27 @@ export default function FeedSelector({
                   </label>
                 </li>
               ))}
+              {!chooseFeedForNewPost && auth && (
+                <li className={styles.browseOpenFeeds}>
+                  <Button
+                    onClick={() => {
+                      setIsOpen(false);
+                      setIsBrowserOpen(true);
+                    }}
+                    noBackground
+                  >
+                    Browse open feeds
+                  </Button>
+                </li>
+              )}
             </ol>
             <Backdrop onClick={handleClose} />
           </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isBrowserOpen && (
+          <OpenFeedsBrowser onClose={() => setIsBrowserOpen(false)} />
         )}
       </AnimatePresence>
     </>

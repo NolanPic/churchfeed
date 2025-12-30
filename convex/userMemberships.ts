@@ -5,6 +5,7 @@ import { getUserAuth } from "@/auth/convex";
 import { getStorageUrl } from "./uploads";
 import { paginationOptsValidator } from "convex/server";
 import { sendNotifications } from "./notifications";
+import { getAll } from "convex-helpers/server/relationships";
 
 /**
  * Helper function to check if a user is the last owner of a feed
@@ -347,5 +348,167 @@ export const changeMemberRole = mutation({
     });
 
     return { success: true };
+  },
+});
+
+/**
+ * Join an open or public feed
+ * Only authenticated users can call this mutation
+ */
+export const joinOpenFeed = mutation({
+  args: {
+    orgId: v.id("organizations"),
+    feedId: v.id("feeds"),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedId } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    const user = auth.getUserOrThrow();
+
+    // Get the feed
+    const feed = await ctx.db.get(feedId);
+    if (!feed) {
+      throw new Error("Feed not found");
+    }
+
+    // Verify feed belongs to organization
+    if (feed.orgId !== orgId) {
+      throw new Error("Feed does not belong to this organization");
+    }
+
+    // Verify feed is open or public
+    if (feed.privacy !== "open" && feed.privacy !== "public") {
+      throw new Error("Can only join open or public feeds");
+    }
+
+    // Check if user is already a member
+    const existingMembership = await ctx.db
+      .query("userFeeds")
+      .withIndex("by_org_and_feed_and_user", (q) =>
+        q.eq("orgId", orgId).eq("feedId", feedId).eq("userId", user._id)
+      )
+      .first();
+
+    if (existingMembership) {
+      throw new Error("You are already a member of this feed");
+    }
+
+    // Create membership
+    await ctx.db.insert("userFeeds", {
+      orgId,
+      userId: user._id,
+      feedId,
+      owner: false,
+      updatedAt: Date.now(),
+    });
+
+    // Send notifications to feed owners
+    await sendNotifications(ctx, orgId, "new_feed_member", {
+      userId: user._id,
+      feedId,
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Get members for multiple open/public feeds at once
+ * Only authenticated users can call this query
+ * Returns up to 50 members per feed
+ */
+export const getOpenFeedMembers = query({
+  args: {
+    orgId: v.id("organizations"),
+    feedIds: v.array(v.id("feeds")),
+  },
+  handler: async (ctx, args) => {
+    const { orgId, feedIds } = args;
+
+    const auth = await getUserAuth(ctx, orgId);
+    auth.getUserOrThrow();
+
+    // Get all feeds and verify they belong to the organization
+    const feeds = await getAll(ctx.db, feedIds);
+    const result: Record<
+      Id<"feeds">,
+      Array<{
+        _id: Id<"users">;
+        name: string;
+        email: string;
+        image: string | null;
+        isOwner: boolean;
+      }>
+    > = {};
+
+    for (let i = 0; i < feedIds.length; i++) {
+      const feedId = feedIds[i];
+      const feed = feeds[i];
+
+      if (!feed) {
+        continue;
+      }
+
+      // Verify feed belongs to the organization
+      if (feed.orgId !== orgId) {
+        throw new Error(`Feed ${feedId} does not belong to organization ${orgId}`);
+      }
+
+      // Only return members if feed is open or public
+      if (feed.privacy !== "open" && feed.privacy !== "public") {
+        continue;
+      }
+
+      // Get all user feeds for this feed
+      const allUserFeeds = await ctx.db
+        .query("userFeeds")
+        .withIndex("by_org_and_feed_and_user", (q) =>
+          q.eq("orgId", orgId).eq("feedId", feedId)
+        )
+        .collect();
+
+      // Get member details
+      const membersWithDetails = await Promise.all(
+        allUserFeeds.slice(0, 50).map(async (userFeed) => {
+          const user = await ctx.db.get(userFeed.userId);
+          if (!user) {
+            return null;
+          }
+
+          const avatarUrl = await getStorageUrl(ctx, user.image);
+
+          return {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            image: avatarUrl,
+            isOwner: userFeed.owner,
+          };
+        })
+      );
+
+      const filteredMembers = membersWithDetails.filter(
+        (member) => member !== null
+      ) as Array<{
+        _id: Id<"users">;
+        name: string;
+        email: string;
+        image: string | null;
+        isOwner: boolean;
+      }>;
+
+      // Sort by owner status first, then by name
+      const sortedMembers = filteredMembers.sort((a, b) => {
+        if (a.isOwner !== b.isOwner) {
+          return a.isOwner ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+
+      result[feedId] = sortedMembers;
+    }
+
+    return result;
   },
 });

@@ -73,6 +73,22 @@
     text-underline-offset: 4px;
 }
 
+.viewingOpenFeedCard {
+    font-family: var(--font-family);
+    font-style: normal;
+    font-size: var(--text-base);
+    padding: 0 var(--spacing4);
+    max-width: 500px;
+    width: 100%;
+}
+
+.browseOpenFeeds {
+    font-family: var(--font-family);
+    font-style: normal;
+    font-size: var(--text-base);
+    margin-top: var(--spacing5);
+}
+
 @media (--tablet) {
 
     .chooseFeedHeading {
