@@ -7,7 +7,6 @@ import { useOrganization } from "@/app/context/OrganizationProvider";
 import { motion } from "motion/react";
 import OpenFeedCard from "./OpenFeedCard";
 import Button from "../common/Button";
-import Backdrop from "../common/Backdrop";
 import styles from "./OpenFeedsBrowser.module.css";
 
 interface OpenFeedsBrowserProps {
@@ -29,7 +28,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   // Fetch user's feed memberships
   const userFeedsData = useQuery(
     api.feeds.getUserFeedsWithMemberships,
-    orgId ? { orgId } : "skip"
+    orgId ? { orgId } : "skip",
   );
   const userFeeds = userFeedsData?.userFeeds || [];
 
@@ -44,7 +43,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   } = usePaginatedQuery(
     api.feeds.getAllOpenFeeds,
     { orgId },
-    { initialNumItems: FEEDS_PER_PAGE }
+    { initialNumItems: FEEDS_PER_PAGE },
   );
 
   // Extract feed IDs from the current page
@@ -53,19 +52,11 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   // Fetch members for all feeds on the current page
   const feedMembers = useQuery(
     api.userMemberships.getOpenFeedMembers,
-    feedIds.length > 0 ? { orgId, feedIds } : "skip"
+    feedIds.length > 0 ? { orgId, feedIds } : "skip",
   );
-
-  const getStatus = (): "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted" => {
-    if (status === "LoadingFirstPage") return "LoadingFirstPage";
-    if (status === "Exhausted") return "Exhausted";
-    if (status === "LoadingMore") return "LoadingMore";
-    return "CanLoadMore";
-  };
 
   return (
     <>
-      <Backdrop onClick={onClose} />
       <motion.div
         className={styles.browser}
         initial={{ y: "100%" }}
@@ -85,51 +76,51 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
           <h2 className={styles.title}>All open feeds</h2>
         </div>
 
-        <div className={styles.feedList}>
-          {getStatus() === "LoadingFirstPage" ? (
-            <div className={styles.loading}>Loading...</div>
-          ) : feeds.length === 0 ? (
-            <div className={styles.empty}>No open feeds available</div>
-          ) : (
-            <>
-              {feeds.map((feed) => {
-                const members = feedMembers?.[feed._id] || [];
-                const avatarUsers: AvatarUser[] = members.slice(0, 3).map((member) => ({
-                  _id: member._id,
-                  name: member.name,
-                  image: member.image,
-                }));
+        <div className={styles.scrollContainer}>
+          <div className={styles.feedList}>
+            {status === "LoadingFirstPage" ? (
+              <div className={styles.loading}>Loading...</div>
+            ) : feeds.length === 0 ? (
+              <div className={styles.empty}>No open feeds available</div>
+            ) : (
+              <>
+                {feeds.map((feed) => {
+                  const members = feedMembers?.[feed._id] || [];
 
-                return (
-                  <OpenFeedCard
-                    key={feed._id}
-                    feed={feed}
-                    isUserMember={userFeedIds.has(feed._id)}
-                    users={avatarUsers}
+                  return (
+                    <OpenFeedCard
+                      key={feed._id}
+                      feed={feed}
+                      isUserMember={userFeedIds.has(feed._id)}
+                      users={members}
+                    />
+                  );
+                })}
+                {status === "CanLoadMore" && (
+                  <div
+                    ref={(el) => {
+                      if (el) {
+                        const observer = new IntersectionObserver(
+                          (entries) => {
+                            if (entries[0]?.isIntersecting) {
+                              loadMore(FEEDS_PER_PAGE);
+                            }
+                          },
+                          { threshold: 0.1 },
+                        );
+                        observer.observe(el);
+                        return () => observer.disconnect();
+                      }
+                    }}
+                    className={styles.loadMoreTrigger}
                   />
-                );
-              })}
-              {getStatus() === "CanLoadMore" && (
-                <div ref={(el) => {
-                  if (el) {
-                    const observer = new IntersectionObserver(
-                      (entries) => {
-                        if (entries[0]?.isIntersecting) {
-                          loadMore(FEEDS_PER_PAGE);
-                        }
-                      },
-                      { threshold: 0.1 }
-                    );
-                    observer.observe(el);
-                    return () => observer.disconnect();
-                  }
-                }} className={styles.loadMoreTrigger} />
-              )}
-              {getStatus() === "LoadingMore" && (
-                <div className={styles.loadingMore}>Loading more...</div>
-              )}
-            </>
-          )}
+                )}
+                {status === "LoadingMore" && (
+                  <div className={styles.loadingMore}>Loading more...</div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </motion.div>
     </>

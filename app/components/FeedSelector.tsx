@@ -29,10 +29,11 @@ export default function FeedSelector({
   onClose,
 }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
-    CurrentFeedAndPostContext
+    CurrentFeedAndPostContext,
   );
   const org = useOrganization();
-  const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
+  const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
+    useState(chooseFeedForNewPost);
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
@@ -44,14 +45,14 @@ export default function FeedSelector({
   // Fetch user's feed memberships
   const userFeedsData = useQuery(
     api.feeds.getUserFeedsWithMemberships,
-    org ? { orgId: org._id } : "skip"
+    org ? { orgId: org._id } : "skip",
   );
   const userFeeds = userFeedsData?.userFeeds || [];
 
   // Get current feed details if viewing a non-member feed
   const currentFeed = useQuery(
     api.feeds.getFeed,
-    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
+    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip",
   );
 
   if (!org) return null;
@@ -65,7 +66,7 @@ export default function FeedSelector({
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
 
   const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
-    setIsOpen(false);
+    setIsFeedSelectorOpen(false);
     setFeedId(feedId);
     scrollToTop();
 
@@ -78,7 +79,8 @@ export default function FeedSelector({
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    console.log("handleClose called");
+    setIsFeedSelectorOpen(false);
     if (onClose) {
       onClose();
     }
@@ -96,7 +98,7 @@ export default function FeedSelector({
               icon="dropdown-arrow"
               iconSize={10}
               className={styles.feedSelector}
-              onClick={() => setIsOpen(true)}
+              onClick={() => setIsFeedSelectorOpen(true)}
             >
               {selectedFeed}
             </Button>
@@ -108,8 +110,9 @@ export default function FeedSelector({
         </>
       )}
       <AnimatePresence>
-        {isOpen && (
+        {isFeedSelectorOpen && !isBrowserOpen && (
           <motion.div
+            key="feed-selector"
             className={styles.feedList}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -124,14 +127,16 @@ export default function FeedSelector({
                   </h2>
                 </li>
               )}
-              {!chooseFeedForNewPost && isViewingNonMemberFeed && currentFeed && (
-                <li className={styles.viewingOpenFeedCard}>
-                  <CurrentlyViewingOpenFeedCard
-                    feedTitle={currentFeed.name}
-                    feedId={selectedFeedId!}
-                  />
-                </li>
-              )}
+              {!chooseFeedForNewPost &&
+                isViewingNonMemberFeed &&
+                currentFeed && (
+                  <li className={styles.viewingOpenFeedCard}>
+                    <CurrentlyViewingOpenFeedCard
+                      feedTitle={currentFeed.name}
+                      feedId={selectedFeedId!}
+                    />
+                  </li>
+                )}
               {!chooseFeedForNewPost && (
                 <li
                   key="all"
@@ -166,7 +171,7 @@ export default function FeedSelector({
                 <li className={styles.browseOpenFeeds}>
                   <Button
                     onClick={() => {
-                      setIsOpen(false);
+                      setIsFeedSelectorOpen(false);
                       setIsBrowserOpen(true);
                     }}
                     noBackground
@@ -177,13 +182,20 @@ export default function FeedSelector({
                 </li>
               )}
             </ol>
-            <Backdrop onClick={handleClose} />
           </motion.div>
         )}
-      </AnimatePresence>
-      <AnimatePresence>
         {isBrowserOpen && (
-          <OpenFeedsBrowser onClose={() => setIsBrowserOpen(false)} />
+          <OpenFeedsBrowser
+            key="open-feeds-browser"
+            onClose={() => {
+              setIsBrowserOpen(false);
+              setIsFeedSelectorOpen(true);
+            }}
+          />
+        )}
+
+        {(isFeedSelectorOpen || isBrowserOpen) && (
+          <Backdrop key="backdrop" onClick={handleClose} />
         )}
       </AnimatePresence>
     </>
