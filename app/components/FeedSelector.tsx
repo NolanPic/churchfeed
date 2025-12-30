@@ -29,7 +29,7 @@ export default function FeedSelector({
   onClose,
 }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
-    CurrentFeedAndPostContext,
+    CurrentFeedAndPostContext
   );
   const org = useOrganization();
   const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
@@ -45,14 +45,14 @@ export default function FeedSelector({
   // Fetch user's feed memberships
   const userFeedsData = useQuery(
     api.feeds.getUserFeedsWithMemberships,
-    org ? { orgId: org._id } : "skip",
+    org ? { orgId: org._id } : "skip"
   );
   const userFeeds = userFeedsData?.userFeeds || [];
 
   // Get current feed details if viewing a non-member feed
   const currentFeed = useQuery(
     api.feeds.getFeed,
-    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip",
+    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
   );
 
   if (!org) return null;
@@ -167,21 +167,19 @@ export default function FeedSelector({
                   </label>
                 </li>
               ))}
-              {!chooseFeedForNewPost && auth && (
-                <li className={styles.browseOpenFeeds}>
-                  <Button
-                    onClick={() => {
-                      setIsFeedSelectorOpen(false);
-                      setIsBrowserOpen(true);
-                    }}
-                    noBackground
-                    className={styles.browseOpenFeedsButton}
-                  >
-                    Browse open feeds
-                  </Button>
-                </li>
-              )}
             </ol>
+            {!chooseFeedForNewPost && auth && (
+              <Button
+                className={styles.browseOpenFeedsButton}
+                onClick={() => {
+                  setIsFeedSelectorOpen(false);
+                  setIsBrowserOpen(true);
+                }}
+                noBackground
+              >
+                Browse open feeds
+              </Button>
+            )}
           </motion.div>
         )}
         {isBrowserOpen && (

@@ -35,7 +35,6 @@
     font-family: var(--font-gentium-plus);
     font-style: italic;
     font-size: 2rem;
-    text-align: center;
     
     & input[type="radio"] {
         visibility: hidden;
@@ -82,14 +81,12 @@
     width: 100%;
 }
 
-.browseOpenFeeds {
-    margin-top: var(--spacing5);
-}
-
 .browseOpenFeedsButton {
+    position: absolute;
+    bottom: var(--spacing10);
     font-family: var(--font-gentium-plus);
-    font-style: normal;
     font-weight: 400;
+    font-size: var(--text-lg);
 }
 
 @media (--tablet) {
