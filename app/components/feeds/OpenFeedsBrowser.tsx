@@ -13,12 +13,6 @@ interface OpenFeedsBrowserProps {
   onClose: () => void;
 }
 
-type AvatarUser = {
-  _id: Id<"users">;
-  name: string;
-  image: string | null;
-};
-
 const FEEDS_PER_PAGE = 20;
 
 const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
@@ -28,7 +22,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   // Fetch user's feed memberships
   const userFeedsData = useQuery(
     api.feeds.getUserFeedsWithMemberships,
-    orgId ? { orgId } : "skip",
+    orgId ? { orgId } : "skip"
   );
   const userFeeds = userFeedsData?.userFeeds || [];
 
@@ -43,7 +37,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   } = usePaginatedQuery(
     api.feeds.getAllOpenFeeds,
     { orgId },
-    { initialNumItems: FEEDS_PER_PAGE },
+    { initialNumItems: FEEDS_PER_PAGE }
   );
 
   // Extract feed IDs from the current page
@@ -52,7 +46,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   // Fetch members for all feeds on the current page
   const feedMembers = useQuery(
     api.userMemberships.getOpenFeedMembers,
-    feedIds.length > 0 ? { orgId, feedIds } : "skip",
+    feedIds.length > 0 ? { orgId, feedIds } : "skip"
   );
 
   return (
@@ -106,7 +100,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
                               loadMore(FEEDS_PER_PAGE);
                             }
                           },
-                          { threshold: 0.1 },
+                          { threshold: 0.1 }
                         );
                         observer.observe(el);
                         return () => observer.disconnect();
