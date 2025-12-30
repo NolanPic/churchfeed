@@ -42,25 +42,27 @@ export default function FeedSelector({
   const feeds =
     useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
 
-  // Fetch user's feed memberships
-  const userFeedsData = useQuery(
-    api.feeds.getUserFeedsWithMemberships,
-    org ? { orgId: org._id } : "skip"
-  );
-  const userFeeds = userFeedsData?.userFeeds || [];
-
-  // Get current feed details if viewing a non-member feed
-  const currentFeed = useQuery(
+  // Get current feed if viewing a non-member feed.
+  // Note: this will still have a value if there's a feed selected,
+  // but it's only used for displaying a card when the user's viewing
+  // a non-member feed.
+  const nonMemberFeed = useQuery(
     api.feeds.getFeed,
     selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
   );
 
   if (!org) return null;
 
-  // Check if user is viewing a feed they are not a member of
-  const userFeedIds = new Set(userFeeds.map((uf) => uf.feedId));
-  const isViewingNonMemberFeed =
-    selectedFeedId && !userFeedIds.has(selectedFeedId);
+  let isViewingNonMemberFeed = false;
+
+  if (selectedFeedId) {
+    auth
+      ?.feed(selectedFeedId)
+      .hasRole("member")
+      .then((result) => {
+        isViewingNonMemberFeed = !result.allowed;
+      });
+  }
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
@@ -129,10 +131,10 @@ export default function FeedSelector({
               )}
               {!chooseFeedForNewPost &&
                 isViewingNonMemberFeed &&
-                currentFeed && (
+                nonMemberFeed && (
                   <li className={styles.viewingOpenFeedCard}>
                     <CurrentlyViewingOpenFeedCard
-                      feedTitle={currentFeed.name}
+                      feedTitle={nonMemberFeed.name}
                       feedId={selectedFeedId!}
                     />
                   </li>
