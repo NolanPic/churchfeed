@@ -78,13 +78,12 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
       >
         <div className={styles.header}>
           <Button
-            icon="chevron-left"
             onClick={onClose}
             noBackground
             className={styles.backButton}
             ariaLabel="Back to my feeds"
           >
-            Back to my feeds
+            &lt; Back to my feeds
           </Button>
           <h2 className={styles.title}>All open feeds</h2>
         </div>
