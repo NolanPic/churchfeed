@@ -7,6 +7,7 @@ import { useOrganization } from "@/app/context/OrganizationProvider";
 import { motion } from "motion/react";
 import OpenFeedCard from "./OpenFeedCard";
 import Button from "../common/Button";
+import Backdrop from "../common/Backdrop";
 import styles from "./OpenFeedsBrowser.module.css";
 
 interface OpenFeedsBrowserProps {
@@ -63,12 +64,8 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   };
 
   return (
-    <motion.div
-      className={styles.overlay}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <>
+      <Backdrop onClick={onClose} />
       <motion.div
         className={styles.browser}
         initial={{ y: "100%" }}
@@ -135,7 +132,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
           )}
         </div>
       </motion.div>
-    </motion.div>
+    </>
   );
 };
 
