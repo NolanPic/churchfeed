@@ -170,6 +170,7 @@ export default function FeedSelector({
                       setIsBrowserOpen(true);
                     }}
                     noBackground
+                    className={styles.browseOpenFeedsButton}
                   >
                     Browse open feeds
                   </Button>

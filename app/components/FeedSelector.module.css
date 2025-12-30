@@ -83,10 +83,13 @@
 }
 
 .browseOpenFeeds {
-    font-family: var(--font-family);
-    font-style: normal;
-    font-size: var(--text-base);
     margin-top: var(--spacing5);
+}
+
+.browseOpenFeedsButton {
+    font-family: var(--font-gentium-plus);
+    font-style: normal;
+    font-weight: 400;
 }
 
 @media (--tablet) {

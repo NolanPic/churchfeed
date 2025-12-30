@@ -33,8 +33,9 @@
 
 .title {
   margin: 0;
+  font-family: var(--font-gentium-plus);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 400;
   text-align: center;
 }
 
