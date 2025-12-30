@@ -33,28 +33,14 @@
   text-align: center;
 }
 
-.scrollContainer {
-  overflow: scroll;
-}
-
 .feedList {
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing4);
+}
+
+.cardListContainer {
   display: flex;
   flex-direction: column;
   gap: var(--spacing8);
-}
-
-.loading,
-.empty,
-.loadingMore {
-  text-align: center;
-  padding: var(--spacing6);
-  color: var(--light2);
-}
-
-.loadMoreTrigger {
-  height: 1px;
-  width: 100%;
 }
