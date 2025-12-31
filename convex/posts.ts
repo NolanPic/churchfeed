@@ -148,8 +148,9 @@ export const getById = query({
       .feed(post.feedId)
       .hasRole("member");
     const feedIsPublic = feed.privacy === "public";
+    const feedIsOpen = feed.privacy === "open"
     const userCanViewThisPost =
-      feedIsPublic || isUserAMemberOfThisFeedCheck.allowed;
+      feedIsPublic || isUserAMemberOfThisFeedCheck.allowed || (auth.getUser() && feedIsOpen);
 
     if (!userCanViewThisPost) {
       throw new Error("User cannot view this post");

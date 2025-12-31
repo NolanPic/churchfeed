@@ -1,7 +1,7 @@
 import Button from "./common/Button";
 import styles from "./FeedSelector.module.css";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
@@ -35,6 +35,8 @@ export default function FeedSelector({
   const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
     useState(chooseFeedForNewPost);
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
+  const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
+    useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
   const [auth] = useUserAuth();
@@ -53,16 +55,16 @@ export default function FeedSelector({
 
   if (!org) return null;
 
-  let isUserPreviewingOpenFeed = false;
-
-  if (selectedFeedId) {
-    auth
-      ?.feed(selectedFeedId)
-      .hasRole("member")
-      .then((result) => {
-        isUserPreviewingOpenFeed = !result.allowed;
-      });
-  }
+  useEffect(() => {
+    if (selectedFeedId) {
+      auth
+        ?.feed(selectedFeedId)
+        .hasRole("member")
+        .then((result) => {
+          setIsUserPreviewingOpenFeed(!result.allowed);
+        });
+    }
+  }, [auth, selectedFeedId]);
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name ||
@@ -83,12 +85,13 @@ export default function FeedSelector({
   };
 
   const handleClose = () => {
-    console.log("handleClose called");
     setIsFeedSelectorOpen(false);
     if (onClose) {
       onClose();
     }
   };
+
+  console.log("isUserPreviewingOpenFeed", isUserPreviewingOpenFeed);
 
   return (
     <>
@@ -124,6 +127,16 @@ export default function FeedSelector({
             transition={{ duration: 0.1 }}
             onClick={handleClose}
           >
+            {!chooseFeedForNewPost &&
+              isUserPreviewingOpenFeed &&
+              previewFeed && (
+                <div className={styles.previewingFeedCard}>
+                  <CurrentlyViewingOpenFeedCard
+                    feedTitle={previewFeed.name}
+                    feedId={selectedFeedId!}
+                  />
+                </div>
+              )}
             <ol>
               {chooseFeedForNewPost && (
                 <li>
@@ -132,16 +145,6 @@ export default function FeedSelector({
                   </h2>
                 </li>
               )}
-              {!chooseFeedForNewPost &&
-                isUserPreviewingOpenFeed &&
-                previewFeed && (
-                  <li className={styles.viewingOpenFeedCard}>
-                    <CurrentlyViewingOpenFeedCard
-                      feedTitle={previewFeed.name}
-                      feedId={selectedFeedId!}
-                    />
-                  </li>
-                )}
               {!chooseFeedForNewPost && (
                 <li
                   key="all"
