@@ -5,27 +5,25 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { motion } from "motion/react";
-import OpenFeedCard from "./OpenFeedCard";
+import JoinFeedCard from "./JoinFeedCard";
 import Button from "../common/Button";
 import { CardList } from "../common/CardList";
-import styles from "./OpenFeedsBrowser.module.css";
+import styles from "./PreviewFeedsSelector.module.css";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 
-interface OpenFeedsBrowserProps {
+interface PreviewFeedsSelectorProps {
   onClose: () => void;
 }
 
 const FEEDS_PER_PAGE = 20;
 
-const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
+const PreviewFeedsSelector = ({ onClose }: PreviewFeedsSelectorProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const [_auth, { userFeeds }] = useUserAuth();
 
-  // Create a set of feed IDs the user is a member of
   const userFeedIds = new Set(userFeeds.map((uf) => uf.feedId));
 
-  // Fetch all open feeds with pagination
   const {
     results: feeds,
     status,
@@ -36,10 +34,8 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
     { initialNumItems: FEEDS_PER_PAGE }
   );
 
-  // Extract feed IDs from the current page
   const feedIds = feeds.map((feed) => feed._id);
 
-  // Fetch members for all feeds on the current page
   const feedMembers = useQuery(
     api.userMemberships.getOpenFeedMembers,
     feedIds.length > 0 ? { orgId, feedIds } : "skip"
@@ -76,7 +72,7 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
           renderCard={(feed) => {
             const members = feedMembers?.[feed._id] || [];
             return (
-              <OpenFeedCard
+              <JoinFeedCard
                 feed={feed}
                 isUserMember={userFeedIds.has(feed._id)}
                 users={members}
@@ -89,4 +85,4 @@ const OpenFeedsBrowser = ({ onClose }: OpenFeedsBrowserProps) => {
   );
 };
 
-export default OpenFeedsBrowser;
+export default PreviewFeedsSelector;

@@ -13,8 +13,8 @@ import { useScrollToTop } from "@/app/hooks/useScrollToTop";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
-import CurrentlyViewingOpenFeedCard from "./feeds/CurrentlyViewingOpenFeedCard";
-import OpenFeedsBrowser from "./feeds/OpenFeedsBrowser";
+import PreviewingFeedCard from "./feeds/PreviewingFeedCard";
+import PreviewFeedsSelector from "./feeds/PreviewFeedsSelector";
 
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
@@ -91,8 +91,6 @@ export default function FeedSelector({
     }
   };
 
-  console.log("isUserPreviewingOpenFeed", isUserPreviewingOpenFeed);
-
   return (
     <>
       {!chooseFeedForNewPost && (
@@ -131,7 +129,7 @@ export default function FeedSelector({
               isUserPreviewingOpenFeed &&
               previewFeed && (
                 <div className={styles.previewingFeedCard}>
-                  <CurrentlyViewingOpenFeedCard
+                  <PreviewingFeedCard
                     feedTitle={previewFeed.name}
                     feedId={selectedFeedId!}
                   />
@@ -191,7 +189,7 @@ export default function FeedSelector({
           </motion.div>
         )}
         {isBrowserOpen && (
-          <OpenFeedsBrowser
+          <PreviewFeedsSelector
             key="open-feeds-browser"
             onClose={() => {
               setIsBrowserOpen(false);

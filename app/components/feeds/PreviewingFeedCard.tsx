@@ -7,17 +7,14 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Card, CardBody } from "../common/Card";
 import Button from "../common/Button";
 import { useOrganization } from "@/app/context/OrganizationProvider";
-import styles from "./CurrentlyViewingOpenFeedCard.module.css";
+import styles from "./PreviewingFeedCard.module.css";
 
-interface CurrentlyViewingOpenFeedCardProps {
+interface PreviewingFeedCardProps {
   feedTitle: string;
   feedId: Id<"feeds">;
 }
 
-const CurrentlyViewingOpenFeedCard = ({
-  feedTitle,
-  feedId,
-}: CurrentlyViewingOpenFeedCardProps) => {
+const PreviewingFeedCard = ({ feedTitle, feedId }: PreviewingFeedCardProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const joinOpenFeed = useMutation(api.userMemberships.joinOpenFeed);
@@ -71,4 +68,4 @@ const CurrentlyViewingOpenFeedCard = ({
   );
 };
 
-export default CurrentlyViewingOpenFeedCard;
+export default PreviewingFeedCard;

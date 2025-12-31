@@ -10,7 +10,7 @@ import StackedUsers from "../common/StackedUsers";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import styles from "./OpenFeedCard.module.css";
+import styles from "./JoinFeedCard.module.css";
 
 type AvatarUser = {
   _id: Id<"users">;
@@ -18,13 +18,13 @@ type AvatarUser = {
   image: string | null;
 };
 
-interface OpenFeedCardProps {
+interface JoinFeedCardProps {
   feed: Doc<"feeds">;
   isUserMember: boolean;
   users: AvatarUser[];
 }
 
-const OpenFeedCard = ({ feed, isUserMember, users }: OpenFeedCardProps) => {
+const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
   const router = useRouter();
@@ -97,9 +97,7 @@ const OpenFeedCard = ({ feed, isUserMember, users }: OpenFeedCardProps) => {
               checked={isExpanded}
               onChange={(e) => setIsExpanded(e.target.checked)}
             />
-            <p className={styles.description}>
-              {feed.description}
-            </p>
+            <p className={styles.description}>{feed.description}</p>
             <label
               htmlFor={`expand-${feed._id}`}
               className={styles.readMoreButton}
@@ -124,4 +122,4 @@ const OpenFeedCard = ({ feed, isUserMember, users }: OpenFeedCardProps) => {
   );
 };
 
-export default OpenFeedCard;
+export default JoinFeedCard;
