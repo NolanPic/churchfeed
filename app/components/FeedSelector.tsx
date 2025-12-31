@@ -42,25 +42,25 @@ export default function FeedSelector({
   const feeds =
     useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
 
-  // Get current feed if viewing a non-member feed.
-  // Note: this will still have a value if there's a feed selected,
-  // but it's only used for displaying a card when the user's viewing
-  // a non-member feed.
-  const nonMemberFeed = useQuery(
+  // Get current feed if viewing a non-member open feed.
+  // Note: this will always have a value if there's a feed selected,
+  // but it's only used for displaying a card when the user's
+  // previewing a feed.
+  const previewFeed = useQuery(
     api.feeds.getFeed,
     selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
   );
 
   if (!org) return null;
 
-  let isViewingNonMemberFeed = false;
+  let isUserPreviewingOpenFeed = false;
 
   if (selectedFeedId) {
     auth
       ?.feed(selectedFeedId)
       .hasRole("member")
       .then((result) => {
-        isViewingNonMemberFeed = !result.allowed;
+        isUserPreviewingOpenFeed = !result.allowed;
       });
   }
 
@@ -130,11 +130,11 @@ export default function FeedSelector({
                 </li>
               )}
               {!chooseFeedForNewPost &&
-                isViewingNonMemberFeed &&
-                nonMemberFeed && (
+                isUserPreviewingOpenFeed &&
+                previewFeed && (
                   <li className={styles.viewingOpenFeedCard}>
                     <CurrentlyViewingOpenFeedCard
-                      feedTitle={nonMemberFeed.name}
+                      feedTitle={previewFeed.name}
                       feedId={selectedFeedId!}
                     />
                   </li>
