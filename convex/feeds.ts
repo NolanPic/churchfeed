@@ -113,6 +113,7 @@ export const getFeed = query({
 
     // Check if user has access to this feed
     const isPublic = feed.privacy === "public";
+    const isOpen = feed.privacy === "open";
     let isMember = false;
 
     if (user) {
@@ -120,7 +121,9 @@ export const getFeed = query({
       isMember = isMemberCheck.allowed;
     }
 
-    if (!isPublic && !isMember) {
+    const allowUserToViewThisFeed = isPublic || (user && (isOpen || isMember));
+
+    if (!allowUserToViewThisFeed) {
       throw new Error("You do not have access to this feed");
     }
 
