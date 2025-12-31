@@ -105,16 +105,24 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
               more={
                 <>
                   {" ... "}
-                  <span className={styles.readMoreButton} onClick={toggleLines}>
+                  <button
+                    className={styles.readMoreButton}
+                    onClick={toggleLines}
+                  >
                     Read more
-                  </span>
+                  </button>
                 </>
               }
               less={
-                <span className={styles.readMoreButton} onClick={toggleLines}>
+                <>
                   {" "}
-                  Read less
-                </span>
+                  <button
+                    className={styles.readMoreButton}
+                    onClick={toggleLines}
+                  >
+                    Read less
+                  </button>
+                </>
               }
             >
               {feed.description}

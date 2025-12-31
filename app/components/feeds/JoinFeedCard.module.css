@@ -33,7 +33,6 @@
 
 .readMoreButton {
   display: inline;
-  margin-top: var(--spacing2);
   color: var(--accent);
   cursor: pointer;
   background: none;
