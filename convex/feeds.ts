@@ -89,7 +89,7 @@ export const get = internalQuery({
 
 /**
  * Get a feed by ID for users with access
- * Returns feed if user is a member, owner, or if feed is public
+ * Returns feed if user is a member, owner, feed is public, or feed is open and user is logged in
  */
 export const getFeed = query({
   args: {
