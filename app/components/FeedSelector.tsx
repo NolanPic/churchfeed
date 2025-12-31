@@ -122,6 +122,7 @@ export default function FeedSelector({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
+            onClick={handleClose}
           >
             <ol>
               {chooseFeedForNewPost && (
