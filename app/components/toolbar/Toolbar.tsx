@@ -13,7 +13,6 @@ import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id } from "@/convex/_generated/dataModel";
 import NotificationsSidebar from "../NotificationsSidebar";
-import Icon from "../common/Icon";
 
 interface ToolbarProps {
   onNewPost: () => void;
@@ -32,7 +31,8 @@ export default function Toolbar({
   const { feedId } = useContext(CurrentFeedAndPostContext);
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [isFeedMember, setIsFeedMember] = useState(false);
-  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] = useState(false);
+  const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
+    useState(false);
 
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
