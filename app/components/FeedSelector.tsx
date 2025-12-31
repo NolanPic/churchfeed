@@ -65,7 +65,9 @@ export default function FeedSelector({
   }
 
   const selectedFeed =
-    feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
+    feeds.find((feed) => feed._id === selectedFeedId)?.name ||
+    previewFeed?.name ||
+    "All feeds";
 
   const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
     setIsFeedSelectorOpen(false);
