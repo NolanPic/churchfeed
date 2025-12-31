@@ -23,20 +23,21 @@
 .backButton {
   align-self: flex-start;
   color: var(--accent);
+  font-weight: 400;
 }
 
 .title {
-  margin: 0;
   font-family: var(--font-gentium-plus);
-  font-size: var(--text-xl);
+  font-size: 32px;
   font-weight: 400;
   text-align: center;
+  padding-top: var(--spacing5);
 }
 
 .feedList {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing4);
+  padding: var(--spacing8);
 }
 
 .cardListContainer {

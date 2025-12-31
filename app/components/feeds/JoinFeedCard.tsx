@@ -65,11 +65,11 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
   };
 
   return (
-    <Card className={styles.openFeedCard}>
-      <CardHeader>
+    <Card>
+      <CardHeader className={styles.cardHeader}>
         <div className={styles.header}>
           <div className={styles.titleRow}>
-            <h3 className={styles.title}>{feed.name}</h3>
+            <h2 className={styles.title}>{feed.name}</h2>
             {feed.privacy === "public" && (
               <Image
                 src="/icons/globe.svg"
@@ -87,7 +87,7 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
           />
         </div>
       </CardHeader>
-      <CardBody>
+      <CardBody className={styles.cardBody}>
         {feed.description && (
           <div className={styles.descriptionContainer}>
             <input
@@ -97,13 +97,15 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
               checked={isExpanded}
               onChange={(e) => setIsExpanded(e.target.checked)}
             />
-            <p className={styles.description}>{feed.description}</p>
-            <label
-              htmlFor={`expand-${feed._id}`}
-              className={styles.readMoreButton}
-            >
-              Read more
-            </label>
+            <p className={styles.description}>
+              {feed.description} &nbsp;
+              <label
+                htmlFor={`expand-${feed._id}`}
+                className={styles.readMoreButton}
+              >
+                Read more
+              </label>
+            </p>
           </div>
         )}
         <div className={styles.actions}>

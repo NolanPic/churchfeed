@@ -58,7 +58,7 @@ const PreviewFeedsSelector = ({ onClose }: PreviewFeedsSelectorProps) => {
         >
           &lt; Back to my feeds
         </Button>
-        <h2 className={styles.title}>All open feeds</h2>
+        <h1 className={styles.title}>All open feeds</h1>
       </div>
 
       <div className={styles.feedList}>

@@ -27,7 +27,7 @@ const StackedUsers = ({
       <div className={styles.avatarsContainer}>
         {displayedUsers.map((user) => (
           <div key={user._id} className={styles.avatarWrapper}>
-            <UserAvatar user={user} size={34} />
+            <UserAvatar user={user} size={34} highlight />
           </div>
         ))}
       </div>

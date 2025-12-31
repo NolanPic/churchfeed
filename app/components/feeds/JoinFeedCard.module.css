@@ -1,10 +1,12 @@
-.openFeedCard {
-  width: 100%;
+.cardHeader,
+.cardBody {
+  padding: var(--spacing4);
 }
 
 .header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--spacing3);
 }
 
@@ -15,9 +17,9 @@
 }
 
 .title {
-  margin: 0;
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-family: var(--font-gentium-plus);
+  font-size: var(--text-md);
+  font-weight: 400;
 }
 
 .globeIcon {
@@ -36,28 +38,23 @@
 }
 
 .description {
-  margin: 0;
-  font-size: var(--text-sm);
-  color: var(--light2);
+  color: var(--white);
   line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  box-orient: vertical;
   overflow: hidden;
 }
 
 .expandCheckbox:checked ~ .description {
-  -webkit-line-clamp: unset;
+  line-clamp: unset;
   display: block;
 }
 
 .readMoreButton {
-  display: inline-block;
+  display: inline;
   margin-top: var(--spacing2);
   color: var(--accent);
-  font-size: var(--text-sm);
   cursor: pointer;
-  text-decoration: underline;
   background: none;
   border: none;
   padding: 0;

@@ -13,9 +13,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid var(--accent);
-  margin-left: calc(var(--avatar-overlap, -8px));
-  position: relative;
+  margin-left: calc(-1 * var(--spacing4));
 }
 
 .avatarWrapper:first-child {
