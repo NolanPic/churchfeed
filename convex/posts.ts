@@ -6,10 +6,10 @@ import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
 import { fromJSONToHTML } from "./utils/postContentConverter";
 import { getStorageUrl } from "./uploads";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { sendNotifications } from "./notifications";
 
-export const getUserPosts = query({
+export const getPostsForUserFeed = query({
   args: {
     orgId: v.id("organizations"),
     selectedFeedId: v.optional(v.id("feeds")),
@@ -32,6 +32,17 @@ export const getUserPosts = query({
 
     if (selectedFeedId) {
       feeds = feeds.filter((feed) => feed._id === selectedFeedId);
+
+      if(feeds.length === 0) {
+        // this may be an open feed that the user is not a member of
+        const feed = await ctx.runQuery(api.feeds.getFeed, {
+          orgId,
+          feedId: selectedFeedId,
+        });
+        if (feed && feed.privacy === "open") {
+          feeds.push(feed);
+        }
+      }
     }
 
     const posts = await ctx.db

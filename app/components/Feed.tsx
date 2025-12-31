@@ -92,7 +92,7 @@ export default function Feed({
   }, [setOpenPostId]);
 
   const { results, status, loadMore } = usePaginatedQuery(
-    api.posts.getUserPosts,
+    api.posts.getPostsForUserFeed,
     {
       orgId,
       selectedFeedId: feedId === null ? undefined : feedId,
