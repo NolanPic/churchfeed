@@ -31,25 +31,6 @@
   margin-bottom: var(--spacing4);
 }
 
-.expandCheckbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.description {
-  color: var(--white);
-  line-height: 1.5;
-  line-clamp: 3;
-  box-orient: vertical;
-  overflow: hidden;
-}
-
-.expandCheckbox:checked ~ .description {
-  line-clamp: unset;
-  display: block;
-}
-
 .readMoreButton {
   display: inline;
   margin-top: var(--spacing2);
@@ -58,10 +39,6 @@
   background: none;
   border: none;
   padding: 0;
-}
-
-.expandCheckbox:checked ~ .readMoreButton {
-  display: none;
 }
 
 .actions {

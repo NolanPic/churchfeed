@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
@@ -10,6 +10,11 @@ import StackedUsers from "../common/StackedUsers";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import {
+  ShowMore,
+  type ShowMoreRef,
+  type ShowMoreToggleLinesFn,
+} from "@re-dev/react-truncate";
 import styles from "./JoinFeedCard.module.css";
 
 type AvatarUser = {
@@ -29,11 +34,15 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
   const orgId = org?._id as Id<"organizations">;
   const router = useRouter();
   const joinOpenFeed = useMutation(api.userMemberships.joinOpenFeed);
+  const showMoreRef = useRef<ShowMoreRef>(null);
 
   const [isJoining, setIsJoining] = useState(false);
   const [hasJoined, setHasJoined] = useState(isUserMember);
   const [joinError, setJoinError] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleLines: ShowMoreToggleLinesFn = (e) => {
+    showMoreRef.current?.toggleLines(e);
+  };
 
   const handleJoin = async () => {
     setIsJoining(true);
@@ -90,22 +99,26 @@ const JoinFeedCard = ({ feed, isUserMember, users }: JoinFeedCardProps) => {
       <CardBody className={styles.cardBody}>
         {feed.description && (
           <div className={styles.descriptionContainer}>
-            <input
-              type="checkbox"
-              id={`expand-${feed._id}`}
-              className={styles.expandCheckbox}
-              checked={isExpanded}
-              onChange={(e) => setIsExpanded(e.target.checked)}
-            />
-            <p className={styles.description}>
-              {feed.description} &nbsp;
-              <label
-                htmlFor={`expand-${feed._id}`}
-                className={styles.readMoreButton}
-              >
-                Read more
-              </label>
-            </p>
+            <ShowMore
+              ref={showMoreRef}
+              lines={3}
+              more={
+                <>
+                  {" ... "}
+                  <span className={styles.readMoreButton} onClick={toggleLines}>
+                    Read more
+                  </span>
+                </>
+              }
+              less={
+                <span className={styles.readMoreButton} onClick={toggleLines}>
+                  {" "}
+                  Read less
+                </span>
+              }
+            >
+              {feed.description}
+            </ShowMore>
           </div>
         )}
         <div className={styles.actions}>
