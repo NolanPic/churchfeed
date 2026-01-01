@@ -35,13 +35,14 @@
 }
 
 .feedList {
-  flex: 1;
   overflow-y: auto;
   padding: var(--spacing8);
 }
 
 .cardListContainer {
-  display: flex;
-  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--spacing8);
 }
