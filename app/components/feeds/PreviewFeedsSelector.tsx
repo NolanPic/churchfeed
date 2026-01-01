@@ -44,10 +44,10 @@ const PreviewFeedsSelector = ({ onClose }: PreviewFeedsSelectorProps) => {
   return (
     <motion.div
       className={styles.browser}
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      exit={{ y: "100%" }}
-      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+      initial={{ opacity: 0, x: "100%" }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: "100%" }}
+      transition={{ duration: 0.2 }}
     >
       <div className={styles.header}>
         <Button
