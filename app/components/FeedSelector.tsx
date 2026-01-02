@@ -53,8 +53,6 @@ export default function FeedSelector({
     selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
   );
 
-  if (!org) return null;
-
   useEffect(() => {
     if (selectedFeedId) {
       auth
@@ -65,6 +63,8 @@ export default function FeedSelector({
         });
     }
   }, [auth, selectedFeedId]);
+
+  if (!org) return null;
 
   const selectedFeed =
     feeds.find((feed) => feed._id === selectedFeedId)?.name ||
