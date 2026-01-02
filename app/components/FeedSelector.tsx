@@ -1,7 +1,7 @@
 import Button from "./common/Button";
 import styles from "./FeedSelector.module.css";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
@@ -12,6 +12,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToTop } from "@/app/hooks/useScrollToTop";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
+import { useUserAuth } from "@/auth/client/useUserAuth";
+import PreviewingFeedCard from "./feeds/PreviewingFeedCard";
+import PreviewFeedsSelector from "./feeds/PreviewFeedsSelector";
 
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
@@ -29,20 +32,47 @@ export default function FeedSelector({
     CurrentFeedAndPostContext
   );
   const org = useOrganization();
-  const [isOpen, setIsOpen] = useState(chooseFeedForNewPost);
+  const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
+    useState(chooseFeedForNewPost);
+  const [isBrowserOpen, setIsBrowserOpen] = useState(false);
+  const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
+    useState(false);
   const scrollToTop = useScrollToTop();
   const router = useRouter();
+  const [auth] = useUserAuth();
 
   const feeds =
     useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
 
+  // Get current feed if viewing a non-member open feed.
+  // Note: this will always have a value if there's a feed selected,
+  // but it's only used for displaying a card when the user's
+  // previewing a feed.
+  const previewFeed = useQuery(
+    api.feeds.getFeed,
+    selectedFeedId && org ? { orgId: org._id, feedId: selectedFeedId } : "skip"
+  );
+
+  useEffect(() => {
+    if (selectedFeedId) {
+      auth
+        ?.feed(selectedFeedId)
+        .hasRole("member")
+        .then((result) => {
+          setIsUserPreviewingOpenFeed(!result.allowed);
+        });
+    }
+  }, [auth, selectedFeedId]);
+
   if (!org) return null;
 
   const selectedFeed =
-    feeds.find((feed) => feed._id === selectedFeedId)?.name || "All feeds";
+    feeds.find((feed) => feed._id === selectedFeedId)?.name ||
+    previewFeed?.name ||
+    "All feeds";
 
   const onSelectFeed = (feedId: Id<"feeds"> | undefined) => {
-    setIsOpen(false);
+    setIsFeedSelectorOpen(false);
     setFeedId(feedId);
     scrollToTop();
 
@@ -55,7 +85,7 @@ export default function FeedSelector({
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    setIsFeedSelectorOpen(false);
     if (onClose) {
       onClose();
     }
@@ -73,7 +103,7 @@ export default function FeedSelector({
               icon="dropdown-arrow"
               iconSize={10}
               className={styles.feedSelector}
-              onClick={() => setIsOpen(true)}
+              onClick={() => setIsFeedSelectorOpen(true)}
             >
               {selectedFeed}
             </Button>
@@ -85,14 +115,26 @@ export default function FeedSelector({
         </>
       )}
       <AnimatePresence>
-        {isOpen && (
+        {isFeedSelectorOpen && !isBrowserOpen && (
           <motion.div
+            key="feed-selector"
             className={styles.feedList}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
+            onClick={handleClose}
           >
+            {!chooseFeedForNewPost &&
+              isUserPreviewingOpenFeed &&
+              previewFeed && (
+                <div className={styles.previewingFeedCard}>
+                  <PreviewingFeedCard
+                    feedTitle={previewFeed.name}
+                    feedId={selectedFeedId!}
+                  />
+                </div>
+              )}
             <ol>
               {chooseFeedForNewPost && (
                 <li>
@@ -132,8 +174,32 @@ export default function FeedSelector({
                 </li>
               ))}
             </ol>
-            <Backdrop onClick={handleClose} />
+            {!chooseFeedForNewPost && auth && (
+              <Button
+                className={styles.browseOpenFeedsButton}
+                onClick={() => {
+                  setIsFeedSelectorOpen(false);
+                  setIsBrowserOpen(true);
+                }}
+                noBackground
+              >
+                Browse open feeds
+              </Button>
+            )}
           </motion.div>
+        )}
+        {isBrowserOpen && (
+          <PreviewFeedsSelector
+            key="open-feeds-browser"
+            onClose={() => {
+              setIsBrowserOpen(false);
+              setIsFeedSelectorOpen(true);
+            }}
+          />
+        )}
+
+        {(isFeedSelectorOpen || isBrowserOpen) && (
+          <Backdrop key="backdrop" onClick={handleClose} />
         )}
       </AnimatePresence>
     </>

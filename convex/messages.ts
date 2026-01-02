@@ -31,8 +31,9 @@ export const getForPost = query({
       .feed(post.feedId)
       .hasRole("member");
     const feedIsPublic = feed.privacy === "public";
+    const feedIsOpen = feed.privacy === "open";
     const userCanViewThisPost =
-      feedIsPublic || isUserMemberOfThisFeedCheck.allowed;
+      feedIsPublic || isUserMemberOfThisFeedCheck.allowed || (auth.getUser() && feedIsOpen);
 
     if (!userCanViewThisPost) {
       throw new Error("User cannot view this post or its messages");
