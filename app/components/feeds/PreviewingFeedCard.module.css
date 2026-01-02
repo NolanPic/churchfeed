@@ -13,13 +13,13 @@
 .label {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--light2);
 }
 
 .feedTitle {
   margin: 0;
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-family: var(--font-gentium-plus);
+  font-weight: 400;
 }
 
 .error {
