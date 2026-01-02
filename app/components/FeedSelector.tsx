@@ -42,7 +42,15 @@ export default function FeedSelector({
   const [auth] = useUserAuth();
 
   const feeds =
-    useQuery(api.feeds.getUserFeeds, org ? { orgId: org._id } : "skip") || [];
+    useQuery(
+      api.feeds.getUserFeeds,
+      org
+        ? {
+            orgId: org._id,
+            onlyIncludeFeedsUserCanPostIn: chooseFeedForNewPost,
+          }
+        : "skip"
+    ) || [];
 
   // Get current feed if viewing a non-member open feed.
   // Note: this will always have a value if there's a feed selected,
