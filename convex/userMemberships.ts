@@ -470,7 +470,7 @@ export const getOpenFeedMembers = query({
 
       // Get member details
       const membersWithDetails = await Promise.all(
-        allUserFeeds.slice(0, 50).map(async (userFeed) => {
+        allUserFeeds.map(async (userFeed) => {
           const user = await ctx.db.get(userFeed.userId);
           if (!user) {
             return null;
@@ -506,7 +506,7 @@ export const getOpenFeedMembers = query({
         return a.name.localeCompare(b.name);
       });
 
-      result[feedId] = sortedMembers;
+      result[feedId] = sortedMembers.slice(0, 50);
     }
 
     return result;
