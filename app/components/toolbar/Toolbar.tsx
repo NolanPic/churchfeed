@@ -33,6 +33,8 @@ export default function Toolbar({
   const [isFeedMember, setIsFeedMember] = useState(false);
   const [isNotificationsSidebarOpen, setIsNotificationsSidebarOpen] =
     useState(false);
+  const [canUserPostInSelectedFeed, setCanUserPostInSelectedFeed] =
+    useState(false);
 
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
@@ -70,6 +72,22 @@ export default function Toolbar({
       });
   }, [auth, feedId]);
 
+  useEffect(() => {
+    if (!auth) {
+      return;
+    }
+
+    // Check if user can post
+    if (!feedId) {
+      setCanUserPostInSelectedFeed(true); // show the post button, which will open up feed selection
+    } else {
+      auth
+        .feed(feedId)
+        .canPost()
+        .then((result) => setCanUserPostInSelectedFeed(result.allowed));
+    }
+  }, [auth, feedId]);
+
   const showNewPostButton = !isNewPostOpen;
   const showCloseButton = !showNewPostButton;
 
@@ -96,7 +114,7 @@ export default function Toolbar({
               className={styles.overflowMenuButton}
               popoverTarget="overflow-menu"
             />
-            {showNewPostButton && (
+            {showNewPostButton && canUserPostInSelectedFeed && (
               <IconButton
                 icon="pen"
                 variant="primary"
