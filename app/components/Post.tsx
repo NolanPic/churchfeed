@@ -47,7 +47,9 @@ export default function Post({
   const postedAt = post.postedAt ?? post._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
   const postedInLink = post.feed ? (
-    <Link href={`/feed/${post.feed._id}`}>{post.feed.name}</Link>
+    <Link href={`/feed/${post.feed._id}`} onClick={(e) => e.stopPropagation()}>
+      {post.feed.name}
+    </Link>
   ) : null;
 
   // Check if user can delete this post
@@ -110,6 +112,40 @@ export default function Post({
     }
   };
 
+  const handlePostClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only handle left clicks
+    if (e.button !== 0) return;
+
+    // Ignore clicks with modifier keys
+    if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+
+    // Don't open post if user has selected text
+    if (window.getSelection()?.toString().length) return;
+
+    // If menu is open, close it instead of opening post
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    // Open the post
+    if (variant === "feed" && onOpenPost) {
+      onOpenPost(post._id);
+    }
+  };
+
+  const handlePostKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Support keyboard navigation: Enter and Space keys
+    if (
+      variant === "feed" &&
+      onOpenPost &&
+      (e.key === "Enter" || e.key === " ")
+    ) {
+      e.preventDefault();
+      onOpenPost(post._id);
+    }
+  };
+
   const getTimeAndSourceFeed = () => {
     if (showSourceFeed && post.feed) {
       return (
@@ -134,7 +170,16 @@ export default function Post({
 
   return (
     <article key={_id} className={styles.postWrapper}>
-      <div className={styles.post}>
+      <div
+        className={styles.post}
+        onClick={handlePostClick}
+        onKeyDown={handlePostKeyDown}
+        role={variant === "feed" ? "button" : undefined}
+        tabIndex={variant === "feed" ? 0 : undefined}
+        aria-label={
+          variant === "feed" ? `View post by ${post.author?.name}` : undefined
+        }
+      >
         <div className={styles.authorAvatar}>
           <UserAvatar user={post.author} />
         </div>
@@ -156,7 +201,10 @@ export default function Post({
               ariaLabel="Post options"
               iconSize={24}
               className={styles.postMenuButton}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={(e: React.MouseEvent<HTMLElement>) => {
+                e.stopPropagation();
+                setIsMenuOpen(!isMenuOpen);
+              }}
               noBackground
             />
             <AnimatePresence>
@@ -171,7 +219,8 @@ export default function Post({
                   <li className={styles.postMenuItem}>
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setIsMenuOpen(false);
                         handleDeletePost();
                       }}
@@ -188,7 +237,10 @@ export default function Post({
           <button
             className={styles.messageThreadButton}
             type="button"
-            onClick={() => onOpenPost?.(post._id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenPost?.(post._id);
+            }}
           >
             {messageCount && (
               <span className={styles.messageThreadCount}>{messageCount}</span>
@@ -202,10 +254,17 @@ export default function Post({
             />
           </button>
         )}
-        <SanitizedUserContent
+        <div
           className={classNames(styles.content, userContentStyles.userContent)}
-          html={content}
-        />
+          onClick={(e) => {
+            // Stop propagation if clicking on a link
+            if ((e.target as HTMLElement).tagName === "A") {
+              e.stopPropagation();
+            }
+          }}
+        >
+          <SanitizedUserContent html={content} />
+        </div>
       </div>
 
       {showSourceFeed && post.feed && (
