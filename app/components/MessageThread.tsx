@@ -23,7 +23,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
     postId,
   });
   const messages = useQuery(api.messages.getForPost, { orgId, postId });
-  const [auth, { isLoading: isUserLoaded, user }] = useUserAuth();
+  const [auth, { isLoading: isUserLoading, user }] = useUserAuth();
   const [canSendMessage, setCanSendMessage] = useState(false);
 
   const isSignedIn = auth !== null;
@@ -35,9 +35,12 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
       return;
     }
 
-    auth.feed(post.feedId).canMessage().then((result) => {
-      setCanSendMessage(result.allowed);
-    });
+    auth
+      .feed(post.feedId)
+      .canMessage()
+      .then((result) => {
+        setCanSendMessage(result.allowed);
+      });
   }, [auth, post?.feedId]);
 
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
@@ -47,6 +50,9 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
   if (messages === undefined) {
     return <p>Loading messages...</p>;
   }
+
+  console.log("canSendMessage", canSendMessage);
+  console.log("isUserLoaded", isUserLoading);
 
   return (
     <>
@@ -90,7 +96,7 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
             You can <Link href="/login">sign in</Link> to send messages.
           </p>
         </Hint>
-      ) : !canSendMessage && isUserLoaded ? (
+      ) : !canSendMessage && !isUserLoading ? (
         <Hint type="info" className={styles.hint}>
           <p>You don&apos;t have permission to send messages in this feed.</p>
         </Hint>
