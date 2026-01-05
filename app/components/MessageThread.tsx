@@ -51,9 +51,6 @@ export default function MessageThread({ postId }: { postId: Id<"posts"> }) {
     return <p>Loading messages...</p>;
   }
 
-  console.log("canSendMessage", canSendMessage);
-  console.log("isUserLoaded", isUserLoading);
-
   return (
     <>
       {messages?.length > 0 && (
