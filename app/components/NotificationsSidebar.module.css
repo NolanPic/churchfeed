@@ -19,7 +19,7 @@
 @media (--tablet) {
   .sidebar {
     width: var(--notifications-sidebar-width);
-    border-right: 1px solid var(--mid);
+    border-right: 1px solid var(--mid2);
   }
 }
 
