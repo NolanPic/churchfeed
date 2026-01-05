@@ -1,7 +1,7 @@
 import Button from "./common/Button";
 import styles from "./FeedSelector.module.css";
 import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useOrganization } from "@/app/context/OrganizationProvider";
@@ -92,10 +92,15 @@ export default function FeedSelector({
     router.push(pathWithQuery);
   };
 
-  const handleClose = () => {
-    setIsFeedSelectorOpen(false);
-    if (onClose) {
-      onClose();
+  const handleClose = (e: React.MouseEvent<HTMLElement>) => {
+    // check to make sure the click wasn't caused by selecting a feed
+    const element = e.target as HTMLElement;
+    const doClose = !["LABEL", "INPUT"].includes(element.tagName);
+    if (doClose) {
+      setIsFeedSelectorOpen(false);
+      if (onClose) {
+        onClose();
+      }
     }
   };
 
