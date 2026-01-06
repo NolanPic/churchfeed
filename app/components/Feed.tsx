@@ -320,13 +320,8 @@ export default function Feed({
       <Modal
         isOpen={!!feedSettingsFeedIdSlug}
         onClose={handleCloseFeedSettings}
-        title={
-          feed
-            ? feed.name + (isFeedOwner ? " Settings" : " Members")
-            : isFeedOwner
-              ? "Feed Settings"
-              : "Feed Members"
-        }
+        title={isFeedOwner ? "Feed settings" : "Feed members"}
+        subtitle={feed ? feed.name : undefined}
         tabs={modalTabs}
         activeTabId={settingsActiveTab}
         onTabChange={setSettingsActiveTab}
