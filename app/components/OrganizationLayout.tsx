@@ -63,11 +63,11 @@ export default function OrganizationLayout({
       });
 
       // Create test notification function on window object
-      if (!window.__churchfeed) {
-        window.__churchfeed = {};
+      if (!window.__churchthreads) {
+        window.__churchthreads = {};
       }
 
-      window.__churchfeed.showNotification = async (
+      window.__churchthreads.showNotification = async (
         title: string,
         body: string
       ) => {

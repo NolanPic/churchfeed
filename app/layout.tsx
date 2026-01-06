@@ -12,7 +12,7 @@ import OrganizationLayout from "./components/OrganizationLayout";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "churchfeed",
+  title: "churchthreads",
   description: "Your feed",
 };
 

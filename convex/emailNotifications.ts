@@ -475,6 +475,6 @@ function generateSubjectLine(emailData: EmailData): string {
       return `${emailData.author.name} just joined ${emailData.feed.name}`;
 
     default:
-      return "New notification from ChurchFeed";
+      return "New notification from churchthreads";
   }
 }
