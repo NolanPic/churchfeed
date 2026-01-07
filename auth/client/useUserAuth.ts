@@ -2,7 +2,7 @@
 
 import { useUser, useAuth } from "@clerk/nextjs";
 import type { UserResource } from "@clerk/types";
-import { useQuery } from "convex/react";
+import { useQuery, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@/app/context/OrganizationProvider";
 import { Id, Doc } from "@/convex/_generated/dataModel";
@@ -19,6 +19,7 @@ import {
   checkFeedPermission,
   createPermissionResult,
 } from "../core/permissions";
+import { useEffect, useRef } from "react";
 
 /**
  * Extended user type that includes image URL (from getUserByClerkId query)
@@ -261,9 +262,11 @@ export function useUserAuth(): [
   }
 ] {
   const { user: clerkUser, isLoaded } = useUser();
+  const { isLoading: isConvexAuthLoading, isAuthenticated } = useConvexAuth();
   const { signOut } = useAuth();
   const org = useOrganization();
   const orgId = org?._id ?? ("" as Id<"organizations">);
+  const isSigningOutRef = useRef(false);
 
   // Query user data
   const user = useQuery(api.user.getUserByClerkId, {
@@ -278,8 +281,29 @@ export function useUserAuth(): [
 
   const { userFeeds = [], feeds = [] } = feedsData || {};
 
-  // Handle loading state
-  if (!isLoaded || user === undefined || feedsData === undefined) {
+  // Check if user is deactivated and sign them out automatically
+  useEffect(() => {
+    // Only check if we're authenticated, Clerk is loaded, and we have query results
+    if (
+      isAuthenticated &&
+      isLoaded &&
+      clerkUser &&
+      user !== undefined &&
+      !isSigningOutRef.current
+    ) {
+      // If user is null (not found in DB) or has deactivatedAt set, sign them out
+      if (user === null || user.deactivatedAt) {
+        isSigningOutRef.current = true;
+        signOut({ redirectUrl: "/login" }).catch((error) => {
+          console.error("Failed to sign out deactivated user:", error);
+          isSigningOutRef.current = false;
+        });
+      }
+    }
+  }, [isAuthenticated, isLoaded, clerkUser, user, signOut]);
+
+  // Handle loading state - use both Clerk and Convex auth loading states
+  if (!isLoaded || isConvexAuthLoading || user === undefined || feedsData === undefined) {
     return [
       null,
       { isLoading: true, error: null, user: null, clerkUser: null, userFeeds: [], signOut },
@@ -287,7 +311,7 @@ export function useUserAuth(): [
   }
 
   // Handle unauthenticated or user not found
-  if (!user || !clerkUser) {
+  if (!isAuthenticated || !user || !clerkUser) {
     return [
       null,
       { isLoading: false, error: null, user: null, clerkUser: null, userFeeds: [], signOut },
