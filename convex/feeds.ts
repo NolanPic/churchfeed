@@ -16,7 +16,7 @@ export const getUserFeeds = query({
     const publicFeeds = await getPublicFeeds(ctx, args.orgId);
 
     if (user) {
-      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+      const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id, user.orgId);
 
       const publicFeedIds = new Set(publicFeeds.map(feed => feed._id));
 
@@ -44,7 +44,7 @@ export const getUserFeedsWithMemberships = query({
       return null;
     }
 
-    const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id);
+    const userFeedsWithMemberships = await getUserFeedsWithMembershipsHelper(ctx, user._id, user.orgId);
 
     return userFeedsWithMemberships;
   },
@@ -53,13 +53,18 @@ export const getUserFeedsWithMemberships = query({
 export const getUserFeedsWithMembershipsHelper = async (
   ctx: QueryCtx,
   userId: Id<"users">,
+  orgId: Id<"organizations">,
 ) => {
   const userFeeds = await getManyFrom(ctx.db, "userFeeds", "by_userId", userId);
-  const feedIds = userFeeds.map((userFeed) => userFeed.feedId);
+
+  // Filter to only include feed memberships that belong to the user's organization
+  const userFeedsInOrg = userFeeds.filter((userFeed) => userFeed.orgId === orgId);
+
+  const feedIds = userFeedsInOrg.map((userFeed) => userFeed.feedId);
   const feedsUserIsMemberOf = await getAll(ctx.db, feedIds);
 
   return {
-    userFeeds,
+    userFeeds: userFeedsInOrg,
     feeds: feedsUserIsMemberOf.filter((feed) => feed !== null),
   };
 }

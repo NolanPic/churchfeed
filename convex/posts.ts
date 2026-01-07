@@ -26,7 +26,7 @@ export const getPostsForUserFeed = query({
 
     if (user) {
       const { feeds: feedsUserIsMemberOf } =
-        await getUserFeedsWithMembershipsHelper(ctx, user._id);
+        await getUserFeedsWithMembershipsHelper(ctx, user._id, user.orgId);
       feeds = feeds.concat(feedsUserIsMemberOf);
     }
 
