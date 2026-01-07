@@ -55,16 +55,19 @@ export const getUserFeedsWithMembershipsHelper = async (
   userId: Id<"users">,
   orgId: Id<"organizations">,
 ) => {
-  const userFeeds = await getManyFrom(ctx.db, "userFeeds", "by_userId", userId);
+  // Query feed memberships scoped to the user's organization using composite index
+  const userFeeds = await ctx.db
+    .query("userFeeds")
+    .withIndex("by_org_and_userId", (q) =>
+      q.eq("orgId", orgId).eq("userId", userId)
+    )
+    .collect();
 
-  // Filter to only include feed memberships that belong to the user's organization
-  const userFeedsInOrg = userFeeds.filter((userFeed) => userFeed.orgId === orgId);
-
-  const feedIds = userFeedsInOrg.map((userFeed) => userFeed.feedId);
+  const feedIds = userFeeds.map((userFeed) => userFeed.feedId);
   const feedsUserIsMemberOf = await getAll(ctx.db, feedIds);
 
   return {
-    userFeeds: userFeedsInOrg,
+    userFeeds,
     feeds: feedsUserIsMemberOf.filter((feed) => feed !== null),
   };
 }

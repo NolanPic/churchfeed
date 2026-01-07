@@ -55,6 +55,7 @@ export default defineSchema({
     owner: v.boolean(),
   })
     .index("by_org_and_feed_and_user", ["orgId", "feedId", "userId"])
+    .index("by_org_and_userId", ["orgId", "userId"])
     .index("by_userId", ["userId"]),
   posts: defineTable({
     ...defaultColumns,
