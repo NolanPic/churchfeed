@@ -21,12 +21,14 @@ export default function ThreadModal({
   const { setFeedIdOfCurrentThread } = useContext(CurrentFeedAndThreadContext);
   const thread = useQuery(
     api.threads.getById,
-    org?._id ? { orgId: org._id, threadId } : "skip",
+    org?._id ? { orgId: org._id, threadId } : "skip"
   );
 
+  const feedId = thread?.feedId;
+
   useEffect(() => {
-    setFeedIdOfCurrentThread(thread?.feedId);
-  }, [thread, setFeedIdOfCurrentThread]);
+    setFeedIdOfCurrentThread(feedId);
+  }, [feedId, setFeedIdOfCurrentThread]);
 
   if (!thread) {
     return <p>Loading thread...</p>;
