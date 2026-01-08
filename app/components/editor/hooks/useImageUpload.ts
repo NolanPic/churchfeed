@@ -31,11 +31,11 @@ export interface UseImageUploadReturn {
 
 export interface UseImageUploadOptions {
   /**
-   * The type of upload (post, message, or avatar)
+   * The type of upload (thread, message, or avatar)
    */
   source: UploadType;
   /**
-   * The source ID (post ID, message ID, or user ID)
+   * The source ID (thread ID, message ID, or user ID)
    * Can be null while drafting, then updated once published
    */
   sourceId?: Id<"threads"> | Id<"messages"> | Id<"users"> | null;
@@ -53,8 +53,8 @@ export interface UseImageUploadOptions {
  * @example
  * ```tsx
  * const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
- *   source: "post",
- *   sourceId: postId,
+ *   source: "thread",
+ *   sourceId: threadId,
  * });
  *
  * const handleFileSelect = async (file: File) => {
