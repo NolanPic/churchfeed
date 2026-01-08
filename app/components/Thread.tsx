@@ -47,7 +47,10 @@ export default function Thread({
   const postedAt = thread.postedAt ?? thread._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
   const postedInLink = thread.feed ? (
-    <Link href={`/feed/${thread.feed._id}`} onClick={(e) => e.stopPropagation()}>
+    <Link
+      href={`/feed/${thread.feed._id}`}
+      onClick={(e) => e.stopPropagation()}
+    >
       {thread.feed.name}
     </Link>
   ) : null;
@@ -94,7 +97,7 @@ export default function Thread({
   }, [isMenuOpen]);
 
   const handleDeleteThread = async () => {
-    if (!confirm("Are you sure you want to delete this post?")) {
+    if (!confirm("Are you sure you want to delete this thread?")) {
       return;
     }
 
@@ -102,12 +105,12 @@ export default function Thread({
       onThreadDeleted?.();
 
       // Hack: wait for the navigation/modal close animation to complete
-      // before deleting the post to avoid query errors
+      // before deleting the thread to avoid query errors
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       await deleteThread({ orgId, threadId: _id });
     } catch (error) {
-      console.error("Failed to delete post:", error);
+      console.error("Failed to delete thread:", error);
       alert("Failed to delete thread. Please try again.");
     }
   };
@@ -119,16 +122,16 @@ export default function Thread({
     // Ignore clicks with modifier keys
     if (e.ctrlKey || e.metaKey || e.shiftKey) return;
 
-    // Don't open post if user has selected text
+    // Don't open thread if user has selected text
     if (window.getSelection()?.toString().length) return;
 
-    // If menu is open, close it instead of opening post
+    // If menu is open, close it instead of opening thread
     if (isMenuOpen) {
       setIsMenuOpen(false);
       return;
     }
 
-    // Open the post
+    // Open the threaed
     if (variant === "feed" && onOpenThread) {
       onOpenThread(thread._id);
     }
@@ -177,7 +180,9 @@ export default function Thread({
         role={variant === "feed" ? "button" : undefined}
         tabIndex={variant === "feed" ? 0 : undefined}
         aria-label={
-          variant === "feed" ? `View thread by ${thread.author?.name}` : undefined
+          variant === "feed"
+            ? `View thread by ${thread.author?.name}`
+            : undefined
         }
       >
         <div className={styles.authorAvatar}>
@@ -225,7 +230,7 @@ export default function Thread({
                         handleDeleteThread();
                       }}
                     >
-                      Delete post
+                      Delete thread
                     </button>
                   </li>
                 </motion.ul>
