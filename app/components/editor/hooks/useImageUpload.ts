@@ -84,7 +84,7 @@ export function useImageUpload(
   // Effect to patch upload source IDs when sourceId changes
   useEffect(() => {
     const updateUploadSourceIds = async () => {
-      // Only run for post and message uploads (not avatars)
+      // Only run for thread and message uploads (not avatars)
       if (source !== "thread" && source !== "message") {
         return;
       }
@@ -154,10 +154,10 @@ export function useImageUpload(
         formData.append("orgId", orgId);
         formData.append("source", source);
 
-        // Only include feedId for post/message uploads
+        // Only include feedId for thread/message uploads
         if (source === "thread" || source === "message") {
           if (!feedIdForThreadsAndMessages) {
-            throw new Error("Feed ID is required for post/message uploads");
+            throw new Error("Feed ID is required for thread/message uploads");
           }
           formData.append("feedId", feedIdForThreadsAndMessages);
         }
@@ -192,7 +192,7 @@ export function useImageUpload(
 
         setImageUrl(url);
 
-        // Track uploadId if sourceId is not yet set (for post/message drafts)
+        // Track uploadId if sourceId is not yet set (for thread/message drafts)
         if (!sourceId && (source === "thread" || source === "message")) {
           setUploadIds((prev) => [...prev, uploadId]);
         }

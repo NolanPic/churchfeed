@@ -22,9 +22,7 @@ The `useImageUpload` hook provides core image upload functionality that can be u
 ### Hook Signature
 
 ```typescript
-function useImageUpload(
-  options: UseImageUploadOptions
-): UseImageUploadReturn
+function useImageUpload(options: UseImageUploadOptions): UseImageUploadReturn;
 ```
 
 ### Options
@@ -45,6 +43,7 @@ interface UseImageUploadOptions {
 ```
 
 **Parameters:**
+
 - `source` (required): Determines what type of image upload this is
   - `"thread"`: Image uploaded to a thread
   - `"message"`: Image uploaded to a message
@@ -86,6 +85,7 @@ interface UseImageUploadReturn {
 ```
 
 **Properties:**
+
 - `imageUrl`: The final Convex storage URL, available after upload completes
 - `previewUrl`: A data URL for immediate preview, available as soon as file is selected
 - `isUploading`: Boolean indicating whether an upload is in progress
@@ -122,10 +122,11 @@ import { useState } from "react";
 function AvatarUploader() {
   const [userId, setUserId] = useState<Id<"users"> | null>(null);
 
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "avatar",
-    sourceId: userId,
-  });
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "avatar",
+      sourceId: userId,
+    });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -177,10 +178,11 @@ function ThreadComposer() {
   const createThread = useMutation(api.threads.create);
 
   // Start with null sourceId - will be patched after thread is created
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "thread",
-    sourceId: threadId,
-  });
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "thread",
+      sourceId: threadId,
+    });
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -234,10 +236,11 @@ import { useImageUpload } from "@/app/components/editor/hooks/useImageUpload";
 import { useState } from "react";
 
 function ImageUploadExample() {
-  const { imageUrl, previewUrl, isUploading, error, uploadImage } = useImageUpload({
-    source: "thread",
-    sourceId: null, // No thread created yet
-  });
+  const { imageUrl, previewUrl, isUploading, error, uploadImage } =
+    useImageUpload({
+      source: "thread",
+      sourceId: null, // No thread created yet
+    });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -266,9 +269,7 @@ function ImageUploadExample() {
 
       {/* Upload Status */}
       {isUploading && (
-        <div style={{ color: "blue", marginBottom: 10 }}>
-          Uploading...
-        </div>
+        <div style={{ color: "blue", marginBottom: 10 }}>Uploading...</div>
       )}
 
       {/* Error Display */}
@@ -311,16 +312,19 @@ The hook validates files using the `validateFile` function from `@/validation`:
 ### Validation Rules by Source
 
 **All Sources:**
+
 - Allowed MIME types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `image/heic`, `image/heif`
 - Maximum file size: 10MB
 
 **Avatar Specific:**
+
 - GIF files are **not allowed** for avatars
 - Previous avatars are automatically replaced
 
 ### Validation Errors
 
 Common validation errors include:
+
 - "File validation failed: Invalid file type"
 - "File validation failed: File size exceeds 10MB"
 - "File validation failed: GIF files not allowed for avatars"
@@ -368,14 +372,18 @@ const handleUpload = async (file: File) => {
 The hook integrates with several context providers:
 
 ### Required Context
+
 - **OrganizationProvider**: Provides `orgId` for upload metadata
 - **CurrentFeedAndThreadContext**: Provides `feedId` for thread/message uploads
 - **Clerk Auth**: Provides authentication token
 
 ### Context Usage
+
 ```typescript
 const org = useOrganization(); // from OrganizationProvider
-const { feedId, feedIdOfCurrentThread } = useContext(CurrentFeedAndThreadContext);
+const { feedId, feedIdOfCurrentThread } = useContext(
+  CurrentFeedAndThreadContext
+);
 const { getToken } = useAuth(); // from Clerk
 ```
 
@@ -402,13 +410,12 @@ A specialized wrapper around `useImageUpload` for TipTap editor integration:
 ```typescript
 import { useEditorImageUpload } from "@/app/components/editor/hooks/useEditorImageUpload";
 
-const { handleChooseFile, handleDrop, error, isUploading } = useEditorImageUpload(
-  editor,
-  threadId
-);
+const { handleChooseFile, handleDrop, error, isUploading } =
+  useEditorImageUpload(editor, threadId);
 ```
 
 **Features:**
+
 - Automatic placeholder insertion with preview URL
 - Automatic replacement with final URL when upload completes
 - Drag-and-drop support

@@ -131,7 +131,7 @@ export default function Thread({
       return;
     }
 
-    // Open the threaed
+    // Open the thread
     if (variant === "feed" && onOpenThread) {
       onOpenThread(thread._id);
     }

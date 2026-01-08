@@ -10,7 +10,7 @@ import { useOrganization } from "../context/OrganizationProvider";
 import MessageThread from "./MessageThread";
 import Thread from "./Thread";
 
-export default function ThreadModal({
+export default function ThreadModalContent({
   threadId,
   onClose,
 }: {
