@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, useMemo, ReactNode } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 
 export const CurrentFeedAndThreadContext = createContext<{
@@ -29,17 +29,20 @@ export function CurrentFeedAndThreadProvider({
   const [feedIdOfCurrentThread, setFeedIdOfCurrentThread] =
     useState<Id<"feeds">>();
 
+  const contextValue = useMemo(
+    () => ({
+      feedId,
+      threadId,
+      feedIdOfCurrentThread,
+      setFeedId,
+      setThreadId,
+      setFeedIdOfCurrentThread,
+    }),
+    [feedId, threadId, feedIdOfCurrentThread]
+  );
+
   return (
-    <CurrentFeedAndThreadContext.Provider
-      value={{
-        feedId,
-        threadId,
-        feedIdOfCurrentThread,
-        setFeedId,
-        setThreadId,
-        setFeedIdOfCurrentThread,
-      }}
-    >
+    <CurrentFeedAndThreadContext.Provider value={contextValue}>
       {children}
     </CurrentFeedAndThreadContext.Provider>
   );
