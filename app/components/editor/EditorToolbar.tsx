@@ -1,5 +1,6 @@
 "use client";
 
+// TODO: ThreadEditorToolbar should be removed
 import styles from "./ThreadEditorToolbar.module.css";
 import Button from "../common/Button";
 import classNames from "classnames";

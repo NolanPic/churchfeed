@@ -1,3 +1,5 @@
+/* TODO: This is used in EditorToolbar but should be removed */
+
 .threadEditorToolbar {
     display: flex;
     justify-content: flex-end;
