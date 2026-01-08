@@ -26,7 +26,7 @@ interface EditorProps {
   autofocus?: boolean;
   onSubmit?: () => void;
   className?: string;
-  sourceId?: Id<"posts"> | Id<"messages">; // the id of the source of the content once it's saved
+  sourceId?: Id<"threads"> | Id<"messages">; // the id of the source of the content once it's saved
 }
 
 const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(

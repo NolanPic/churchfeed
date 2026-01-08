@@ -46,7 +46,7 @@ export default function Feed({
   const [isSelectingFeedForThread, setIsSelectingFeedForThread] = useState(false);
   const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
-  const [isFeedMember, setIsFeedMember] = useState(false);
+  const [, setIsFeedMember] = useState(false);
   const [auth] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
