@@ -28,6 +28,8 @@ export default function ThreadModalContent({
 
   useEffect(() => {
     setFeedIdOfCurrentThread(feedId);
+
+    return () => setFeedIdOfCurrentThread(undefined);
   }, [feedId, setFeedIdOfCurrentThread]);
 
   if (!thread) {
