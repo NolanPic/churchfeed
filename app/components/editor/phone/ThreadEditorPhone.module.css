@@ -2,7 +2,7 @@
     margin: 0 var(--modal-gutter);
 }
 
-.postEditorPhoneToolbar {
+.threadEditorPhoneToolbar {
     display: flex;
     justify-content: space-between;
 }

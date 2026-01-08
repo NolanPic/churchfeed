@@ -15,7 +15,7 @@ export function fromJSONToHTML(content: string) {
     try {
         parsedContent = JSON.parse(content);
     } catch(error) {
-        console.error("Failed to parse post content as JSON", error);
+        console.error("Failed to parse thread content as JSON", error);
     }
 
     let html = '';
@@ -37,7 +37,7 @@ export function fromJSONToHTML(content: string) {
             content: parsedContent,
         });
     } catch(error) {
-        console.error("Failed to render post content to HTML", error);
+        console.error("Failed to render thread content to HTML", error);
     }
 
     return html;

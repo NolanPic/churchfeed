@@ -9,11 +9,13 @@ import { paginationOptsValidator } from "convex/server";
 export const getUserFeeds = query({
   args: {
     orgId: v.id("organizations"),
+    onlyIncludeFeedsUserCanPostIn: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const auth = await getUserAuth(ctx, args.orgId);
+    const { orgId, onlyIncludeFeedsUserCanPostIn } = args; 
+    const auth = await getUserAuth(ctx, orgId);
     const user = auth.getUser();
-    const publicFeeds = await getPublicFeeds(ctx, args.orgId);
+    const publicFeeds = await getPublicFeeds(ctx, orgId);
 
     if (user) {
       const { feeds: feedsUserIsMemberOf } = await getUserFeedsWithMembershipsHelper(ctx, user._id);
@@ -25,7 +27,20 @@ export const getUserFeeds = query({
         feed => !publicFeedIds.has(feed._id)
       );
 
-      return [...publicFeeds, ...uniqueFeedsUserIsMemberOf];
+      let finalFeeds = [...publicFeeds, ...uniqueFeedsUserIsMemberOf]
+
+      if(onlyIncludeFeedsUserCanPostIn) {
+        const feedChecks = await Promise.all(
+          finalFeeds.map(async feed => {
+            const canPost = await auth.feed(feed._id).canPost();
+            return canPost.allowed;
+          })
+        );
+
+        finalFeeds = finalFeeds.filter((_, index) => feedChecks[index]);
+      }
+
+      return finalFeeds;
     } else {
       return publicFeeds;
     }

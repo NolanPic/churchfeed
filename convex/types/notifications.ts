@@ -2,28 +2,28 @@ import { Id, Doc } from "../_generated/dataModel";
 
 export type EmailData =
   | {
-      type: "new_post_in_member_feed";
+      type: "new_thread_in_member_feed";
       author: Doc<"users">;
       authorImageUrl: string | null;
       feed: Doc<"feeds">;
-      postHtml: string;
-      postId: Id<"posts">;
+      threadHtml: string;
+      threadId: Id<"threads">;
       notificationId: Id<"notifications">;
       userOwnsFeed: boolean;
       orgHost: string;
     }
   | {
-      type: "new_message_in_post";
+      type: "new_message_in_thread";
       messages: Array<{
         message: Doc<"messages">;
         author: Doc<"users">;
         authorImageUrl: string | null;
         messageHtml: string;
       }>;
-      postId: Id<"posts">;
-      postTitle: string;
+      threadId: Id<"threads">;
+      threadTitle: string;
       notificationId: Id<"notifications">;
-      userOwnsPost: boolean;
+      userOwnsThread: boolean;
       actorName: string;
       orgHost: string;
     }

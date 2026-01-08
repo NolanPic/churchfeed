@@ -17,7 +17,7 @@ const ALLOWED_IMAGE_TYPES = [
  */
 const SIZE_LIMITS = {
   avatar: 1 * 1024 * 1024, // 1MB
-  post: 3 * 1024 * 1024, // 3MB
+  thread: 3 * 1024 * 1024, // 3MB
   message: 3 * 1024 * 1024, // 3MB
 } as const;
 

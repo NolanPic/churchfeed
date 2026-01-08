@@ -7,7 +7,7 @@ import {
   notificationTypeValidator,
   notificationDataValidator,
 } from "./notifications";
-import { fromJSONToHTML } from "./utils/postContentConverter";
+import { fromJSONToHTML } from "./utils/threadContentConverter";
 import { EmailData } from "./types/notifications";
 import renderEmailTemplate from "./renderEmailTemplate";
 
@@ -39,13 +39,13 @@ export const sendEmailNotifications = internalAction({
     }
 
     // Conversation lull detection for message notifications
-    if (type === "new_message_in_post") {
-      const postId = (data as { postId: Id<"posts"> }).postId;
+    if (type === "new_message_in_thread") {
+      const threadId = (data as { threadId: Id<"threads"> }).threadId;
 
       // Check for conversation lull
       const lastMessage = await ctx.runQuery(
-        internal.emailNotifications.getLastMessageSentInPost,
-        { postId, orgId },
+        internal.emailNotifications.getLastMessageSentInThread,
+        { threadId, orgId },
       );
 
       if (lastMessage) {
@@ -174,14 +174,14 @@ export const getNotificationDataForEmail = internalQuery({
 
       try {
         switch (type) {
-          case "new_post_in_member_feed": {
-            emailData = await getNewPostEmailData(
+          case "new_thread_in_member_feed": {
+            emailData = await getNewThreadEmailData(
               ctx,
               orgId,
               data as {
                 userId: Id<"users">;
                 feedId: Id<"feeds">;
-                postId: Id<"posts">;
+                threadId: Id<"threads">;
               },
               recipient.userId,
               recipient.notificationId,
@@ -190,7 +190,7 @@ export const getNotificationDataForEmail = internalQuery({
             break;
           }
 
-          case "new_message_in_post": {
+          case "new_message_in_thread": {
             emailData = await getNewMessageEmailData(
               ctx,
               orgId,
@@ -247,18 +247,18 @@ export const getMessage = internalQuery({
 });
 
 /**
- * Get last message sent in a post for conversation lull detection
+ * Get last message sent in a thread for conversation lull detection
  */
-export const getLastMessageSentInPost = internalQuery({
+export const getLastMessageSentInThread = internalQuery({
   args: {
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
     orgId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
     const messages = await ctx.db
       .query("messages")
-      .withIndex("by_orgId_postId", (q) =>
-        q.eq("orgId", args.orgId).eq("postId", args.postId),
+      .withIndex("by_orgId_threadId", (q) =>
+        q.eq("orgId", args.orgId).eq("threadId", args.threadId),
       )
       .order("desc")
       .take(1);
@@ -272,14 +272,14 @@ export const getLastMessageSentInPost = internalQuery({
  */
 export const getScheduledMessageNotifications = internalQuery({
   args: {
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
   },
   handler: async (ctx, args) => {
     const scheduled = await ctx.db.system
       .query("_scheduled_functions")
       .collect();
 
-    const notificationScheduledForThisPost = scheduled.filter((sf) => {
+    const notificationScheduledForThisThread = scheduled.filter((sf) => {
       if (sf.state.kind !== "pending") {
         return false;
       }
@@ -288,7 +288,7 @@ export const getScheduledMessageNotifications = internalQuery({
         return false;
       }
 
-      if (sf.args?.[0]?.type !== "new_message_in_post") {
+      if (sf.args?.[0]?.type !== "new_message_in_thread") {
         return false;
       }
 
@@ -298,34 +298,34 @@ export const getScheduledMessageNotifications = internalQuery({
         return false;
       }
 
-      // message should belong to this post
+      // message should belong to this thread
       const postIdOfMessage = sf.args?.[0].data?.postId;
-      if (!postIdOfMessage || postIdOfMessage !== args.postId) {
+      if (!postIdOfMessage || postIdOfMessage !== args.threadId) {
         return false;
       }
 
       return true;
     });
 
-    return notificationScheduledForThisPost;
+    return notificationScheduledForThisThread;
   },
 });
 
 // Helper functions
 
-async function getNewPostEmailData(
+async function getNewThreadEmailData(
   ctx: QueryCtx,
   orgId: Id<"organizations">,
-  data: { userId: Id<"users">; feedId: Id<"feeds">; postId: Id<"posts"> },
+  data: { userId: Id<"users">; feedId: Id<"feeds">; threadId: Id<"threads"> },
   recipientUserId: Id<"users">,
   notificationId: Id<"notifications">,
   orgHost: string,
 ): Promise<EmailData | null> {
   const author = await ctx.db.get(data.userId);
   const feed = await ctx.db.get(data.feedId);
-  const post = await ctx.db.get(data.postId);
+  const thread = await ctx.db.get(data.threadId);
 
-  if (!author || !feed || !post) {
+  if (!author || !feed || !thread) {
     return null;
   }
 
@@ -334,7 +334,7 @@ async function getNewPostEmailData(
         uploadId: author.image,
       })
     : null;
-  const postHtml = fromJSONToHTML(post.content);
+  const threadHtml = fromJSONToHTML(thread.content);
 
   // Check if recipient owns the feed
   const userFeed = await ctx.db
@@ -348,12 +348,12 @@ async function getNewPostEmailData(
     .first();
 
   return {
-    type: "new_post_in_member_feed" as const,
+    type: "new_thread_in_member_feed" as const,
     author,
     authorImageUrl,
     feed,
-    postHtml,
-    postId: data.postId,
+    threadHtml,
+    threadId: data.threadId,
     notificationId,
     userOwnsFeed: userFeed?.owner ?? false,
     orgHost,
@@ -380,8 +380,8 @@ async function getNewMessageEmailData(
   // Get the most recent message and 4 before it (5 total)
   const messages = await ctx.db
     .query("messages")
-    .withIndex("by_orgId_postId", (q) =>
-      q.eq("orgId", orgId).eq("postId", message.postId),
+    .withIndex("by_orgId_threadId", (q) =>
+      q.eq("orgId", orgId).eq("threadId", message.threadId),
     )
     .order("desc")
     .take(5);
@@ -406,20 +406,20 @@ async function getNewMessageEmailData(
     }),
   );
 
-  // Get post to check ownership
-  const post = await ctx.db.get(message.postId);
-  const userOwnsPost = post?.posterId === recipientUserId;
+  // Get thread to check ownership
+  const thread = await ctx.db.get(message.threadId);
+  const userOwnsThread = thread?.posterId === recipientUserId;
 
   // Get most recent message author for subject line
   const mostRecentAuthor = await ctx.db.get(messages[0].senderId);
 
   return {
-    type: "new_message_in_post" as const,
+    type: "new_message_in_thread" as const,
     messages: messagesWithAuthors,
-    postId: message.postId,
-    postTitle: "a post",
+    threadId: message.threadId,
+    threadTitle: "a thread",
     notificationId,
-    userOwnsPost,
+    userOwnsThread,
     actorName: mostRecentAuthor?.name || "Someone",
     orgHost,
   };
@@ -459,22 +459,22 @@ async function getNewFeedMemberEmailData(
 
 function generateSubjectLine(emailData: EmailData): string {
   switch (emailData.type) {
-    case "new_post_in_member_feed":
+    case "new_thread_in_member_feed":
       if (emailData.userOwnsFeed) {
         return `${emailData.author.name} just published a post in your feed, ${emailData.feed.name}`;
       }
       return `${emailData.author.name} just published a post in ${emailData.feed.name}`;
 
-    case "new_message_in_post":
-      if (emailData.userOwnsPost) {
+    case "new_message_in_thread":
+      if (emailData.userOwnsThread) {
         return `${emailData.actorName} messaged in your post`;
       }
-      return `${emailData.actorName} responded in a post`;
+      return `${emailData.actorName} responded in a thread`;
 
     case "new_feed_member":
       return `${emailData.author.name} just joined ${emailData.feed.name}`;
 
     default:
-      return "New notification from ChurchFeed";
+      return "New notification from churchthreads";
   }
 }

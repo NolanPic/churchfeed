@@ -1,7 +1,7 @@
-.postEditor {
+.threadEditor {
     --editor-open-min-height: 190px;
     --editor-open-width: 100%;
-    
+
     position: absolute;
     right: 0;
     width: var(--editor-open-width);

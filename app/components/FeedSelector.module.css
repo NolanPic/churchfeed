@@ -146,7 +146,7 @@
         top: 3px;
 
         /* Tint external SVG image to match var(--accent) */
-        /* TODO: clean this up after https://github.com/NolanPic/churchfeed/issues/70 */
+        /* TODO: clean this up after https://github.com/NolanPic/churchthreads/issues/70 */
         filter: brightness(0) saturate(100%) invert(84%) sepia(22%) saturate(779%) hue-rotate(321deg) brightness(103%) contrast(94%);
     }
 }

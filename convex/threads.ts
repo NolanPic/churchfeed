@@ -4,12 +4,12 @@ import { paginationOptsValidator } from "convex/server";
 import { getUserFeedsWithMembershipsHelper, getPublicFeeds } from "./feeds";
 import { getUserAuth } from "@/auth/convex";
 import { Doc, Id } from "./_generated/dataModel";
-import { fromJSONToHTML } from "./utils/postContentConverter";
+import { fromJSONToHTML } from "./utils/threadContentConverter";
 import { getStorageUrl } from "./uploads";
 import { api, internal } from "./_generated/api";
 import { sendNotifications } from "./notifications";
 
-export const getPostsForUserFeed = query({
+export const getThreadsForUserFeed = query({
   args: {
     orgId: v.id("organizations"),
     selectedFeedId: v.optional(v.id("feeds")),
@@ -45,8 +45,8 @@ export const getPostsForUserFeed = query({
       }
     }
 
-    const posts = await ctx.db
-      .query("posts")
+    const threads = await ctx.db
+      .query("threads")
       .withIndex("by_org_and_postedAt", (q) => q.eq("orgId", orgId))
       .filter((q) =>
         q.or(...feeds.map((feed) => q.eq(q.field("feedId"), feed._id))),
@@ -59,39 +59,39 @@ export const getPostsForUserFeed = query({
       feedMap.set(feed._id, feed);
     }
 
-    const enrichedPosts = await Promise.all(
-      posts.page.map(async (post) => {
-        const author = await ctx.db.get(post.posterId);
-        if (!author) return null; // skip posts with no author
+    const enrichedThreads = await Promise.all(
+      threads.page.map(async (thread) => {
+        const author = await ctx.db.get(thread.posterId);
+        if (!author) return null; // skip threads with no author
 
         const image = await getStorageUrl(ctx, author.image);
-        const feed = feedMap.get(post.feedId) || null;
+        const feed = feedMap.get(thread.feedId) || null;
         const messageCount = (
           await ctx.db
             .query("messages")
-            .withIndex("by_orgId_postId", (q) =>
-              q.eq("orgId", orgId).eq("postId", post._id),
+            .withIndex("by_orgId_threadId", (q) =>
+              q.eq("orgId", orgId).eq("threadId", thread._id),
             )
             .collect()
         ).length;
         return {
-          ...post,
+          ...thread,
           author: { ...author, image },
           feed,
-          content: fromJSONToHTML(post.content),
+          content: fromJSONToHTML(thread.content),
           messageCount,
         };
       }),
     );
 
     return {
-      ...posts,
-      page: enrichedPosts.filter((post) => post !== null),
+      ...threads,
+      page: enrichedThreads.filter((thread) => thread !== null),
     };
   },
 });
 
-export const createPost = mutation({
+export const createThread = mutation({
   args: {
     orgId: v.id("organizations"),
     feedId: v.id("feeds"),
@@ -109,7 +109,7 @@ export const createPost = mutation({
 
     const now = Date.now();
 
-    const postId = await ctx.db.insert("posts", {
+    const threadId = await ctx.db.insert("threads", {
       orgId,
       feedId,
       posterId: user._id,
@@ -119,90 +119,90 @@ export const createPost = mutation({
     });
 
     // Send notifications for feed members
-    await sendNotifications(ctx, orgId, "new_post_in_member_feed", {
+    await sendNotifications(ctx, orgId, "new_thread_in_member_feed", {
       userId: user._id,
       feedId,
-      postId,
+      threadId,
     });
 
-    return postId;
+    return threadId;
   },
 });
 
 export const getById = query({
   args: {
     orgId: v.id("organizations"),
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
   },
   handler: async (ctx, args) => {
-    const { orgId, postId } = args;
+    const { orgId, threadId } = args;
 
     const auth = await getUserAuth(ctx, orgId);
 
-    const post = await ctx.db.get(postId);
-    if (!post) throw new Error("Post not found");
-    const feed = await ctx.db.get(post.feedId);
+    const thread = await ctx.db.get(threadId);
+    if (!thread) throw new Error("Thread not found");
+    const feed = await ctx.db.get(thread.feedId);
     if (!feed) throw new Error("Feed not found");
 
     const isUserAMemberOfThisFeedCheck = await auth
-      .feed(post.feedId)
+      .feed(thread.feedId)
       .hasRole("member");
     const feedIsPublic = feed.privacy === "public";
     const feedIsOpen = feed.privacy === "open"
-    const userCanViewThisPost =
+    const userCanViewThisThread =
       feedIsPublic || isUserAMemberOfThisFeedCheck.allowed || (auth.getUser() && feedIsOpen);
 
-    if (!userCanViewThisPost) {
-      throw new Error("User cannot view this post");
+    if (!userCanViewThisThread) {
+      throw new Error("User cannot view this thread");
     }
 
-    const author = await ctx.db.get(post.posterId);
+    const author = await ctx.db.get(thread.posterId);
     if (!author) return null;
     const image = await getStorageUrl(ctx, author.image);
 
     return {
-      ...post,
+      ...thread,
       author: { ...author, image },
       feed: feed ?? null,
-      content: fromJSONToHTML(post.content),
+      content: fromJSONToHTML(thread.content),
     };
   },
 });
 
-export const deletePost = mutation({
+export const deleteThread = mutation({
   args: {
     orgId: v.id("organizations"),
-    postId: v.id("posts"),
+    threadId: v.id("threads"),
   },
   handler: async (ctx, args) => {
-    const { orgId, postId } = args;
+    const { orgId, threadId } = args;
 
     const auth = await getUserAuth(ctx, orgId);
     const user = auth.getUserOrThrow();
 
-    // Get the post
-    const post = await ctx.db.get(postId);
-    if (!post) {
-      throw new Error("Post not found");
+    // Get the thread
+    const thread = await ctx.db.get(threadId);
+    if (!thread) {
+      throw new Error("Thread not found");
     }
 
-    // Check if user is the post author
-    const isAuthor = post.posterId === user._id;
+    // Check if user is the thread author
+    const isAuthor = thread.posterId === user._id;
 
     // Check if user is the feed owner
-    const feedOwnerCheck = await auth.feed(post.feedId).hasRole("owner");
+    const feedOwnerCheck = await auth.feed(thread.feedId).hasRole("owner");
     const isFeedOwner = feedOwnerCheck.allowed;
 
     const canDelete = isAuthor || isFeedOwner;
     if (!canDelete) {
-      throw new Error("You do not have permission to delete this post");
+      throw new Error("You do not have permission to delete this thread");
     }
 
-    // Get all messages for this post
+    // Get all messages for this thread
     const messages = await ctx.db
       .query("messages")
-      .withIndex("by_orgId_postId", (q) =>
-        q.eq("orgId", orgId).eq("postId", postId),
+      .withIndex("by_orgId_threadId", (q) =>
+        q.eq("orgId", orgId).eq("threadId", threadId),
       )
       .collect();
 
@@ -215,21 +215,21 @@ export const deletePost = mutation({
       });
     }
 
-    // Delete uploads for the post itself
+    // Delete uploads for the thread itself
     await ctx.runMutation(internal.uploads.deleteUploadsForSources, {
       orgId,
-      source: "post",
-      sourceIds: [postId],
+      source: "thread",
+      sourceIds: [threadId],
     });
 
-    // Delete the post
+    // Delete the thread
     try {
-      await ctx.db.delete(postId);
+      await ctx.db.delete(threadId);
     } catch (error) {
-      console.warn(`Failed to delete post ${postId}:`, error);
+      console.warn(`Failed to delete thread ${threadId}:`, error);
       throw error; // Re-throw since this is critical
     }
 
-    return postId;
+    return threadId;
   },
 });

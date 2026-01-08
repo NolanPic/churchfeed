@@ -5,22 +5,22 @@ import {
 import IconButton from "../../common/IconButton";
 import Modal from "../../common/Modal";
 import Editor, { EditorHandle } from "../Editor";
-import styles from "./PostEditorPhone.module.css";
+import styles from "./ThreadEditorPhone.module.css";
 import { useOnPublish } from "@/app/hooks/useOnPublish";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRef, useEffect } from "react";
 
-interface PostEditorPhoneProps {
+interface ThreadEditorPhoneProps {
   isOpen: boolean;
   onClose: () => void;
   feedId: Id<"feeds"> | null;
 }
 
-function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
+function PhoneEditorModal({ isOpen, onClose, feedId }: ThreadEditorPhoneProps) {
   const { addImageDrop } = useEditorCommands();
   const editorRef = useRef<EditorHandle | null>(null);
   const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
-    "post",
+    "thread",
     editorRef,
     feedId,
   );
@@ -35,12 +35,12 @@ function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
 
   return (
     <Modal
-      title="New post"
+      title="New thread"
       isOpen={isOpen}
       onClose={onClose}
-      ariaLabel="Write a new post"
+      ariaLabel="Write a new thread"
       toolbar={({ onClose }) => (
-        <div className={styles.postEditorPhoneToolbar}>
+        <div className={styles.threadEditorPhoneToolbar}>
           <IconButton icon="close" onClick={onClose} />
           <IconButton icon="image" onClick={addImageDrop} />
           <IconButton
@@ -64,11 +64,11 @@ function PhoneEditorModal({ isOpen, onClose, feedId }: PostEditorPhoneProps) {
   );
 }
 
-export default function PostEditorPhone({
+export default function ThreadEditorPhone({
   isOpen,
   onClose,
   feedId,
-}: PostEditorPhoneProps) {
+}: ThreadEditorPhoneProps) {
   return (
     <EditorCommandsProvider>
       <PhoneEditorModal isOpen={isOpen} onClose={onClose} feedId={feedId} />

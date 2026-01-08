@@ -1,7 +1,7 @@
 "use client";
 
 import Backdrop from "../common/Backdrop";
-import styles from "./PostEditor.module.css";
+import styles from "./ThreadEditor.module.css";
 import { useRef, useEffect } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
@@ -10,20 +10,20 @@ import EditorToolbar from "./EditorToolbar";
 import { EditorCommandsProvider } from "../../context/EditorCommands";
 import { useOnPublish } from "@/app/hooks/useOnPublish";
 
-interface PostEditorProps {
+interface ThreadEditorProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   feedId: Id<"feeds"> | null;
 }
 
-export default function PostEditor({
+export default function ThreadEditor({
   isOpen,
   setIsOpen,
   feedId,
-}: PostEditorProps) {
+}: ThreadEditorProps) {
   const editorRef = useRef<EditorHandle | null>(null);
   const { state, error, onPublish, publishedSourceId, reset } = useOnPublish(
-    "post",
+    "thread",
     editorRef,
     feedId,
   );
@@ -50,7 +50,7 @@ export default function PostEditor({
   return (
     <>
       <motion.div
-        className={styles.postEditor}
+        className={styles.threadEditor}
         style={isOpen ? { zIndex: 2 } : {}}
         initial={editorInitial}
         animate={editorOpen}
