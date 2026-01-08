@@ -1,13 +1,13 @@
-.postWrapper {
+.threadWrapper {
     --messageThreadButtonWidth: 32px;
-    --postMenuButtonWidth: 40px;
+    --threadMenuButtonWidth: 40px;
 }
 
-.post {
+.thread {
     display: grid;
-    grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--postMenuButtonWidth)) fit-content(var(--messageThreadButtonWidth));
+    grid-template-columns: repeat(2, fit-content(14ch)) 1fr fit-content(var(--threadMenuButtonWidth)) fit-content(var(--messageThreadButtonWidth));
     grid-template-rows: repeat(2, fit-content);
-    grid-template-areas: "authorAvatar authorName metadata postMenu messageThread"
+    grid-template-areas: "authorAvatar authorName metadata threadMenu messageThread"
                          "content content content content content";
     gap: var(--spacing3);
 }
@@ -38,19 +38,19 @@
     color: var(--light2);
 }
 
-.postMenu {
-    grid-area: postMenu;
+.threadMenu {
+    grid-area: threadMenu;
     position: relative;
     justify-self: end;
     opacity: 1;
 }
 
-.postMenuButton {
+.threadMenuButton {
     background-color: transparent !important;
     cursor: pointer;
 }
 
-.postMenuList {
+.threadMenuList {
     background-color: var(--mid);
     border: 1px solid var(--accent);
     border-radius: 10px;
@@ -69,7 +69,7 @@
     z-index: 1;
 }
 
-.postMenuItem > button {
+.threadMenuItem > button {
     cursor: pointer;
     background: none;
     border: none;
@@ -78,7 +78,7 @@
     padding: var(--spacing1) 0;
 }
 
-.postMenuItem > button:hover {
+.threadMenuItem > button:hover {
     background-color: var(--mid2);
 }
 
@@ -111,13 +111,13 @@
     grid-area: content;
 }
 
-/* Add cursor pointer for clickable posts */
-.post[role="button"] {
+/* Add cursor pointer for clickable threads */
+.thread[role="button"] {
     cursor: pointer;
 }
 
 /* Focus outline for keyboard navigation */
-.post[role="button"]:focus-visible {
+.thread[role="button"]:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
@@ -143,8 +143,8 @@
 
 @media (--tablet) {
 
-    .post {
-        grid-template-areas: "authorAvatar authorName metadata postMenu messageThread"
+    .thread {
+        grid-template-areas: "authorAvatar authorName metadata threadMenu messageThread"
                          ". content content content content";
         gap: var(--spacing4);
     }
@@ -156,19 +156,19 @@
 
     .authorName,
     .metadata,
-    .postMenu,
+    .threadMenu,
     .messageThreadButton {
         align-self: center;
     }
 
-    /* Hide post menu by default on desktop, show on hover or when menu is open */
-    .postMenu {
+    /* Hide thread menu by default on desktop, show on hover or when menu is open */
+    .threadMenu {
         opacity: 0;
         transition: opacity 0.2s ease-in-out;
     }
 
-    .post:hover .postMenu,
-    .postMenu[data-menu-open="true"] {
+    .thread:hover .threadMenu,
+    .threadMenu[data-menu-open="true"] {
         opacity: 1;
     }
 

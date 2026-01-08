@@ -1,6 +1,6 @@
 import Button from "./common/Button";
 import styles from "./FeedSelector.module.css";
-import { CurrentFeedAndPostContext } from "@/app/context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
 import React, { useContext, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -19,21 +19,21 @@ import PreviewFeedsSelector from "./feeds/PreviewFeedsSelector";
 type FeedSelectorVariant = "topOfFeed" | "inToolbar";
 interface FeedSelectorProps {
   variant: FeedSelectorVariant;
-  chooseFeedForNewPost?: boolean;
+  chooseFeedForNewThread?: boolean;
   onClose?: () => void;
 }
 
 export default function FeedSelector({
   variant,
-  chooseFeedForNewPost = false,
+  chooseFeedForNewThread = false,
   onClose,
 }: FeedSelectorProps) {
   const { feedId: selectedFeedId, setFeedId } = useContext(
-    CurrentFeedAndPostContext
+    CurrentFeedAndThreadContext
   );
   const org = useOrganization();
   const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
-    useState(chooseFeedForNewPost);
+    useState(chooseFeedForNewThread);
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
   const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
     useState(false);
@@ -47,7 +47,7 @@ export default function FeedSelector({
       org
         ? {
             orgId: org._id,
-            onlyIncludeFeedsUserCanPostIn: chooseFeedForNewPost,
+            onlyIncludeFeedsUserCanPostIn: chooseFeedForNewThread,
           }
         : "skip"
     ) || [];
@@ -85,7 +85,7 @@ export default function FeedSelector({
     scrollToTop();
 
     const targetPath = feedId ? `/feed/${feedId}` : `/`;
-    const pathWithQuery = chooseFeedForNewPost
+    const pathWithQuery = chooseFeedForNewThread
       ? `${targetPath}?openEditor=true`
       : targetPath;
 
@@ -106,7 +106,7 @@ export default function FeedSelector({
 
   return (
     <>
-      {!chooseFeedForNewPost && (
+      {!chooseFeedForNewThread && (
         <>
           <div className={classNames(styles.selectedFeed, styles[variant])}>
             <h2 className={styles.feedSelectorTitle}>
@@ -138,7 +138,7 @@ export default function FeedSelector({
             transition={{ duration: 0.1 }}
             onClick={handleClose}
           >
-            {!chooseFeedForNewPost &&
+            {!chooseFeedForNewThread &&
               isUserPreviewingOpenFeed &&
               previewFeed && (
                 <div className={styles.previewingFeedCard}>
@@ -149,14 +149,14 @@ export default function FeedSelector({
                 </div>
               )}
             <ol>
-              {chooseFeedForNewPost && (
+              {chooseFeedForNewThread && (
                 <li>
                   <h2 className={styles.chooseFeedHeading}>
-                    Select a feed to post in
+                    Select a feed to start a thread in
                   </h2>
                 </li>
               )}
-              {!chooseFeedForNewPost && (
+              {!chooseFeedForNewThread && (
                 <li
                   key="all"
                   className={!selectedFeedId ? styles.selected : ""}
@@ -187,7 +187,7 @@ export default function FeedSelector({
                 </li>
               ))}
             </ol>
-            {!chooseFeedForNewPost && auth && (
+            {!chooseFeedForNewThread && auth && (
               <Button
                 className={styles.browseOpenFeedsButton}
                 onClick={() => {

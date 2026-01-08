@@ -14,21 +14,21 @@ interface MessageData {
 
 interface NewMessagesProps {
   messages: MessageData[];
-  postId: Id<"posts">;
-  postTitle: string;
+  threadId: Id<"threads">;
+  threadTitle: string;
   notificationId: Id<"notifications">;
   orgHost: string;
 }
 
 export const NewMessages: React.FC<NewMessagesProps> = ({
   messages,
-  postId,
-  postTitle,
+  threadId,
+  threadTitle,
   notificationId,
   orgHost,
 }) => {
   return (
-    <Notification title={`New messages in ${postTitle}`} orgHost={orgHost}>
+    <Notification title={`New messages in ${threadTitle}`} orgHost={orgHost}>
       <Section>
         {/* Messages */}
         {messages.map((msg, index) => {
@@ -90,7 +90,7 @@ export const NewMessages: React.FC<NewMessagesProps> = ({
 
         {/* Action button */}
         <div style={{ textAlign: "center" as const }}>
-          <Button url={`https://${orgHost}/post/${postId}?notificationId=${notificationId}`}>
+          <Button url={`https://${orgHost}/thread/${threadId}?notificationId=${notificationId}`}>
             View messages
           </Button>
         </div>

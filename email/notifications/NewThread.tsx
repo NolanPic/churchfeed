@@ -5,29 +5,29 @@ import { Avatar } from "../components/Avatar";
 import { Button } from "../components/Button";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
-interface NewPostProps {
+interface NewThreadProps {
   author: Doc<"users">;
   authorImageUrl: string | null;
   feed: Doc<"feeds">;
-  postHtml: string;
-  postId: Id<"posts">;
+  threadHtml: string;
+  threadId: Id<"threads">;
   notificationId: Id<"notifications">;
   orgHost: string;
 }
 
-export const NewPost: React.FC<NewPostProps> = ({
+export const NewThread: React.FC<NewThreadProps> = ({
   author,
   authorImageUrl,
   feed,
-  postHtml,
-  postId,
+  threadHtml,
+  threadId,
   notificationId,
   orgHost,
 }) => {
-  // Note: postHtml should already be sanitized before being passed to this template
+  // Note: threadHtml should already be sanitized before being passed to this template
 
   return (
-    <Notification title={`New post from ${author.name}`} orgHost={orgHost}>
+    <Notification title={`New thread from ${author.name}`} orgHost={orgHost}>
       <Section>
         {/* Author info */}
         <div
@@ -61,7 +61,7 @@ export const NewPost: React.FC<NewPostProps> = ({
           </Text>
         </div>
 
-        {/* Post content */}
+        {/* Thread content */}
         <div
           style={{
             fontSize: "16px",
@@ -70,15 +70,15 @@ export const NewPost: React.FC<NewPostProps> = ({
             marginBottom: "24px",
             fontFamily: "Lato, Arial, sans-serif",
           }}
-          dangerouslySetInnerHTML={{ __html: postHtml }}
+          dangerouslySetInnerHTML={{ __html: threadHtml }}
         />
 
         {/* Action button */}
         <div style={{ textAlign: "center" }}>
           <Button
-            url={`https://${orgHost}/post/${postId}?notificationId=${notificationId}`}
+            url={`https://${orgHost}/thread/${threadId}?notificationId=${notificationId}`}
           >
-            View post
+            View thread
           </Button>
         </div>
       </Section>

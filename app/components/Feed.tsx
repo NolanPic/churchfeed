@@ -5,45 +5,45 @@ import { useQuery, usePaginatedQuery } from "convex/react";
 import { useState, useRef, useEffect, useContext } from "react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import Post from "./Post";
+import Thread from "./Thread";
 import FeedSkeleton from "./FeedSkeleton";
 import useViewportHeight from "@/app/hooks/useViewportHeight";
 import { AnimatePresence } from "framer-motion";
 import { useOrganization } from "../context/OrganizationProvider";
-import PostEditor from "./editor/PostEditor";
-import PostModalContent from "./PostModalContent";
+import ThreadEditor from "./editor/ThreadEditor";
+import ThreadModalContent from "./ThreadModalContent";
 import FeedSettingsTab, { FeedSettingsTabHandle } from "./FeedSettingsTab";
 import FeedMembersTab from "./FeedMembersTab";
 import Modal from "./common/Modal";
 import useHistoryRouter from "@/app/hooks/useHistoryRouter";
-import { CurrentFeedAndPostContext } from "../context/CurrentFeedAndPostProvider";
+import { CurrentFeedAndThreadContext } from "../context/CurrentFeedAndThreadProvider";
 import FeedSelector from "./FeedSelector";
 import Toolbar from "./toolbar/Toolbar";
-import PostEditorPhone from "./editor/phone/PostEditorPhone";
+import ThreadEditorPhone from "./editor/phone/ThreadEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
-  postIdSlug?: Id<"posts"> | null;
+  threadIdSlug?: Id<"threads"> | null;
   feedSettingsFeedIdSlug?: Id<"feeds"> | null;
 }
 
 export default function Feed({
   feedIdSlug,
-  postIdSlug,
+  threadIdSlug,
   feedSettingsFeedIdSlug,
 }: FeedProps) {
   const itemsPerPage = 10;
   const {
     feedId,
-    postId: openPostId,
+    threadId: openThreadId,
     setFeedId,
-    setPostId: setOpenPostId,
-  } = useContext(CurrentFeedAndPostContext);
-  const [isNewPostOpen, setIsNewPostOpen] = useState(false);
-  const [isSelectingFeedForPost, setIsSelectingFeedForPost] = useState(false);
+    setThreadId: setOpenThreadId,
+  } = useContext(CurrentFeedAndThreadContext);
+  const [isNewThreadOpen, setIsNewThreadOpen] = useState(false);
+  const [isSelectingFeedForThread, setIsSelectingFeedForThread] = useState(false);
   const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [isFeedMember, setIsFeedMember] = useState(false);
@@ -57,10 +57,10 @@ export default function Feed({
 
   const historyRouter = useHistoryRouter((path) => {
     const segments = path.split("/").filter(Boolean);
-    if (segments[0] === "post" && segments[1]) {
-      setOpenPostId(segments[1] as Id<"posts">);
+    if (segments[0] === "thread" && segments[1]) {
+      setOpenThreadId(segments[1] as Id<"threads">);
     } else {
-      setOpenPostId(undefined);
+      setOpenThreadId(undefined);
     }
   });
 
@@ -71,28 +71,28 @@ export default function Feed({
   );
 
   useEffect(() => {
-    if (postIdSlug) {
-      setOpenPostId(postIdSlug);
+    if (threadIdSlug) {
+      setOpenThreadId(threadIdSlug);
     }
-  }, [postIdSlug, setOpenPostId]);
+  }, [threadIdSlug, setOpenThreadId]);
 
   // Keep modal state in sync with browser back/forward
   useEffect(() => {
     const onPopState = () => {
       const path = window.location.pathname;
       const segments = path.split("/").filter(Boolean);
-      if (segments[0] === "post" && segments[1]) {
-        setOpenPostId(segments[1] as Id<"posts">);
+      if (segments[0] === "thread" && segments[1]) {
+        setOpenThreadId(segments[1] as Id<"threads">);
       } else {
-        setOpenPostId(undefined);
+        setOpenThreadId(undefined);
       }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [setOpenPostId]);
+  }, [setOpenThreadId]);
 
   const { results, status, loadMore } = usePaginatedQuery(
-    api.posts.getPostsForUserFeed,
+    api.threads.getThreadsForUserFeed,
     {
       orgId,
       selectedFeedId: feedId === null ? undefined : feedId,
@@ -141,26 +141,26 @@ export default function Feed({
 
   const isTabletOrUp = useMediaQuery("(min-width: 34.375rem)");
 
-  const handleOpenPost = (postId: Id<"posts">) => {
-    setOpenPostId(postId);
-    historyRouter.push(`/post/${postId}`);
+  const handleOpenThread = (threadId: Id<"threads">) => {
+    setOpenThreadId(threadId);
+    historyRouter.push(`/thread/${threadId}`);
   };
 
-  const handleClosePost = () => {
-    setOpenPostId(undefined);
+  const handleCloseThread = () => {
+    setOpenThreadId(undefined);
     historyRouter.push(feedId ? `/feed/${feedId}` : `/`);
   };
 
-  const handleNewPostClick = () => {
+  const handleNewThreadClick = () => {
     if (!feedId) {
-      setIsSelectingFeedForPost(true);
+      setIsSelectingFeedForThread(true);
     } else {
-      setIsNewPostOpen(true);
+      setIsNewThreadOpen(true);
     }
   };
 
   const handleCloseFeedSelector = () => {
-    setIsSelectingFeedForPost(false);
+    setIsSelectingFeedForThread(false);
   };
 
   const handleCloseFeedSettings = () => {
@@ -191,8 +191,8 @@ export default function Feed({
   // Watch for openEditor query parameter to open editor after navigation
   useEffect(() => {
     if (searchParams.get("openEditor") === "true") {
-      setIsSelectingFeedForPost(false);
-      setIsNewPostOpen(true);
+      setIsSelectingFeedForThread(false);
+      setIsNewThreadOpen(true);
       removeEditorQueryParam();
     }
   }, [searchParams]);
@@ -253,26 +253,26 @@ export default function Feed({
     <>
       <div className={styles.feedWrapper} ref={feedWrapperRef}>
         <Toolbar
-          onNewPost={handleNewPostClick}
-          isNewPostOpen={isNewPostOpen}
-          setIsNewPostOpen={setIsNewPostOpen}
+          onNewThread={handleNewThreadClick}
+          isNewThreadOpen={isNewThreadOpen}
+          setIsNewThreadOpen={setIsNewThreadOpen}
           feedWrapperRef={feedWrapperRef}
         />
         <div className={styles.feedSelectorTabletUp}>
           <FeedSelector variant="topOfFeed" />
         </div>
-        {isSelectingFeedForPost && (
+        {isSelectingFeedForThread && (
           <FeedSelector
             variant="topOfFeed"
-            chooseFeedForNewPost
+            chooseFeedForNewThread
             onClose={handleCloseFeedSelector}
           />
         )}
         <AnimatePresence>
-          {isNewPostOpen && isTabletOrUp && (
-            <PostEditor
-              isOpen={isNewPostOpen}
-              setIsOpen={setIsNewPostOpen}
+          {isNewThreadOpen && isTabletOrUp && (
+            <ThreadEditor
+              isOpen={isNewThreadOpen}
+              setIsOpen={setIsNewThreadOpen}
               feedId={feedId ?? null}
             />
           )}
@@ -281,14 +281,14 @@ export default function Feed({
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
           ) : (
-            results.map((post) => {
+            results.map((thread) => {
               return (
-                <div key={post._id} className={styles.feedPost}>
-                  <Post
-                    post={post}
+                <div key={thread._id} className={styles.feedPost}>
+                  <Thread
+                    thread={thread}
                     variant="feed"
                     showSourceFeed={!feedId}
-                    onOpenPost={handleOpenPost}
+                    onOpenThread={handleOpenThread}
                   />
                 </div>
               );
@@ -299,21 +299,21 @@ export default function Feed({
       </div>
 
       {!isTabletOrUp && (
-        <PostEditorPhone
-          isOpen={isNewPostOpen}
-          onClose={() => setIsNewPostOpen(false)}
+        <ThreadEditorPhone
+          isOpen={isNewThreadOpen}
+          onClose={() => setIsNewThreadOpen(false)}
           feedId={feedId ?? null}
         />
       )}
 
       <Modal
-        isOpen={!!openPostId}
-        onClose={handleClosePost}
-        ariaLabel="Post details and messages"
+        isOpen={!!openThreadId}
+        onClose={handleCloseThread}
+        ariaLabel="Thread details and messages"
         dragToClose
       >
-        {openPostId && (
-          <PostModalContent postId={openPostId} onClose={handleClosePost} />
+        {openThreadId && (
+          <ThreadModalContent threadId={openThreadId} onClose={handleCloseThread} />
         )}
       </Modal>
 

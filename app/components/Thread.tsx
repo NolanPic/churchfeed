@@ -1,4 +1,4 @@
-import styles from "./Post.module.css";
+import styles from "./Thread.module.css";
 import userContentStyles from "./shared-styles/user-content.module.css";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
@@ -15,46 +15,46 @@ import { useOrganization } from "../context/OrganizationProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./common/Button";
 
-interface PostProps {
-  post: Doc<"posts"> & {
+interface ThreadProps {
+  thread: Doc<"threads"> & {
     author: Omit<Doc<"users">, "image"> & { image: string | null };
   } & {
     feed: Doc<"feeds"> | null;
     messageCount?: number;
   };
-  variant: "feed" | "postDetails";
+  variant: "feed" | "threadDetails";
   showSourceFeed: boolean;
-  onOpenPost?: (postId: Id<"posts">) => void;
-  onPostDeleted?: () => void;
+  onOpenThread?: (threadId: Id<"threads">) => void;
+  onThreadDeleted?: () => void;
 }
 
-export default function Post({
-  post,
+export default function Thread({
+  thread,
   variant,
   showSourceFeed,
-  onOpenPost,
-  onPostDeleted,
-}: PostProps) {
-  const { _id, content } = post;
+  onOpenThread,
+  onThreadDeleted,
+}: ThreadProps) {
+  const { _id, content } = thread;
   const [auth] = useUserAuth();
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const deletePost = useMutation(api.posts.deletePost);
+  const deleteThread = useMutation(api.threads.deleteThread);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [canDelete, setCanDelete] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const postedAt = post.postedAt ?? post._creationTime;
+  const postedAt = thread.postedAt ?? thread._creationTime;
   const timeAgoLabel = getTimeAgoLabel(postedAt);
-  const postedInLink = post.feed ? (
-    <Link href={`/feed/${post.feed._id}`} onClick={(e) => e.stopPropagation()}>
-      {post.feed.name}
+  const postedInLink = thread.feed ? (
+    <Link href={`/feed/${thread.feed._id}`} onClick={(e) => e.stopPropagation()}>
+      {thread.feed.name}
     </Link>
   ) : null;
 
-  // Check if user can delete this post
+  // Check if user can delete this thread
   useEffect(() => {
-    if (!auth || !post.feed) {
+    if (!auth || !thread.feed) {
       setCanDelete(false);
       return;
     }
@@ -66,15 +66,15 @@ export default function Post({
     }
 
     // User can delete if they're the author or a feed owner
-    const isAuthor = post.posterId === user._id;
+    const isAuthor = thread.posterId === user._id;
 
     auth
-      .feed(post.feed._id)
+      .feed(thread.feed._id)
       .hasRole("owner")
       .then((result) => {
         setCanDelete(isAuthor || result.allowed);
       });
-  }, [auth, post.posterId, post.feed]);
+  }, [auth, thread.posterId, thread.feed]);
 
   // Handle click outside to close menu
   useEffect(() => {
@@ -93,26 +93,26 @@ export default function Post({
     };
   }, [isMenuOpen]);
 
-  const handleDeletePost = async () => {
+  const handleDeleteThread = async () => {
     if (!confirm("Are you sure you want to delete this post?")) {
       return;
     }
 
     try {
-      onPostDeleted?.();
+      onThreadDeleted?.();
 
       // Hack: wait for the navigation/modal close animation to complete
       // before deleting the post to avoid query errors
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      await deletePost({ orgId, postId: _id });
+      await deleteThread({ orgId, threadId: _id });
     } catch (error) {
       console.error("Failed to delete post:", error);
-      alert("Failed to delete post. Please try again.");
+      alert("Failed to delete thread. Please try again.");
     }
   };
 
-  const handlePostClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleThreadClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Only handle left clicks
     if (e.button !== 0) return;
 
@@ -129,25 +129,25 @@ export default function Post({
     }
 
     // Open the post
-    if (variant === "feed" && onOpenPost) {
-      onOpenPost(post._id);
+    if (variant === "feed" && onOpenThread) {
+      onOpenThread(thread._id);
     }
   };
 
-  const handlePostKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleThreadKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // Support keyboard navigation: Enter and Space keys
     if (
       variant === "feed" &&
-      onOpenPost &&
+      onOpenThread &&
       (e.key === "Enter" || e.key === " ")
     ) {
       e.preventDefault();
-      onOpenPost(post._id);
+      onOpenThread(thread._id);
     }
   };
 
   const getTimeAndSourceFeed = () => {
-    if (showSourceFeed && post.feed) {
+    if (showSourceFeed && thread.feed) {
       return (
         <>
           {timeAgoLabel}
@@ -162,45 +162,45 @@ export default function Post({
   };
 
   const messageCount =
-    variant === "feed" && post.messageCount && post.messageCount > 0
-      ? post.messageCount > 99
+    variant === "feed" && thread.messageCount && thread.messageCount > 0
+      ? thread.messageCount > 99
         ? "99+"
-        : post.messageCount
+        : thread.messageCount
       : null;
 
   return (
-    <article key={_id} className={styles.postWrapper}>
+    <article key={_id} className={styles.threadWrapper}>
       <div
-        className={styles.post}
-        onClick={handlePostClick}
-        onKeyDown={handlePostKeyDown}
+        className={styles.thread}
+        onClick={handleThreadClick}
+        onKeyDown={handleThreadKeyDown}
         role={variant === "feed" ? "button" : undefined}
         tabIndex={variant === "feed" ? 0 : undefined}
         aria-label={
-          variant === "feed" ? `View post by ${post.author?.name}` : undefined
+          variant === "feed" ? `View thread by ${thread.author?.name}` : undefined
         }
       >
         <div className={styles.authorAvatar}>
-          <UserAvatar user={post.author} />
+          <UserAvatar user={thread.author} />
         </div>
-        <p className={styles.authorName}>{post.author?.name}</p>
+        <p className={styles.authorName}>{thread.author?.name}</p>
         <p
           className={styles.metadata}
-          title={`Posted ${timeAgoLabel}${post.feed ? ` in ${post.feed.name}` : ""}`}
+          title={`Posted ${timeAgoLabel}${thread.feed ? ` in ${thread.feed.name}` : ""}`}
         >
           {getTimeAndSourceFeed()}
         </p>
         {canDelete && (
           <div
-            className={styles.postMenu}
+            className={styles.threadMenu}
             ref={menuRef}
             data-menu-open={isMenuOpen}
           >
             <Button
               icon="ellipsis"
-              ariaLabel="Post options"
+              ariaLabel="Thread options"
               iconSize={24}
-              className={styles.postMenuButton}
+              className={styles.threadMenuButton}
               onClick={(e: React.MouseEvent<HTMLElement>) => {
                 e.stopPropagation();
                 setIsMenuOpen(!isMenuOpen);
@@ -210,19 +210,19 @@ export default function Post({
             <AnimatePresence>
               {isMenuOpen && (
                 <motion.ul
-                  className={styles.postMenuList}
+                  className={styles.threadMenuList}
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.1 }}
                 >
-                  <li className={styles.postMenuItem}>
+                  <li className={styles.threadMenuItem}>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsMenuOpen(false);
-                        handleDeletePost();
+                        handleDeleteThread();
                       }}
                     >
                       Delete post
@@ -239,7 +239,7 @@ export default function Post({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onOpenPost?.(post._id);
+              onOpenThread?.(thread._id);
             }}
           >
             {messageCount && (
@@ -267,7 +267,7 @@ export default function Post({
         </div>
       </div>
 
-      {showSourceFeed && post.feed && (
+      {showSourceFeed && thread.feed && (
         <p className={styles.postedIn}>Posted in {postedInLink}</p>
       )}
     </article>

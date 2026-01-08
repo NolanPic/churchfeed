@@ -1,0 +1,49 @@
+"use client";
+
+import { useContext, useEffect } from "react";
+import { CurrentFeedAndThreadContext } from "@/app/context/CurrentFeedAndThreadProvider";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import styles from "./ThreadModalContent.module.css";
+import { useOrganization } from "../context/OrganizationProvider";
+import MessageThread from "./MessageThread";
+import Thread from "./Thread";
+
+export default function ThreadModal({
+  threadId,
+  onClose,
+}: {
+  threadId: Id<"threads">;
+  onClose: () => void;
+}) {
+  const org = useOrganization();
+  const { setFeedIdOfCurrentThread } = useContext(CurrentFeedAndThreadContext);
+  const thread = useQuery(
+    api.threads.getById,
+    org?._id ? { orgId: org._id, threadId } : "skip",
+  );
+
+  useEffect(() => {
+    setFeedIdOfCurrentThread(thread?.feedId);
+  }, [thread, setFeedIdOfCurrentThread]);
+
+  if (!thread) {
+    return <p>Loading thread...</p>;
+  }
+
+  return (
+    <div>
+      <div className={styles.threadWrapper}>
+        <Thread
+          thread={thread}
+          variant="threadDetails"
+          showSourceFeed
+          onThreadDeleted={onClose}
+        />
+      </div>
+      <hr className={styles.threadSeparator} />
+      <MessageThread threadId={thread._id} />
+    </div>
+  );
+}

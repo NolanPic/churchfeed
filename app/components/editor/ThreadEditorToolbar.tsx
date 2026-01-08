@@ -27,7 +27,7 @@ export default function PostEditorToolbar({
   const isPostingDisabled = feedOptions.length === 0;
 
   return (
-    <div className={styles.postEditorToolbar}>
+    <div className={styles.threadEditorToolbar}>
       <Select
         options={feedOptions}
         defaultValue={feedIdToPostTo ?? undefined}
@@ -43,7 +43,6 @@ export default function PostEditorToolbar({
         icon="send"
         onClick={feedIdToPostTo ? () => onPost(feedIdToPostTo) : undefined}
         disabled={isPosting || isPostingDisabled}
-        className={styles.postButton}
         variant="primary"
       >
         Post

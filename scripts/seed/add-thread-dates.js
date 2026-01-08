@@ -32,24 +32,24 @@ function generateDates(count) {
 const seedDataPath = path.join(__dirname, 'seed-data.json');
 const seedData = JSON.parse(fs.readFileSync(seedDataPath, 'utf8'));
 
-// Add postedAt property to each post
+// Add postedAt property to each thread
 seedData.organizations.forEach((org) => {
-  console.log(`Processing ${org.orgName} (${org.posts.length} posts)`);
+  console.log(`Processing ${org.orgName} (${org.threads.length} threads)`);
 
-  // group posts by feed
-  const postsByFeed = org.posts.reduce((acc, post) => {
-    acc[post.feedIndex] = acc[post.feedIndex] || [];
-    acc[post.feedIndex].push(post);
+  // group threads by feed
+  const threadsByFeed = org.threads.reduce((acc, thread) => {
+    acc[thread.feedIndex] = acc[thread.feedIndex] || [];
+    acc[thread.feedIndex].push(thread);
     return acc;
   }, []);
-  
-  // Generate dates for posts in each feed
-  postsByFeed.forEach((posts) => {
-    const dates = generateDates(posts.length);
+
+  // Generate dates for threads in each feed
+  threadsByFeed.forEach((threads) => {
+    const dates = generateDates(threads.length);
     console.log(`  Generated ${dates.length} dates for ${org.orgName}`);
     console.log(`  Date range: ${new Date(dates[0]).toISOString()} to ${new Date(dates[dates.length - 1]).toISOString()}`);
-    posts.forEach((post, postIndex) => {
-      post.postedAt = dates[postIndex];
+    threads.forEach((thread, threadIndex) => {
+      thread.postedAt = dates[threadIndex];
     });
   });
 
@@ -58,5 +58,5 @@ seedData.organizations.forEach((org) => {
 // Write the updated data back to the file
 fs.writeFileSync(seedDataPath, JSON.stringify(seedData, null, 2), 'utf8');
 
-console.log(`\nSuccessfully added postedAt property to all posts!`);
+console.log(`\nSuccessfully added postedAt property to all threads!`);
 console.log(`Updated data written to ${seedDataPath}`); 
