@@ -11,9 +11,9 @@ export const CurrentFeedAndThreadContext = createContext<{
   setThreadId: (threadId?: Id<"threads">) => void;
   setFeedIdOfCurrentThread: (feedId?: Id<"feeds">) => void;
 }>({
-  feedId: undefined as Id<"feeds"> | undefined,
-  threadId: undefined as Id<"threads"> | undefined,
-  feedIdOfCurrentThread: undefined as Id<"feeds"> | undefined,
+  feedId: undefined,
+  threadId: undefined,
+  feedIdOfCurrentThread: undefined,
   setFeedId: () => {},
   setThreadId: () => {},
   setFeedIdOfCurrentThread: () => {},
@@ -26,7 +26,8 @@ export function CurrentFeedAndThreadProvider({
 }) {
   const [feedId, setFeedId] = useState<Id<"feeds">>();
   const [threadId, setThreadId] = useState<Id<"threads">>();
-  const [feedIdOfCurrentThread, setFeedIdOfCurrentThread] = useState<Id<"feeds">>();
+  const [feedIdOfCurrentThread, setFeedIdOfCurrentThread] =
+    useState<Id<"feeds">>();
 
   return (
     <CurrentFeedAndThreadContext.Provider
