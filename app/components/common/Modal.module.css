@@ -203,7 +203,7 @@
   }
 
   .tab {
-    font-size: var(--text-md)
+    font-size: var(--text-md);
   }
 }
 
