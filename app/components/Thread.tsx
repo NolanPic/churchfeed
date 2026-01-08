@@ -267,6 +267,15 @@ export default function Thread({
               e.stopPropagation();
             }
           }}
+          onKeyDown={(e) => {
+            // Stop propagation if navigating a link via keyboard
+            if (
+              (e.target as HTMLElement).tagName === "A" &&
+              (e.key === "Enter" || e.key === " ")
+            ) {
+              e.stopPropagation();
+            }
+          }}
         >
           <SanitizedUserContent html={content} />
         </div>
