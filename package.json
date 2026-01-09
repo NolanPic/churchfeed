@@ -12,7 +12,7 @@
     "dev:nextjs": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "seed": "node scripts/seed/seed.js",
     "seed:clear": "node scripts/seed/seed.js clear",
     "test": "vitest",
