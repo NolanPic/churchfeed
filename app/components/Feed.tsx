@@ -23,6 +23,8 @@ import ThreadEditorPhone from "./editor/phone/ThreadEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
+import FeedEmptyState from "./FeedEmptyState";
+import FeedFooter from "./FeedFooter";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -43,7 +45,8 @@ export default function Feed({
     setThreadId: setOpenThreadId,
   } = useContext(CurrentFeedAndThreadContext);
   const [isNewThreadOpen, setIsNewThreadOpen] = useState(false);
-  const [isSelectingFeedForThread, setIsSelectingFeedForThread] = useState(false);
+  const [isSelectingFeedForThread, setIsSelectingFeedForThread] =
+    useState(false);
   const [settingsActiveTab, setSettingsActiveTab] = useState("settings");
   const [isFeedOwner, setIsFeedOwner] = useState(false);
   const [, setIsFeedMember] = useState(false);
@@ -280,6 +283,11 @@ export default function Feed({
         <main className={styles.feedPosts} data-testid="feed-posts">
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
+          ) : results.length === 0 ? (
+            <FeedEmptyState
+              feedId={feedId}
+              onNewThread={handleNewThreadClick}
+            />
           ) : (
             results.map((thread) => {
               return (
@@ -298,6 +306,8 @@ export default function Feed({
         <div ref={endOfFeed} />
       </div>
 
+      <FeedFooter />
+
       {!isTabletOrUp && (
         <ThreadEditorPhone
           isOpen={isNewThreadOpen}
@@ -313,7 +323,10 @@ export default function Feed({
         dragToClose
       >
         {openThreadId && (
-          <ThreadModalContent threadId={openThreadId} onClose={handleCloseThread} />
+          <ThreadModalContent
+            threadId={openThreadId}
+            onClose={handleCloseThread}
+          />
         )}
       </Modal>
 
