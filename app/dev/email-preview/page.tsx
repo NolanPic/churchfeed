@@ -19,14 +19,20 @@ function EmailPreviewContent() {
 
     const renderEmail = async () => {
       let html = "";
-      if (type === "new_post_in_member_feed") {
-        const data = mockData.new_post_in_member_feed as React.ComponentProps<typeof NewThread>;
+      if (type === "new_thread_in_member_feed") {
+        const data = mockData.new_thread_in_member_feed as React.ComponentProps<
+          typeof NewThread
+        >;
         html = await render(<NewThread {...data} />);
-      } else if (type === "new_message_in_post") {
-        const data = mockData.new_message_in_post as React.ComponentProps<typeof NewMessages>;
+      } else if (type === "new_message_in_thread") {
+        const data = mockData.new_message_in_thread as React.ComponentProps<
+          typeof NewMessages
+        >;
         html = await render(<NewMessages {...data} />);
       } else if (type === "new_feed_member") {
-        const data = mockData.new_feed_member as React.ComponentProps<typeof UserJoinedFeed>;
+        const data = mockData.new_feed_member as React.ComponentProps<
+          typeof UserJoinedFeed
+        >;
         html = await render(<UserJoinedFeed {...data} />);
       }
 
@@ -54,12 +60,14 @@ function EmailPreviewContent() {
         <p>Add type parameter to preview an email:</p>
         <ul>
           <li>
-            <a href="?type=new_post_in_member_feed">
-              ?type=new_post_in_member_feed
+            <a href="?type=new_thread_in_member_feed">
+              ?type=new_thread_in_member_feed
             </a>
           </li>
           <li>
-            <a href="?type=new_message_in_post">?type=new_message_in_post</a>
+            <a href="?type=new_message_in_thread">
+              ?type=new_message_in_thread
+            </a>
           </li>
           <li>
             <a href="?type=new_feed_member">?type=new_feed_member</a>

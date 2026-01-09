@@ -1,5 +1,5 @@
 {
-  "new_post_in_member_feed": {
+  "new_thread_in_member_feed": {
     "author": {
       "_id": "mock_user_1",
       "_creationTime": 1700000000000,
@@ -22,7 +22,7 @@
     "notificationId": "mock_notif_1",
     "orgHost": "example.churchthreads.com"
   },
-  "new_message_in_post": {
+  "new_message_in_thread": {
     "messages": [
       {
         "message": {
