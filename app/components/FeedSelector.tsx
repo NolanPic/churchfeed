@@ -32,8 +32,9 @@ export default function FeedSelector({
     CurrentFeedAndThreadContext
   );
   const org = useOrganization();
-  const [isFeedSelectorOpen, setIsFeedSelectorOpen] =
-    useState(chooseFeedForNewThread);
+  const [isFeedSelectorOpen, setIsFeedSelectorOpen] = useState(
+    chooseFeedForNewThread
+  );
   const [isBrowserOpen, setIsBrowserOpen] = useState(false);
   const [isUserPreviewingOpenFeed, setIsUserPreviewingOpenFeed] =
     useState(false);
@@ -152,7 +153,7 @@ export default function FeedSelector({
               {chooseFeedForNewThread && (
                 <li>
                   <h2 className={styles.chooseFeedHeading}>
-                    Select a feed to start a thread in
+                    Select a feed to post in
                   </h2>
                 </li>
               )}
