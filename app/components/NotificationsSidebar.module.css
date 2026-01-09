@@ -1,9 +1,6 @@
 /* Sidebar width variable for easy tweaking */
-:root {
-  --notifications-sidebar-width: 400px;
-}
-
 .sidebar {
+  --notifications-sidebar-width: 400px;
   position: fixed;
   top: 0;
   left: 0;

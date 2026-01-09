@@ -20,7 +20,7 @@ const FEEDS_PER_PAGE = 20;
 const PreviewFeedsSelector = ({ onClose }: PreviewFeedsSelectorProps) => {
   const org = useOrganization();
   const orgId = org?._id as Id<"organizations">;
-  const [_auth, { userFeeds }] = useUserAuth();
+  const [, { userFeeds }] = useUserAuth();
 
   const userFeedIds = new Set(userFeeds.map((uf) => uf.feedId));
 

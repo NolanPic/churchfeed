@@ -78,7 +78,7 @@ export default function NotificationsSidebar({
     }
 
     return () => observer.disconnect();
-  }, [status, results?.length]);
+  }, [status, results]);
 
   const handleClearAll = async () => {
     if (!orgId) return;

@@ -40,9 +40,8 @@ export function CardList<T extends { _id?: string }>({
   const endOfList = useRef<HTMLDivElement>(null);
   const intersectionCb = useRef<IntersectionObserverCallback | null>(null);
 
-  const handleIntersection = (
-    entries: IntersectionObserverEntry[],
-    observer: IntersectionObserver
+  const handleIntersection: IntersectionObserverCallback = (
+    entries
   ) => {
     if (
       entries[0] &&
