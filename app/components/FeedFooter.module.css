@@ -2,7 +2,6 @@
     display: grid;
     place-items: center;
     text-decoration: none;
-    display: block;
     margin: var(--spacing10) 0 var(--spacing24);
 
     & p {
