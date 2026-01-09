@@ -23,6 +23,7 @@ import ThreadEditorPhone from "./editor/phone/ThreadEditorPhone";
 import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUserAuth } from "@/auth/client/useUserAuth";
+import FeedEmptyState from "./FeedEmptyState";
 
 interface FeedProps {
   feedIdSlug: Id<"feeds"> | null;
@@ -280,6 +281,8 @@ export default function Feed({
         <main className={styles.feedPosts} data-testid="feed-posts">
           {status === "LoadingFirstPage" ? (
             <FeedSkeleton />
+          ) : results.length === 0 ? (
+            <FeedEmptyState feedId={feedId} onNewThread={handleNewThreadClick} />
           ) : (
             results.map((thread) => {
               return (
